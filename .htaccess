@@ -1,0 +1,17 @@
+# politon.pe/joseguzman
+DirectoryIndex index.html
+Options -Indexes
+AddType video/mp4 .mp4
+AddType font/woff2 .woff2
+AddType application/javascript .js
+<IfModule mod_headers.c>
+  <FilesMatch "\.(mp4|jpg|png|woff2)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  <FilesMatch "\.(html|js|css)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <Files "sw.js">
+    Header set Service-Worker-Allowed "/joseguzman/"
+  </Files>
+</IfModule>

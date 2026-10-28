@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Activo no corriente y pasivo corriente · Clases 3 y 4</title>
+<meta name="description" content="Dinámica de Plan Contable · Clases 3 y 4: activo no corriente y pasivo corriente, con dos casos en video. Ponencia de José Manuel Guzmán Valverde.">
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/deck.css">
+<style>
+  /* piezas propias de esta ponencia */
+  .flow { position:absolute; left:72px; right:72px; top:216px; display:grid; grid-template-columns:repeat(5,1fr); gap:24px; }
+  .flow::before { content:''; position:absolute; left:60px; right:60px; top:54px; height:3px; background:var(--line); }
+  .flow .st { position:relative; }
+  .flow .circ { width:108px; height:108px; margin-left:18px; }
+  .flow .c { margin-top:22px; font-size:16px; font-weight:700; letter-spacing:1.4px; color:var(--mag); }
+  .flow .h { font-size:27px; font-weight:700; color:var(--navy); margin-top:6px; }
+  .flow .d { font-size:18px; color:var(--muted); margin-top:6px; }
+  .g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:30px; }
+  .g2 { display:grid; grid-template-columns:repeat(2,1fr); gap:28px 30px; }
+  .tile { position:relative; border-radius:14px; background:var(--soft); border:1.5px solid var(--line); padding:26px 28px; }
+  .tile h3 { margin:0; font-size:25px; color:var(--navy); }
+  .tile p { margin:10px 0 0; font-size:18px; line-height:1.4; }
+  .gl .tile { display:grid; grid-template-columns:78px 1fr; grid-template-rows:auto 1fr; column-gap:16px; height:222px; }
+  .gl .circ { width:78px; height:78px; }
+  .gl h3 { align-self:center; }
+  .gl p { grid-column:1 / 3; font-size:18px; margin-top:16px; }
+  .acct { display:flex; align-items:center; gap:24px; height:142px; padding:0 26px; }
+  .acct .chip { width:108px; height:88px; font-size:36px; }
+  .acct h3 { font-size:23px; }
+  .acct p { margin-top:6px; font-size:17px; color:var(--muted); }
+  .duel { height:258px; padding:24px 34px; }
+  .duel .who { display:flex; align-items:center; gap:18px; font-size:30px; font-weight:700; color:var(--navy); }
+  .duel .who .chip { width:84px; height:84px; font-size:32px; }
+  .duel q { display:block; margin-top:20px; font-size:24px; font-style:italic; quotes:'«' '»'; }
+  .duel .acc { margin-top:12px; font-size:17px; font-weight:700; letter-spacing:.5px; }
+  .duel.win { border:4px solid var(--blue); }
+  .verdict { position:absolute; left:0; right:0; top:282px; height:192px; display:flex; align-items:center; gap:30px; padding:0 40px; border-radius:14px; background:var(--navy); color:#fff; font-size:24px; line-height:1.4; }
+  .verdict .circ { width:108px; height:108px; }
+  .bar { position:absolute; left:0; right:0; display:flex; height:86px; }
+  .bar > div { display:grid; place-items:center; color:#fff; font-size:25px; font-weight:700; border-right:3px solid #fff; }
+  .ticks { position:absolute; left:0; right:0; font-size:16px; font-weight:700; color:var(--muted); }
+  .ticks span { position:absolute; transform:translateX(-50%); }
+  .rule { display:flex; align-items:center; gap:22px; height:126px; padding:0 24px; }
+  .rule .chip { width:120px; height:84px; font-size:30px; }
+  .rule h3 { font-size:22px; }
+  .rule p { margin-top:6px; font-size:17px; color:var(--muted); }
+  .chart { position:absolute; left:0; top:0; width:770px; height:500px; }
+  .chart .t { text-align:center; font-size:18px; font-weight:700; color:var(--navy); }
+  .chart .cols { position:absolute; left:20px; right:10px; bottom:40px; top:40px; display:flex; align-items:flex-end; gap:30px; border-bottom:2px solid var(--line); }
+  .chart .col { flex:1; position:relative; background:var(--navy); border-radius:4px 4px 0 0; }
+  .chart .col b { position:absolute; left:50%; top:-28px; transform:translateX(-50%); font-size:16px; color:var(--ink); white-space:nowrap; }
+  .chart .lbls { position:absolute; left:20px; right:10px; bottom:6px; display:flex; gap:30px; }
+  .chart .lbls span { flex:1; text-align:center; font-size:16px; color:var(--muted); }
+  .q { display:flex; align-items:center; gap:22px; height:138px; padding:0 26px; }
+  .q .chip { width:78px; height:78px; font-size:26px; }
+  .q > span:not(.chip) { font-size:22px; font-weight:700; color:var(--navy); line-height:1.3; }
+  .ans { display:flex; align-items:center; gap:22px; height:138px; padding:0 22px; }
+  .ans .chip { width:180px; height:90px; font-size:30px; }
+  .ans .chip.sm { font-size:21px; }
+  .ans h4 { margin:0; font-size:18px; color:var(--navy); line-height:1.25; }
+  .ans p { margin:8px 0 0; font-size:17px; color:var(--muted); }
+  .split { position:absolute; left:0; right:0; top:0; height:114px; display:flex; }
+  .split div { display:flex; align-items:center; color:#fff; font-weight:700; border-right:3px solid #fff; }
+  .stat b { display:block; font-size:72px; font-weight:900; line-height:1; text-align:center; }
+  .stat span { display:block; margin-top:10px; font-size:19px; color:var(--muted); text-align:center; }
+  .op { font-size:66px; font-weight:900; color:var(--mag); text-align:center; }
+  .tl { position:absolute; left:0; right:0; top:0; display:grid; grid-template-columns:repeat(3,1fr); gap:30px; }
+  .tl::before { content:''; position:absolute; left:50px; right:50px; top:33px; height:3px; background:var(--line); }
+  .tl .chip { position:relative; width:68px; height:68px; font-size:24px; margin-left:18px; }
+  .tl .c { margin-top:16px; font-size:16px; font-weight:700; letter-spacing:1.4px; color:var(--mag); }
+  .tl .h { font-size:24px; font-weight:700; color:var(--navy); margin-top:4px; }
+  .tl .d { font-size:17px; color:var(--muted); margin-top:4px; }
+  .vside { position:absolute; left:624px; right:72px; }
+  .vside .k { font-size:18px; font-weight:700; letter-spacing:2.5px; color:var(--pinkline); }
+  .vside .dur { font-size:17px; color:var(--line); margin-top:6px; }
+  .vbox2 { border-radius:14px; padding:22px 30px; display:flex; gap:22px; align-items:flex-start; font-size:22px; line-height:1.4; }
+  .vbox2 .circ { width:78px; height:78px; }
+  .vbox2 .lab { font-size:15px; color:var(--pinkline); margin-bottom:6px; }
+  aside.notes { display:none; }
+  ul.bul { margin:0; padding-left:26px; font-size:21px; line-height:1.45; }
+  ul.bul li { margin-bottom:10px; }
+</style>
+</head>
+<body class="deck-page" data-root="../../../"
+  data-offline="../../../assets/base.css,../../../assets/deck.css,../../../assets/deck.js,../../../assets/icons.js,../../../assets/fonts/lato-latin-400-normal.woff2,../../../assets/fonts/lato-latin-400-italic.woff2,../../../assets/fonts/lato-latin-700-normal.woff2,../../../assets/fonts/lato-latin-900-normal.woff2,media/exp04.mp4,media/exp05.mp4,media/exp04.jpg,media/exp05.jpg">
+<div class="viewport"><div class="stage">
+
+<!-- ======================= INICIO ======================= -->
+<section class="slide dark cover">
+  <div class="ck">PLAN CONTABLE GENERAL · CLASES 3 Y 4</div>
+  <h1>Activo no corriente y pasivo corriente</h1>
+  <p class="lead">Qué son, qué cuentas usan y cómo se registran, con dos casos en video</p>
+  <div class="brand">CERTUS &nbsp;|&nbsp; CONTABILIDAD</div>
+  <aside class="notes"><p>Presenta el tema: hoy vemos dos clases del plan contable, cada una con un caso en video.</p><p>Atajos: <b>F</b> pantalla completa · <b>B</b> pantalla negra · <b>S</b> esta vista.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Cómo vamos a trabajar</div><h2 class="title">Ver el caso, explicarlo y practicar</h2>
+  <div class="flow">
+    <div class="st"><span class="circ" style="width:108px;height:108px"><i data-icon="FaChalkboardTeacher"></i></span><div class="c">PARA EMPEZAR</div><div class="h">Conceptos</div><div class="d">Palabras clave y mapa</div></div>
+    <div class="st"><span class="circ m" style="width:108px;height:108px"><i data-icon="FaPlay"></i></span><div class="c">CLASE 3</div><div class="h">Video</div><div class="d">EXP. 04 · acciones</div></div>
+    <div class="st"><span class="circ" style="width:108px;height:108px"><i data-icon="FaChalkboardTeacher"></i></span><div class="c">CLASE 3</div><div class="h">Explicación</div><div class="d">Activo no corriente</div></div>
+    <div class="st"><span class="circ m" style="width:108px;height:108px"><i data-icon="FaPlay"></i></span><div class="c">CLASE 4</div><div class="h">Video</div><div class="d">EXP. 05 · IGV</div></div>
+    <div class="st"><span class="circ" style="width:108px;height:108px"><i data-icon="FaChalkboardTeacher"></i></span><div class="c">CLASE 4</div><div class="h">Explicación</div><div class="d">Pasivo corriente</div></div>
+  </div>
+  <div class="card" style="left:72px;right:72px;top:558px;height:120px;display:flex;align-items:center;padding:0 40px;font-size:20px;line-height:1.4">
+    <div><b class="navy">Los videos:</b> Ana y Beto, practicantes de un estudio contable, discuten dónde registrar una operación. Antes del veredicto, el video pregunta: <b class="mag">¿quién tiene razón?</b></div></div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Cada clase empieza con un caso corto en video. Cuando salga la cuenta regresiva, ustedes votan: ¿Ana o Beto? Después lo explicamos paso a paso y practicamos.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Para empezar</div><h2 class="title">Seis palabras que vamos a usar</h2>
+  <div class="body g3 gl" style="grid-template-rows:222px 222px;gap:24px 30px">
+    <div class="tile"><span class="circ"><i data-icon="FaBoxOpen"></i></span><h3>Activo</h3><p>Lo que la empresa tiene y le sirve: dinero, máquinas, lo que le deben.</p></div>
+    <div class="tile"><span class="circ"><i data-icon="FaFileContract"></i></span><h3>Pasivo</h3><p>Lo que la empresa debe a otros: proveedores, bancos, Estado, trabajadores.</p></div>
+    <div class="tile"><span class="circ"><i data-icon="FaCalendarAlt"></i></span><h3>Corriente</h3><p>12 meses o menos. Si pasa de 12 meses, es «no corriente».</p></div>
+    <div class="tile"><span class="circ"><i data-icon="FaHashtag"></i></span><h3>Cuenta y elemento</h3><p>Cada cuenta tiene un código. Su primer dígito es el elemento: la 33 es del elemento 3.</p></div>
+    <div class="tile"><span class="circ"><i data-icon="FaColumns"></i></span><h3>Debe y haber</h3><p>Las dos columnas del asiento: izquierda (debe) y derecha (haber). Siempre suman igual.</p></div>
+    <div class="tile"><span class="circ m"><i data-icon="FaPercent"></i></span><h3>IGV</h3><p>Impuesto de 18 % que se cobra en las ventas. La empresa lo cobra para el Estado.</p></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Si estas seis palabras quedan claras, todo lo demás se entiende. Activo es lo que tengo; pasivo, lo que debo; y el plazo de 12 meses separa lo corriente de lo no corriente.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Punto de partida</div><h2 class="title">Dónde están en el estado de situación financiera</h2>
+  <div class="body">
+    <div class="abs navy" style="left:0;top:0;font-size:22px;font-weight:700">ACTIVO: lo que la empresa tiene</div>
+    <div class="abs navy" style="left:780px;top:0;font-size:22px;font-weight:700">PASIVO: lo que la empresa debe</div>
+    <div class="card" style="left:0;top:48px;width:672px;height:132px;padding:22px 34px"><div class="navy" style="font-size:25px;font-weight:700">Activo corriente</div><div class="muted" style="font-size:18px;margin-top:10px">Se convierte en efectivo o se usa en 12 meses</div></div>
+    <div class="card navy" style="left:0;top:198px;width:672px;height:132px;padding:22px 34px"><div style="font-size:25px;font-weight:700">Activo no corriente · Clase 3</div><div style="font-size:18px;margin-top:10px;color:var(--pinkline)">Se usa por más de 12 meses</div></div>
+    <div class="card navy" style="left:780px;top:48px;width:676px;height:132px;padding:22px 34px"><div style="font-size:25px;font-weight:700">Pasivo corriente · Clase 4</div><div style="font-size:18px;margin-top:10px;color:var(--pinkline)">Se paga dentro de los próximos 12 meses</div></div>
+    <div class="card" style="left:780px;top:198px;width:676px;height:132px;padding:22px 34px"><div class="navy" style="font-size:25px;font-weight:700">Pasivo no corriente</div><div class="muted" style="font-size:18px;margin-top:10px">Se paga en un plazo mayor de 12 meses</div></div>
+    <div class="abs mag" style="left:690px;width:72px;top:120px;text-align:center;font-size:52px;font-weight:900">+</div>
+    <div class="card white" style="left:0;right:0;top:372px;height:102px;display:flex;align-items:center;padding:0 40px;font-size:24px"><b class="navy">Ecuación contable:&nbsp;</b><b class="mag">Activo = Pasivo + Patrimonio</b></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>La empresa tiene cosas (activo) y debe cosas (pasivo). Para ordenarlas usamos un plazo de 12 meses. Hoy vemos el activo que dura más de 12 meses y el pasivo que se paga en menos de 12 meses.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+</section>
+
+<!-- ======================= CLASE 3 ======================= -->
+<section class="slide dark cover">
+  <div class="ck">CLASE 3</div>
+  <h1>Activo no corriente</h1>
+  <p class="lead">Bienes y derechos que la empresa mantiene para utilizar a largo plazo, generalmente por más de un año.</p>
+  <div class="say"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Lo que la empresa compra para usarlo varios años, no para venderlo. Por ejemplo, la máquina de una fábrica.</div></div>
+  <div class="brand">CERTUS &nbsp;|&nbsp; CONTABILIDAD</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 3 · Definición</div><h2 class="title">Tres rasgos que lo identifican</h2>
+  <div class="body">
+    <div class="g3" style="position:absolute;left:0;right:0;top:0;height:342px">
+      <div class="tile"><span class="circ m" style="width:102px;height:102px"><i data-icon="FaHourglassHalf"></i></span><h3 style="margin-top:22px">Largo plazo</h3><p>Se usa por más de un año (más de 12 meses).</p></div>
+      <div class="tile"><span class="circ m" style="width:102px;height:102px"><i data-icon="FaCogs"></i></span><h3 style="margin-top:22px">Para usar, no para vender</h3><p>Sirve para operar el negocio; no es mercadería.</p></div>
+      <div class="tile"><span class="circ m" style="width:102px;height:102px"><i data-icon="FaChartLine"></i></span><h3 style="margin-top:22px">Genera beneficios futuros</h3><p>Ayuda a producir o vender durante varios años.</p></div>
+    </div>
+    <div class="card white" style="left:0;right:0;top:372px;height:102px;display:flex;align-items:center;padding:0 40px;font-size:23px"><b class="mag">Ejemplos:&nbsp;</b>maquinarias, vehículos, edificios y equipos.</div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Truco: depende del uso. La camioneta con la que una empresa reparte es activo no corriente; la misma camioneta en una tienda que vende autos es mercadería.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+</section>
+
+<section class="slide dark">
+  <div class="vbox"><video src="media/exp04.mp4" poster="media/exp04.jpg" preload="auto" playsinline></video><div class="hint"><span><i data-icon="FaPlay"></i></span></div></div>
+  <div class="vside" style="top:76px">
+    <div class="row" style="gap:20px"><span class="circ m" style="width:96px;height:96px"><i data-icon="FaPlay"></i></span><div><div class="k">CLASE 3 · VIDEO EXP. 04</div><div class="dur">Duración: 1 min 24 s</div></div></div>
+    <div style="margin-top:34px;font-size:46px;font-weight:700;line-height:1.12">¿Las acciones ya no van en la 30?</div>
+    <div class="vbox2" style="margin-top:34px;background:var(--navy2)"><span class="circ m"><i data-icon="FaEye"></i></span><div><div class="lab">MIENTRAS LO VES</div>La empresa compra el 5 % de las acciones de otra. ¿Van a la cuenta 30 o a la 11?</div></div>
+    <div class="vbox2 say" style="margin-top:22px;background:#fff;color:var(--ink)"><span style="font-size:52px;color:var(--mag);flex:none"><i data-icon="FaCommentDots"></i></span><div><div class="lab" style="color:var(--mag)">ANTES DE DAR PLAY</div>Vamos a ver un caso de minuto y medio. Cuando salga la cuenta regresiva, voten con la mano: ¿Ana o Beto?</div></div>
+  </div>
+  <aside class="notes"><p>Pulsa «siguiente» una vez para reproducir el video y otra vez para avanzar. Con <b>K</b> pausas o reanudas.</p><p>Pausa en la cuenta regresiva (cerca del segundo 37) para que voten: ¿Ana (cuenta 11) o Beto (cuenta 30)?</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 3 · Lo que vimos</div><h2 class="title">Ana y Beto no se ponían de acuerdo</h2>
+  <div class="body">
+    <div class="g2" style="position:absolute;left:0;right:0;top:0">
+      <div class="tile duel win"><div class="who"><span class="chip" style="background:var(--blue)">A</span>Ana</div><q>Van a la 11, inversiones financieras.</q><div class="acc" style="color:var(--blue)">ELEMENTO 1 · ACTIVO DISPONIBLE Y EXIGIBLE</div></div>
+      <div class="tile duel"><div class="who"><span class="chip" style="background:var(--red)">B</span>Beto</div><q>Van a la 30, como siempre.</q><div class="acc" style="color:var(--red)">ELEMENTO 3 · ACTIVO INMOVILIZADO</div></div>
+    </div>
+    <div class="verdict"><span class="circ m"><i data-icon="FaCheck"></i></span><div><b>Tiene razón Ana,</b> siempre que no haya control ni influencia. Si la empresa controla a la otra, influye mucho en ella o comparte el control, la razón es de Beto.</div></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Comprar el 5 % de otra empresa es una inversión pequeña: no da poder para decidir allá. Por eso no va a la 30 (inversiones con poder), sino a la 11 (inversiones financieras).</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+  <aside class="notes"><p>Idea de fondo: no todo lo que la empresa conserva a largo plazo se registra igual; depende de qué es y para qué lo tiene.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 3 · Cuentas del PCGE</div><h2 class="title">Elemento 3: activo inmovilizado (cuentas 30 a 39)</h2>
+  <div class="body g2" style="grid-template-rows:repeat(3,142px);gap:20px 30px">
+    <div class="tile acct"><span class="chip m">33</span><div><h3>Propiedades, planta y equipo</h3><p>Edificios, maquinarias, vehículos, muebles, computadoras</p></div></div>
+    <div class="tile acct"><span class="chip m">34</span><div><h3>Intangibles</h3><p>Lo que no se puede tocar: software, marcas, patentes</p></div></div>
+    <div class="tile acct"><span class="chip m">39</span><div><h3>Depreciación acumulada</h3><p>Cuánto del valor del activo ya se desgastó con el uso</p></div></div>
+    <div class="tile acct"><span class="chip">30</span><div><h3>Inversiones con poder</h3><p>Acciones en subsidiarias, asociadas y negocios conjuntos (el video)</p></div></div>
+    <div class="tile acct"><span class="chip">31</span><div><h3>Propiedades de inversión</h3><p>Inmuebles que se alquilan a otros o se guardan para venderlos más caros</p></div></div>
+    <div class="tile acct"><span class="chip">32</span><div><h3>Activos por derecho de uso</h3><p>Bienes que la empresa usa gracias a un contrato de alquiler</p></div></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>No hay que memorizar todas. Empecemos por las tres en fucsia: la 33 para lo que usamos (máquinas, vehículos), la 34 para lo que no se toca (software) y la 39 para el desgaste acumulado.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+  <aside class="notes"><p>Nombres del PCGE 2026 (obligatorio desde el 1/01/2028). En el PCGE 2019 vigente, la 30 se llama «Inversiones mobiliarias».</p><p>Otras cuentas del elemento: 35 activos biológicos, 36 deterioro, 37 activo diferido, 38 otros activos. En 2026 se suma la 348 Criptoactivos.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 3 · La regla del video</div><h2 class="title">¿Cuánto poder te dan tus acciones?</h2>
+  <div class="body">
+    <div class="abs muted lab" style="left:0;top:-12px;font-size:16px">Porcentaje de votos que tiene la empresa en la otra</div>
+    <div class="abs mag" style="left:73px;top:24px;font-size:15px;font-weight:700;border-left:3px solid var(--mag);padding-left:8px;height:34px">CASO DEL VIDEO: 5 %</div>
+    <div class="bar" style="top:58px"><div style="width:20%;background:var(--blue)">Cuenta 11</div><div style="width:30%;background:var(--gold)">Cuenta 302</div><div style="width:50%;background:var(--red);border-right:0">Cuenta 301</div></div>
+    <div class="ticks" style="top:152px"><span style="left:0;transform:none">0 %</span><span style="left:20%">20 %</span><span style="left:50%">50 %</span><span style="left:auto;right:0;transform:none">100 %</span></div>
+    <div class="g2" style="position:absolute;left:0;right:0;top:196px;gap:18px 30px">
+      <div class="tile rule"><span class="chip" style="background:var(--blue)">11</span><div><h3>Inversión financiera</h3><p>Poco poder: menos del 20 % de los votos y sin influencia.</p></div></div>
+      <div class="tile rule"><span class="chip" style="background:var(--gold)">302</span><div><h3>Asociada</h3><p>Influencia: desde el 20 % de los votos se supone que influyes.</p></div></div>
+      <div class="tile rule"><span class="chip" style="background:var(--red)">301</span><div><h3>Subsidiaria</h3><p>Control: por lo general, más del 50 % de los votos.</p></div></div>
+      <div class="tile rule"><span class="chip" style="background:var(--teal)">303</span><div><h3>Negocio conjunto</h3><p>Control compartido con otro socio por acuerdo.</p></div></div>
+    </div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>¿Cuánto poder me dan mis acciones? Poco poder: cuenta 11. Influencia: 302. Control: 301. Control compartido: 303. El porcentaje es una guía; también se revisan los acuerdos.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+  <aside class="notes"><p>Base técnica, por si preguntan: el control se define en la NIIF 10; la influencia significativa (desde el 20 %) en la NIC 28, y esa presunción admite prueba en contrario. Las acciones sin influencia van a la 11 como instrumentos de patrimonio (1122 o 1132).</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 3 · Caso del aula</div><h2 class="title">Una máquina de S/ 60,000 que dura 5 años</h2>
+  <div class="body">
+    <div class="chart"><div class="t">Valor de la máquina en libros (S/)</div>
+      <div class="cols"><div class="col" style="height:100%"><b>60,000</b></div><div class="col" style="height:80%"><b>48,000</b></div><div class="col" style="height:60%"><b>36,000</b></div><div class="col" style="height:40%"><b>24,000</b></div><div class="col" style="height:20%"><b>12,000</b></div><div class="col" style="height:0"><b>0</b></div></div>
+      <div class="lbls"><span>Compra</span><span>Año 1</span><span>Año 2</span><span>Año 3</span><span>Año 4</span><span>Año 5</span></div></div>
+    <div class="abs" style="left:830px;right:0;top:0">
+      <div class="lab mag" style="font-size:16px;margin-bottom:8px">1) Compra al contado</div>
+      <table class="ledger"><tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr><tr><td>33 Propiedades, planta y equipo</td><td>60,000</td><td></td></tr><tr><td>40 IGV (crédito fiscal)</td><td>10,800</td><td></td></tr><tr><td>10 Efectivo</td><td></td><td>70,800</td></tr></table>
+      <div class="lab mag" style="font-size:16px;margin:26px 0 8px">2) Depreciación de cada año</div>
+      <table class="ledger"><tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr><tr><td>68 Depreciación (gasto)</td><td>12,000</td><td></td></tr><tr><td>39 Depreciación acumulada</td><td></td><td>12,000</td></tr></table>
+    </div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>La máquina se registra como activo (33). Cada año se «gasta» una parte por el uso: S/ 60,000 ÷ 5 años = S/ 12,000. Eso es la depreciación: va a gasto (68) y se acumula en la 39.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+  <aside class="notes"><p>Ejemplo ilustrativo con IGV de 18 % y depreciación en línea recta. El IGV de la compra (S/ 10,800) es crédito fiscal: el mismo concepto que aparece en el video de la clase 4.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 3 · Práctica</div><h2 class="title">¿En qué cuenta va?</h2>
+  <div class="body g2" style="grid-template-rows:repeat(3,138px);gap:24px 30px">
+    <div class="tile q"><span class="chip">1</span><span>Compras el 8 % de las acciones de un proveedor, sin acuerdos especiales</span></div>
+    <div class="tile q"><span class="chip">2</span><span>Compras el 30 % de las acciones de otra empresa</span></div>
+    <div class="tile q"><span class="chip">3</span><span>Compras el 70 % de las acciones de otra empresa</span></div>
+    <div class="tile q"><span class="chip">4</span><span>Una camioneta que usa el área de reparto</span></div>
+    <div class="tile q"><span class="chip">5</span><span>Una licencia de software por 3 años</span></div>
+    <div class="tile q"><span class="chip">6</span><span>El desgaste acumulado de la camioneta</span></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Para cada caso pregúntate: ¿la empresa lo usa para trabajar o es una inversión? Si es una inversión, ¿cuánto poder le da en la otra empresa?</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+  <aside class="notes"><p>Respuestas: 1) 11 · 2) 302 · 3) 301 · 4) 33 · 5) 34 · 6) 39. Están en la diapositiva siguiente.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 3 · Respuestas</div><h2 class="title">Así se clasifican</h2>
+  <div class="body g2" style="grid-template-rows:repeat(3,138px);gap:24px 30px">
+    <div class="tile ans"><span class="chip m">11</span><div><h4>Compras el 8 % de las acciones de un proveedor</h4><p>Poco poder: es una inversión financiera.</p></div></div>
+    <div class="tile ans"><span class="chip m">302</span><div><h4>Compras el 30 % de las acciones de otra empresa</h4><p>Desde el 20 % se supone influencia: asociada.</p></div></div>
+    <div class="tile ans"><span class="chip m">301</span><div><h4>Compras el 70 % de las acciones de otra empresa</h4><p>Más del 50 %: la controlas, es subsidiaria.</p></div></div>
+    <div class="tile ans"><span class="chip m">33</span><div><h4>Una camioneta que usa el área de reparto</h4><p>La usas varios años para trabajar.</p></div></div>
+    <div class="tile ans"><span class="chip m">34</span><div><h4>Una licencia de software por 3 años</h4><p>No se puede tocar: es un intangible.</p></div></div>
+    <div class="tile ans"><span class="chip m">39</span><div><h4>El desgaste acumulado de la camioneta</h4><p>El gasto del año va a la 68; lo acumulado, a la 39.</p></div></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Las acciones se clasifican por el poder que dan (11, 302 o 301). Lo que se usa para trabajar va a la 33 si se puede tocar y a la 34 si no.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+</section>
+
+<!-- ======================= CLASE 4 ======================= -->
+<section class="slide dark cover">
+  <div class="ck">CLASE 4</div>
+  <h1>Pasivo corriente</h1>
+  <p class="lead">Obligaciones y deudas que la empresa debe pagar a corto plazo, generalmente dentro de los próximos doce meses.</p>
+  <div class="say"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Lo que la empresa tiene que pagar pronto, en menos de un año. Por ejemplo, la factura de un proveedor a 30 días.</div></div>
+  <div class="brand">CERTUS &nbsp;|&nbsp; CONTABILIDAD</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 4 · Definición</div><h2 class="title">El plazo decide: corriente o no corriente</h2>
+  <div class="body g2" style="grid-template-rows:474px">
+    <div class="tile" style="background:var(--navy);border-color:var(--navy);color:#fff;padding:30px 36px">
+      <div class="row" style="gap:20px"><span class="circ m" style="width:96px;height:96px"><i data-icon="FaCalendarAlt"></i></span><div><div style="font-size:28px;font-weight:700">Pasivo corriente</div><div style="font-size:19px;font-weight:700;color:var(--pinkline);margin-top:6px">Se paga en 12 meses o menos</div></div></div>
+      <ul class="bul" style="margin-top:30px"><li>Deudas con proveedores</li><li>Tributos del mes (IGV, renta)</li><li>Remuneraciones pendientes de pago</li><li>Cuotas de préstamos que vencen este año</li></ul></div>
+    <div class="tile" style="padding:30px 36px">
+      <div class="row" style="gap:20px"><span class="circ" style="width:96px;height:96px"><i data-icon="FaHourglassHalf"></i></span><div><div class="navy" style="font-size:28px;font-weight:700">Pasivo no corriente</div><div class="mag" style="font-size:19px;font-weight:700;margin-top:6px">Se paga en más de 12 meses</div></div></div>
+      <ul class="bul" style="margin-top:30px"><li>Préstamo bancario a 5 años (la parte de largo plazo)</li><li>Bonos emitidos a largo plazo</li><li>Alquileres con pagos en varios años</li></ul></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Lo que decide es cuándo vence la deuda. Un préstamo a 5 años se parte en dos: las cuotas de los próximos 12 meses son corrientes y el resto, no corriente.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+</section>
+
+<section class="slide dark">
+  <div class="vbox"><video src="media/exp05.mp4" poster="media/exp05.jpg" preload="auto" playsinline></video><div class="hint"><span><i data-icon="FaPlay"></i></span></div></div>
+  <div class="vside" style="top:76px">
+    <div class="row" style="gap:20px"><span class="circ m" style="width:96px;height:96px"><i data-icon="FaPlay"></i></span><div><div class="k">CLASE 4 · VIDEO EXP. 05</div><div class="dur">Duración: 1 min 11 s</div></div></div>
+    <div style="margin-top:34px;font-size:46px;font-weight:700;line-height:1.12">Cobré S/ 118… ¿y no todo es mío?</div>
+    <div class="vbox2" style="margin-top:34px;background:var(--navy2)"><span class="circ m"><i data-icon="FaEye"></i></span><div><div class="lab">MIENTRAS LO VES</div>Una ferretería vende por S/ 118 con IGV incluido. ¿Todo es venta o una parte es deuda?</div></div>
+    <div class="vbox2 say" style="margin-top:22px;background:#fff;color:var(--ink)"><span style="font-size:52px;color:var(--mag);flex:none"><i data-icon="FaCommentDots"></i></span><div><div class="lab" style="color:var(--mag)">ANTES DE DAR PLAY</div>Ahora un caso de un minuto. Fíjense en el IGV. En la cuenta regresiva voten otra vez: ¿Ana o Beto?</div></div>
+  </div>
+  <aside class="notes"><p>Pulsa «siguiente» para reproducir y otra vez para avanzar. Pausa en la cuenta regresiva (cerca del segundo 37): ¿Ana (S/ 100 venta y S/ 18 deuda) o Beto (S/ 118 venta)?</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 4 · Lo que vimos</div><h2 class="title">Ana y Beto registran la venta</h2>
+  <div class="body">
+    <div class="g2" style="position:absolute;left:0;right:0;top:0">
+      <div class="tile duel win"><div class="who"><span class="chip" style="background:var(--blue)">A</span>Ana</div><q>Cien son venta, y dieciocho, deuda con Sunat.</q><div class="acc" style="color:var(--blue)">CUENTAS 70 Y 40</div></div>
+      <div class="tile duel"><div class="who"><span class="chip" style="background:var(--red)">B</span>Beto</div><q>Los ciento dieciocho son venta.</q><div class="acc" style="color:var(--red)">TODO A LA CUENTA 70</div></div>
+    </div>
+    <div class="verdict"><span class="circ m"><i data-icon="FaCheck"></i></span><div><b>Tiene razón Ana,</b> siempre que la venta esté gravada con el IGV. Si la venta está exonerada o es inafecta, no hay IGV: la razón es de Beto.</div></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Cuando cobras S/ 118, S/ 18 son IGV: un impuesto que cobras por encargo del Estado. Ese dinero no es tuyo; se lo debes a la Sunat. Por eso es pasivo, y corriente, porque se paga el mes siguiente.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 4 · Cuentas del PCGE</div><h2 class="title">Elemento 4: pasivo (cuentas 40 a 49)</h2>
+  <div class="body g3 gl" style="grid-template-rows:222px 222px;gap:24px 30px">
+    <div class="tile"><span class="circ m"><i data-icon="FaFileInvoiceDollar"></i></span><h3><span class="mag" style="font-size:38px">40</span>&nbsp; Tributos por pagar</h3><p>Al Estado: IGV, renta, aportes a EsSalud y ONP.</p></div>
+    <div class="tile"><span class="circ m"><i data-icon="FaUsers"></i></span><h3><span class="mag" style="font-size:38px">41</span>&nbsp; Remuneraciones</h3><p>A los trabajadores: sueldos, vacaciones, gratificaciones, CTS.</p></div>
+    <div class="tile"><span class="circ m"><i data-icon="FaTruck"></i></span><h3><span class="mag" style="font-size:38px">42</span>&nbsp; Proveedores</h3><p>Cuentas por pagar comerciales: facturas de mercadería y servicios.</p></div>
+    <div class="tile"><span class="circ"><i data-icon="FaUniversity"></i></span><h3><span style="font-size:38px">45</span>&nbsp; Obligaciones financieras</h3><p>Al banco: préstamos y sobregiros.</p></div>
+    <div class="tile"><span class="circ"><i data-icon="FaHandHoldingUsd"></i></span><h3><span style="font-size:38px">46</span>&nbsp; Por pagar diversas</h3><p>Deudas que no son del negocio principal.</p></div>
+    <div class="tile"><span class="circ"><i data-icon="FaBalanceScale"></i></span><h3><span style="font-size:38px">48</span>&nbsp; Provisiones</h3><p>Pagos probables: juicios, garantías.</p></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Tres cuentas para empezar, en fucsia: la 40 es lo que debemos al Estado (impuestos), la 41 a los trabajadores (sueldos) y la 42 a los proveedores (facturas).</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+  <aside class="notes"><p>El elemento 4 agrupa todo el pasivo, corriente y no corriente: lo que define si es corriente es el vencimiento, no la cuenta. En el PCGE 2026 se suman la 462 (pasivos por arrendamiento) y la 494 (pasivo del contrato).</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 4 · La regla del video</div><h2 class="title">S/ 118 se parte en dos</h2>
+  <div class="body">
+    <div class="split"><div style="width:84.75%;background:var(--green);padding-left:34px;font-size:27px">S/ 100 · VENTA (INGRESO DE LA EMPRESA)</div><div style="width:15.25%;background:var(--red);justify-content:center;font-size:22px;border-right:0">S/ 18 · IGV</div></div>
+    <div class="abs" style="left:0;top:124px;font-size:17px;font-weight:700;color:var(--green)">Cuenta 70 · Ventas (elemento 7)</div>
+    <div class="abs" style="right:0;top:124px;font-size:17px;font-weight:700;color:var(--red)">Cuenta 40 · Pasivo corriente</div>
+    <div class="abs" style="left:0;width:792px;top:192px">
+      <div class="lab mag" style="font-size:16px;margin-bottom:8px">Asiento de la venta (cobrada al contado)</div>
+      <table class="ledger" style="font-size:20px"><tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr><tr><td>10 Efectivo</td><td>118</td><td></td></tr><tr><td>70 Ventas</td><td></td><td>100</td></tr><tr><td>40 Tributos por pagar · IGV</td><td></td><td>18</td></tr></table>
+    </div>
+    <div class="card" style="left:840px;right:0;top:192px;height:282px;padding:22px 34px">
+      <div class="lab mag" style="font-size:16px">Cómo sacar la cuenta</div>
+      <div class="navy" style="font-size:31px;font-weight:700;line-height:1.45;margin-top:12px">Venta: 118 ÷ 1.18 = 100<br>IGV: 118 − 100 = 18</div>
+      <div class="muted" style="font-size:18px;margin-top:12px">Se divide entre 1.18 porque el precio incluye el 18 % de IGV.</div>
+    </div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>En el asiento, lo que entra (el efectivo) va al debe. La venta y la deuda con la Sunat van al haber. Las dos columnas suman lo mismo: 118 = 100 + 18.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+  <aside class="notes"><p>Tasa general del IGV: 18 % (16 % de IGV + 2 % de Impuesto de Promoción Municipal). Si la venta fuera al crédito, el debe iría a la cuenta 12 en lugar de la 10.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 4 · La regla del video</div><h2 class="title">Cuánto se paga realmente a la Sunat</h2>
+  <div class="body">
+    <div style="position:absolute;left:0;right:0;top:-6px;display:grid;grid-template-columns:1fr 80px 1fr 80px 1fr;align-items:start">
+      <div class="stat"><b class="navy">18.00</b><span>IGV de tus ventas</span></div><div class="op">−</div>
+      <div class="stat"><b style="color:var(--green)">12.60</b><span>IGV de tus compras (crédito fiscal)</span></div><div class="op">=</div>
+      <div class="stat"><b style="color:var(--red)">5.40</b><span>IGV que pagas a la Sunat</span></div>
+    </div>
+    <div class="abs muted" style="left:0;right:0;top:142px;text-align:center;font-size:17px;font-style:italic">Ejemplo del video: compras del mes por S/ 70 + IGV 12.60.</div>
+    <div class="g2" style="position:absolute;left:0;right:0;top:204px;grid-template-rows:270px">
+      <div class="tile row" style="gap:24px;align-items:flex-start;padding:34px"><span class="circ" style="width:96px;height:96px;background:var(--red)"><i data-icon="FaBan"></i></span><div><h3>Venta exonerada</h3><p style="font-size:21px">La ley la libera del IGV. Los S/ 118 son venta: todo a la 70.</p></div></div>
+      <div class="tile row" style="gap:24px;align-items:flex-start;padding:34px"><span class="circ" style="width:96px;height:96px;background:var(--red)"><i data-icon="FaBan"></i></span><div><h3>Venta inafecta</h3><p style="font-size:21px">Está fuera del IGV. Los S/ 118 son venta: todo a la 70.</p></div></div>
+    </div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>No pagas los S/ 18 completos: les restas el IGV que tú pagaste en tus compras. Ese descuento se llama crédito fiscal. Si la venta no tiene IGV (exonerada o inafecta), no hay deuda con la Sunat.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+  <aside class="notes"><p>Exoneradas: Apéndices I y II de la Ley del IGV. Inafectas: artículo 2. El cálculo es ilustrativo: no considera retenciones, percepciones, detracciones ni saldos a favor.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 4 · Caso del aula</div><h2 class="title">Mercadería a crédito, pagadera en 30 días</h2>
+  <div class="body">
+    <div class="tl">
+      <div><span class="chip">1</span><div class="c">DÍA 0</div><div class="h">Compra a crédito</div><div class="d">Nace la deuda con el proveedor: S/ 11,800 en la cuenta 42.</div></div>
+      <div><span class="chip m">2</span><div class="c">DÍA 1–29</div><div class="h">Pasivo corriente</div><div class="d">La deuda vence en menos de 12 meses.</div></div>
+      <div><span class="chip">3</span><div class="c">DÍA 30</div><div class="h">Pago</div><div class="d">Se paga la factura y la cuenta 42 queda en cero.</div></div>
+    </div>
+    <div class="abs" style="left:0;width:708px;top:262px"><div class="lab mag" style="font-size:16px;margin-bottom:8px">Asiento del día 0</div>
+      <table class="ledger"><tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr><tr><td>60 Compras</td><td>10,000</td><td></td></tr><tr><td>40 IGV (crédito fiscal)</td><td>1,800</td><td></td></tr><tr><td>42 Proveedores</td><td></td><td>11,800</td></tr></table></div>
+    <div class="abs" style="right:0;width:708px;top:262px"><div class="lab mag" style="font-size:16px;margin-bottom:8px">Asiento del día 30</div>
+      <table class="ledger"><tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr><tr><td>42 Proveedores</td><td>11,800</td><td></td></tr><tr><td>10 Efectivo</td><td></td><td>11,800</td></tr></table></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Comprar a crédito crea una deuda con el proveedor (42), que es pasivo corriente porque se paga en 30 días. Es el espejo del video: aquí el IGV de la compra es crédito fiscal.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+  <aside class="notes"><p>En el sistema peruano, la compra en la 60 se acompaña con el asiento de destino (20 Mercaderías contra 61 Variación de inventarios) cuando la mercadería ingresa al almacén.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 4 · Práctica</div><h2 class="title">¿Es pasivo corriente? ¿En qué cuenta va?</h2>
+  <div class="body g2" style="grid-template-rows:repeat(3,138px);gap:24px 30px">
+    <div class="tile q"><span class="chip">1</span><span>El IGV de las ventas gravadas del mes</span></div>
+    <div class="tile q"><span class="chip">2</span><span>Los sueldos de octubre aún no pagados</span></div>
+    <div class="tile q"><span class="chip">3</span><span>Una factura de proveedor a 30 días</span></div>
+    <div class="tile q"><span class="chip">4</span><span>Una venta exonerada por S/ 118</span></div>
+    <div class="tile q"><span class="chip">5</span><span>La cuota de un préstamo que vence en 2 meses</span></div>
+    <div class="tile q"><span class="chip">6</span><span>La parte de un préstamo que vence en 3 años</span></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Para cada caso hazte dos preguntas: ¿a quién se le debe? (eso da la cuenta) y ¿cuándo se paga? (eso dice si es corriente).</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+  <aside class="notes"><p>Respuestas: 1) 40 sí · 2) 41 sí · 3) 42 sí · 4) no es pasivo, todo a la 70 · 5) 45 sí · 6) 45 no corriente.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">Clase 4 · Respuestas</div><h2 class="title">Así se clasifican</h2>
+  <div class="body g2" style="grid-template-rows:repeat(3,138px);gap:24px 30px">
+    <div class="tile ans"><span class="chip m sm">40 · Sí</span><div><h4>El IGV de las ventas gravadas del mes</h4><p>Se paga a la Sunat el mes siguiente.</p></div></div>
+    <div class="tile ans"><span class="chip m sm">41 · Sí</span><div><h4>Los sueldos de octubre aún no pagados</h4><p>Se paga a los trabajadores en días.</p></div></div>
+    <div class="tile ans"><span class="chip m sm">42 · Sí</span><div><h4>Una factura de proveedor a 30 días</h4><p>Vence en 30 días: menos de 12 meses.</p></div></div>
+    <div class="tile ans"><span class="chip m sm">No</span><div><h4>Una venta exonerada por S/ 118</h4><p>Sin IGV no hay deuda: todo es venta (70).</p></div></div>
+    <div class="tile ans"><span class="chip m sm">45 · Sí</span><div><h4>La cuota de un préstamo que vence en 2 meses</h4><p>Vence en menos de 12 meses.</p></div></div>
+    <div class="tile ans"><span class="chip m sm">45 · No</span><div><h4>La parte de un préstamo que vence en 3 años</h4><p>Más de 12 meses: pasivo no corriente.</p></div></div>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>A quién se le debe da la cuenta: Estado (40), trabajadores (41), proveedores (42), banco (45). Cuándo vence dice si es corriente.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+</section>
+
+<!-- ======================= CIERRE ======================= -->
+<section class="slide">
+  <div class="kicker">Resumen</div><h2 class="title">Lo que nos dejan los dos casos</h2>
+  <div class="body">
+    <table class="cmp">
+      <tr><th></th><th>Clase 3 · Activo no corriente</th><th class="m">Clase 4 · Pasivo corriente</th></tr>
+      <tr><td>Qué es</td><td>Lo que la empresa usa por más de 12 meses</td><td>Lo que la empresa debe pagar en 12 meses o menos</td></tr>
+      <tr><td>Elemento del PCGE</td><td>3 · Activo inmovilizado (30 a 39)</td><td>4 · Pasivo (40 a 49)</td></tr>
+      <tr><td>Caso en video</td><td>Acciones del 5 %: sin poder van a la 11, no a la 30</td><td>Venta de S/ 118: S/ 100 a la 70 y S/ 18 a la 40</td></tr>
+      <tr><td>Caso del aula</td><td>Máquina: cuenta 33, se deprecia en la 39</td><td>Proveedor a 30 días: cuenta 42</td></tr>
+      <tr><td>Pregunta clave</td><td>¿La empresa lo usa por más de un año?</td><td>¿La empresa lo paga en los próximos 12 meses?</td></tr>
+    </table>
+  </div>
+  <div class="simple"><i data-icon="FaCommentDots"></i><div><b class="lab">En palabras simples</b>Dos preguntas resumen todo: ¿la empresa lo usa por más de un año? Entonces es activo no corriente. ¿La empresa lo debe pagar en los próximos 12 meses? Entonces es pasivo corriente.</div></div>
+  <div class="foot"><span class="n"></span><span>CERTUS &nbsp;|&nbsp; CONTABILIDAD</span></div>
+</section>
+
+<section class="slide dark cover">
+  <div class="ck">IDEAS CLAVE</div>
+  <h1>Pregunta qué es y cuándo vence</h1>
+  <ul class="big" style="top:390px;font-size:31px">
+    <li>Clase 3: no todo lo que la empresa guarda va al elemento 3; mira si lo usa o si es una inversión.</li>
+    <li>Clase 4: el IGV cobrado no es de la empresa; es una deuda de corto plazo con la Sunat.</li>
+    <li>Ambos ayudan al desarrollo de las actividades económicas de la empresa.</li>
+  </ul>
+  <div class="brand">CERTUS &nbsp;|&nbsp; CONTABILIDAD</div>
+  <aside class="notes"><p>Cierre. Pregunta al aula si quedó alguna duda.</p></aside>
+</section>
+
+</div></div>
+
+<div class="blackout"></div>
+<div class="progress"></div>
+<div class="toast" role="status" aria-live="polite"></div>
+<nav class="hud" aria-label="Controles de la presentación">
+  <a href="../../" title="Volver a las ponencias"><i data-icon="FaArrowLeft"></i> Ponencias</a>
+  <span class="sep"></span>
+  <button data-do="prev" title="Anterior (←)"><i data-icon="FaChevronLeft"></i><span class="sr">Anterior</span></button>
+  <span class="count">1 / 25</span>
+  <button data-do="next" title="Siguiente (→)"><i data-icon="FaChevronRight"></i><span class="sr">Siguiente</span></button>
+  <span class="sep"></span>
+  <button data-do="full" title="Pantalla completa (F)"><i data-icon="FaExpand"></i> Pantalla completa</button>
+  <button data-do="pres" title="Vista del presentador (S)"><i data-icon="FaDesktop"></i> Presentador</button>
+  <a href="media/clases-3-y-4-v3.pdf" download title="Descargar PDF de respaldo"><i data-icon="FaFilePdf"></i> PDF</a>
+  <button data-do="offline" title="Guardar para usar sin internet"><i data-icon="FaWifi"></i> Sin conexión</button>
+  <button data-do="help" title="Atajos (?)"><i data-icon="FaKeyboard"></i><span class="sr">Atajos</span></button>
+</nav>
+<div class="help" role="dialog" aria-label="Atajos de teclado"><div class="box">
+  <h3>Atajos y puntero</h3>
+  <dl>
+    <dt>Siguiente</dt><dd><kbd>→</kbd> <kbd>AvPág</kbd> <kbd>Espacio</kbd> o el botón de avanzar del puntero</dd>
+    <dt>Anterior</dt><dd><kbd>←</kbd> <kbd>RePág</kbd> o el botón de retroceder del puntero</dd>
+    <dt>Videos</dt><dd>«Siguiente» primero reproduce el video; la siguiente pulsación avanza. <kbd>K</kbd> pausa o reanuda.</dd>
+    <dt>Pantalla completa</dt><dd><kbd>F</kbd> o <kbd>F5</kbd> · salir con <kbd>Esc</kbd></dd>
+    <dt>Pantalla negra</dt><dd><kbd>B</kbd> o <kbd>.</kbd></dd>
+    <dt>Presentador</dt><dd><kbd>S</kbd> abre una ventana con notas, siguiente diapositiva y cronómetro</dd>
+    <dt>Ir a una</dt><dd>número + <kbd>Enter</kbd> (por ejemplo, <kbd>1</kbd><kbd>4</kbd><kbd>Enter</kbd>)</dd>
+  </dl>
+  <p style="margin:16px 0 0;text-align:right"><button data-close style="all:unset;cursor:pointer;color:var(--mag);font-weight:700">Cerrar</button></p>
+</div></div>
+
+<script src="../../../assets/icons.js"></script>
+<script src="../../../assets/deck.js"></script>
+</body>
+</html>

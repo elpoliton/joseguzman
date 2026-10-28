@@ -1,0 +1,29 @@
+# Publica la web en politon.pe/joseguzman cada vez que hay cambios en la rama main.
+# Requiere 4 secretos en GitHub (Settings → Secrets and variables → Actions):
+#   FTP_SERVIDOR   p. ej. ftp.politon.pe (o la IP del servidor)
+#   FTP_USUARIO    usuario FTP de cPanel
+#   FTP_CLAVE      contraseña de ese usuario
+#   FTP_CARPETA    carpeta de destino en el servidor, terminada en / (p. ej. /public_html/joseguzman/)
+name: Publicar en politon.pe/joseguzman
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Subir por FTP (solo los archivos que cambiaron)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVIDOR }}
+          username: ${{ secrets.FTP_USUARIO }}
+          password: ${{ secrets.FTP_CLAVE }}
+          server-dir: ${{ secrets.FTP_CARPETA }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            tools/**
+            README.md
