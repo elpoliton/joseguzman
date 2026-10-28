@@ -28,25 +28,41 @@
   function fitMain() { fit(stage, window.innerWidth, window.innerHeight); }
   window.addEventListener('resize', function () { fitMain(); if (presenter) renderPresenter(); });
 
-  // ---------- videos
+  // ---------- videos: 1.er «siguiente» = video en grande · 2.º = vuelve a la diapositiva · 3.º = avanza
+  var layer = document.createElement('div'); layer.className = 'vlayer';
+  layer.innerHTML = '<div class="vslot"></div><div class="vend">Clic para volver a la diapositiva</div>';
+  document.body.appendChild(layer);
+  var slot = layer.querySelector('.vslot'), openV = null;
   function vidOf(k) { return slides[k] ? slides[k].querySelector('video') : null; }
-  function boxOf(v) { return v.closest('.vbox'); }
-  function stateOf(v) { return !v ? 'none' : !v.paused && !v.ended ? 'playing' : v.dataset.played ? 'played' : 'idle'; }
+  function boxOf(v) { return v.__box || (v.__box = v.closest('.vbox')); }
+  function stateOf(v) { return !v ? 'none' : openV === v ? (v.ended ? 'ended' : 'open') : v.dataset.done ? 'done' : 'idle'; }
+  var VERR = { 1: 'se canceló la carga', 2: 'error de red', 3: 'no se pudo decodificar', 4: 'formato no soportado o archivo no encontrado' };
   slides.forEach(function (s) {
     var v = s.querySelector('video'); if (!v) return;
-    var b = boxOf(v);
-    v.addEventListener('play', function () { v.dataset.played = '1'; b.classList.add('playing'); b.classList.remove('played'); broadcast(); });
-    v.addEventListener('pause', function () { b.classList.remove('playing'); b.classList.add('played'); broadcast(); });
-    v.addEventListener('ended', function () { b.classList.remove('playing'); b.classList.add('played'); broadcast(); });
-    b.addEventListener('click', function () { toggleVideo(); });
+    boxOf(v);
+    v.addEventListener('ended', function () { layer.classList.add('ended'); broadcast(); });
+    v.addEventListener('error', function () { toast('No se pudo cargar el video (' + (VERR[v.error && v.error.code] || 'error') + ')'); });
+    boxOf(v).addEventListener('click', function () { if (vidOf(i) === v) openVideo(v); });
   });
-  function playVideo(v) { var p = v.play(); if (p && p.catch) p.catch(function () { toast('Toca el video para reproducirlo'); }); }
-  function toggleVideo() { var v = vidOf(i); if (!v) return; if (v.paused || v.ended) playVideo(v); else v.pause(); }
+  layer.addEventListener('click', function () { cmd('next'); });
+  function playVideo(v) { var p = v.play(); if (p && p.catch) p.catch(function (err) { toast('No se pudo reproducir el video: ' + (err && err.name || 'error') + '. Haz clic sobre él.'); }); }
+  function openVideo(v) {
+    if (openV) return; openV = v;
+    v.currentTime = 0; slot.appendChild(v); layer.classList.remove('ended'); layer.classList.add('on');
+    playVideo(v); broadcast();
+  }
+  function closeVideo() {
+    var v = openV; if (!v) return; openV = null;
+    v.pause(); v.dataset.done = '1';
+    var b = boxOf(v); b.insertBefore(v, b.firstChild); b.classList.add('played');
+    layer.classList.remove('on', 'ended'); broadcast();
+  }
+  function toggleVideo() { var v = openV; if (!v) { v = vidOf(i); if (v) openVideo(v); return; } if (v.paused || v.ended) playVideo(v); else v.pause(); }
 
   // ---------- navegación
   function show(n, silent) {
     n = Math.max(0, Math.min(N - 1, n));
-    var old = vidOf(i); if (old && n !== i) old.pause();
+    if (openV && n !== i) closeVideo();
     slides[i].classList.remove('on'); i = n; slides[i].classList.add('on');
     try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) { }
     var c = document.querySelector('.hud .count'); if (c) c.textContent = (i + 1) + ' / ' + N;
@@ -55,11 +71,12 @@
     if (!silent) broadcast();
   }
   function next() {
+    if (openV) { closeVideo(); return; }
     var v = vidOf(i);
-    if (v && !v.dataset.played) { playVideo(v); return; }
+    if (v && !v.dataset.done && !presenter) { openVideo(v); return; }
     if (i < N - 1) show(i + 1);
   }
-  function prev() { if (i > 0) show(i - 1); }
+  function prev() { if (openV) { closeVideo(); return; } if (i > 0) show(i - 1); }
 
   // ---------- canal entre la ventana del público y la del presentador
   function broadcast() { if (chan && !presenter) chan.postMessage({ t: 'state', i: i, v: stateOf(vidOf(i)) }); }
@@ -111,12 +128,12 @@
         cmd('prev'); break;
       case 'Home': cmd('go', 0); break;
       case 'End': cmd('go', N - 1); break;
-      case 'f': case 'F': case 'F5': fullscreen(); break;
+      case 'f': case 'F': case 'F5': case 'BrowserHome': case 'Tab': fullscreen(); break;
       case 'b': case 'B': case '.': cmd('black'); break;
       case 'k': case 'K': cmd('video'); break;
       case 's': case 'S': if (!presenter) openPresenter(); break;
       case '?': case 'h': case 'H': help(true); break;
-      case 'Escape': var b = document.querySelector('.blackout'); if (b.classList.contains('on')) b.classList.remove('on'); return;
+      case 'Escape': var b = document.querySelector('.blackout'); if (b.classList.contains('on')) b.classList.remove('on'); if (openV) closeVideo(); return;
       default: return;
     }
     e.preventDefault();
@@ -178,7 +195,7 @@
     var html = '';
     if (simple) html += '<p><b>En pantalla:</b> ' + simple.textContent.replace(/^\s*(EN PALABRAS SIMPLES|ANTES DE DAR PLAY)\s*/i, '') + '</p>';
     if (notes) html += notes.innerHTML;
-    if (vidOf(i)) html = '<p style="color:#BF0085"><b>Video: ' + ({ none: '', idle: 'listo · «siguiente» lo reproduce', playing: 'reproduciéndose', played: 'ya reproducido · «siguiente» avanza' }[videoState] || '') + '</b></p>' + html;
+    if (vidOf(i)) html = '<p style="color:#BF0085"><b>Video: ' + ({ none: '', idle: 'listo · «siguiente» lo abre en grande', open: 'en grande, reproduciéndose · «siguiente» vuelve a la diapositiva', ended: 'terminó · «siguiente» vuelve a la diapositiva', done: 'visto · «siguiente» avanza' }[videoState] || '') + '</b></p>' + html;
     pv.querySelector('.pnotes').innerHTML = html || '<p style="color:#888">Sin notas.</p>';
   }
   function clock() {

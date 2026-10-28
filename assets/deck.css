@@ -75,6 +75,14 @@ table.cmp td:first-child { font-weight: 700; color: var(--navy); width: 300px; }
 .vbox .hint span { width: 110px; height: 110px; border-radius: 50%; background: var(--mag); display: grid; place-items: center; color: #fff; font-size: 44px; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
 .vbox.playing .hint, .vbox.played .hint { opacity: 0; }
 
+/* video en grande */
+.vlayer { position: fixed; inset: 0; z-index: 45; background: #000; display: none; align-items: center; justify-content: center; cursor: pointer; }
+.vlayer.on { display: flex; }
+.vlayer .vslot { height: 100%; display: flex; align-items: center; justify-content: center; }
+.vlayer video { height: 100vh; width: auto; max-width: 100vw; display: block; }
+.vlayer .vend { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); background: rgba(12,20,40,.85); color: #fff; font: 700 16px/1 'Lato', sans-serif; padding: 12px 18px; border-radius: 10px; opacity: 0; transition: opacity .4s; }
+.vlayer.ended .vend { opacity: 1; }
+
 /* ---------- controles en pantalla (se ocultan solos) */
 .hud { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 60; display: flex; gap: 6px; align-items: center; padding: 8px 10px; border-radius: 14px; background: rgba(12,20,40,.88); color: #fff; font: 600 14px/1 'Lato', sans-serif; box-shadow: 0 10px 30px rgba(0,0,0,.4); transition: opacity .35s; }
 .hud.hide { opacity: 0; pointer-events: none; }

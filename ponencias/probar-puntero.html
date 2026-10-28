@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probar mi puntero · Ponencias</title>
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  .pad { min-height: 60vh; display: grid; place-items: center; text-align: center; border: 2px dashed var(--line); border-radius: 20px; padding: 30px; }
+  .pad .k { font-size: clamp(48px, 10vw, 110px); font-weight: 900; color: var(--navy); line-height: 1; }
+  .pad .a { margin-top: 18px; font-size: 22px; font-weight: 700; color: var(--mag); }
+  .pad .c { margin-top: 8px; color: var(--muted); font-size: 16px; }
+  ol.log { margin: 20px 0 0; padding-left: 22px; color: var(--muted); font-size: 15px; }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="../"><i class="mono">JG</i><span>José Manuel Guzmán</span></a>
+  <nav><a href="./">Ponencias</a></nav>
+</div></header>
+<main><section class="sec"><div class="wrap">
+  <div class="kick">Herramienta</div>
+  <h2>Probar mi puntero</h2>
+  <p class="intro">Conecta el puntero y pulsa cada botón. Aquí verás qué tecla envía y qué hace en las presentaciones.</p>
+  <div class="pad" tabindex="0"><div><div class="k" id="k">Pulsa un botón</div><div class="a" id="a"></div><div class="c" id="c"></div></div></div>
+  <ol class="log" id="log" reversed></ol>
+</div></section></main>
+<script>
+  var ACC = {
+    ArrowRight: 'Siguiente', ArrowDown: 'Siguiente', PageDown: 'Siguiente', ' ': 'Siguiente', Enter: 'Siguiente', n: 'Siguiente', N: 'Siguiente',
+    ArrowLeft: 'Anterior', ArrowUp: 'Anterior', PageUp: 'Anterior', Backspace: 'Anterior', p: 'Anterior', P: 'Anterior',
+    Home: 'Ir a la primera diapositiva', End: 'Ir a la última diapositiva',
+    f: 'Pantalla completa', F: 'Pantalla completa', F5: 'Pantalla completa', BrowserHome: 'Pantalla completa', Tab: 'Pantalla completa',
+    b: 'Pantalla negra', B: 'Pantalla negra', '.': 'Pantalla negra', Escape: 'Salir de pantalla completa / cerrar video',
+    k: 'Pausar o reanudar video', K: 'Pausar o reanudar video', s: 'Vista del presentador', S: 'Vista del presentador'
+  };
+  document.addEventListener('keydown', function (e) {
+    e.preventDefault();
+    var name = e.key === ' ' ? 'Espacio' : e.key;
+    document.getElementById('k').textContent = name;
+    document.getElementById('a').textContent = ACC[e.key] ? '→ ' + ACC[e.key] : '→ Esta tecla no hace nada todavía';
+    document.getElementById('c').textContent = 'código: ' + e.code + (e.shiftKey ? ' · con Mayús' : '');
+    var li = document.createElement('li'); li.textContent = name + ' (' + e.code + ')' + (ACC[e.key] ? ' → ' + ACC[e.key] : ''); var log = document.getElementById('log'); log.insertBefore(li, log.firstChild);
+  });
+</script>
+</body>
+</html>
