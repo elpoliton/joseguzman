@@ -62,8 +62,10 @@
   // ---------- navegación
   function show(n, silent) {
     n = Math.max(0, Math.min(N - 1, n));
+    var prevI = i;
     if (openV && n !== i) closeVideo();
     slides[i].classList.remove('on'); i = n; slides[i].classList.add('on');
+    if (n !== prevI) { var nv = vidOf(i); if (nv) { delete nv.dataset.done; boxOf(nv).classList.remove('played'); } } // al volver a la diapositiva, el video se puede ver otra vez
     try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) { }
     var c = document.querySelector('.hud .count'); if (c) c.textContent = (i + 1) + ' / ' + N;
     var pr = document.querySelector('.progress'); if (pr) pr.style.width = (100 * (i + 1) / N) + '%';
