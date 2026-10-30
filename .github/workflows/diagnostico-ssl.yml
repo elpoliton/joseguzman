@@ -1,0 +1,26 @@
+# Revisa el certificado HTTPS de politon.pe (cadena, vigencia, dominios). Se ejecuta a mano desde Actions.
+name: Diagnóstico del certificado de politon.pe
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/diagnostico-ssl.yml']
+jobs:
+  ssl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Revisar certificado
+        run: |
+          for h in politon.pe www.politon.pe; do
+            echo "== $h"
+            out=$(echo | timeout 20 openssl s_client -connect $h:443 -servername $h -showcerts 2>&1)
+            n=$(echo "$out" | grep -c 'BEGIN CERTIFICATE')
+            leaf=$(echo "$out" | openssl x509 -noout -subject -issuer -dates -ext subjectAltName 2>&1 | tr '\n' ' ')
+            verify=$(echo "$out" | grep -E 'Verify return code' | head -1)
+            chain=$(echo "$out" | grep -E '^ *[0-9]+ s:|^ *i:' | tr '\n' ' ')
+            echo "::notice title=$h · certificados enviados::$n"
+            echo "::notice title=$h · hoja::$leaf"
+            echo "::notice title=$h · verificación::$verify"
+            echo "::notice title=$h · cadena::$chain"
+            code=$(curl -s -o /dev/null -w '%{http_code} %{ssl_verify_result}' https://$h/joseguzman/ || true)
+            echo "::notice title=$h · curl::$code"
+          done
