@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Practica asientos contables con el PCGE | José Manuel Guzmán Valverde</title>
-<meta name="description" content="Espacio de práctica de asientos contables con el Plan Contable General Empresarial (PCGE): busca cuentas, arma el asiento con debe y haber, verifica si cuadra y compáralo con la solución.">
+<meta name="description" content="Practica asientos contables con el Plan Contable General Empresarial (PCGE): plan de cuentas completo, ejercicios con verificación de debe y haber, y tu libro diario.">
 <link rel="canonical" href="https://politon.pe/joseguzman/contabilidad/">
 <meta name="author" content="José Manuel Guzmán Valverde">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_PE">
 <meta property="og:url" content="https://politon.pe/joseguzman/contabilidad/">
 <meta property="og:title" content="Practica asientos contables con el PCGE">
-<meta property="og:description" content="Busca cuentas del PCGE, arma tus asientos y verifica si cuadran.">
+<meta property="og:description" content="Plan de cuentas completo, ejercicios con verificación y libro diario.">
 <meta property="og:image" content="https://politon.pe/joseguzman/assets/img/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="../favicon.ico" sizes="48x48">
@@ -32,79 +32,113 @@
 <main class="cx">
   <div class="cx-head noprint">
     <div>
-      <div class="kick">Práctica</div>
+      <div class="kick">Contabilidad · práctica</div>
       <h1>Asientos contables con el PCGE</h1>
-      <p class="intro">Lee el caso, busca la cuenta, completa el detalle y escribe los montos en el debe o el haber. Luego pulsa <b>Verificar</b>.</p>
     </div>
-    <label class="ver">Plan contable
-      <select id="version"><option value="2019">PCGE 2019 (vigente)</option><option value="2026">PCGE 2026 (desde 2028)</option></select>
-    </label>
+    <div class="head-r">
+      <div class="prog" title="Ejercicios resueltos"><div class="prog-bar"><i id="progBar"></i></div><span id="progTxt"></span></div>
+      <label class="ver"><span>Plan contable</span>
+        <select id="version"><option value="2019">PCGE 2019 · vigente</option><option value="2026">PCGE 2026 · desde 2028</option></select>
+      </label>
+    </div>
   </div>
 
-  <div class="cx-grid">
-    <!-- lista de ejercicios -->
-    <aside class="cx-list noprint">
-      <div class="cx-list-h"><b>Ejercicios</b><span id="avance"></span></div>
-      <div id="lista"></div>
-      <button class="btn line sm full" id="nuevo"><i data-icon="FaPencilAlt"></i> Nuevo ejercicio propio</button>
-      <div class="cx-tools">
-        <button class="lnk" id="exportar"><i data-icon="FaDownload"></i> Descargar en Excel</button>
-        <button class="lnk" id="imprimir"><i data-icon="FaFilePdf"></i> Imprimir / PDF</button>
-        <button class="lnk" id="respaldo">Guardar copia (.json)</button>
-        <label class="lnk">Recuperar copia<input type="file" id="importar" accept=".json" hidden></label>
-      </div>
-      <p class="tiny">Tu avance se guarda en este navegador.</p>
-    </aside>
+  <nav class="vtabs noprint" role="tablist">
+    <button role="tab" data-v="practica" aria-selected="true"><i data-icon="FaPencilAlt"></i> Practicar</button>
+    <button role="tab" data-v="plan" aria-selected="false"><i data-icon="FaBookOpen"></i> Plan de cuentas</button>
+    <button role="tab" data-v="diario" aria-selected="false"><i data-icon="FaColumns"></i> Mi libro diario</button>
+  </nav>
 
-    <!-- área de trabajo -->
-    <section class="cx-work">
-      <article class="card-e">
-        <div class="e-top"><span class="e-date" id="eFecha"></span><span class="e-tema" id="eTema"></span><button class="lnk noprint" id="borrarPropio" hidden>Eliminar este ejercicio</button></div>
-        <p class="e-text" id="eTexto"></p>
-      </article>
+  <!-- ===================== PRACTICAR ===================== -->
+  <section id="v-practica" class="view">
+    <div class="cx-grid">
+      <aside class="cx-list noprint">
+        <div class="cx-list-h"><b>Ejercicios</b><button class="lnk" id="nuevo">+ Propio</button></div>
+        <div id="lista"></div>
+      </aside>
 
-      <div class="tbl-wrap">
-        <table class="asiento" id="asiento">
-          <thead><tr><th class="c-cta">Cuenta</th><th>Detalle</th><th class="c-num">Debe</th><th class="c-num">Haber</th><th class="c-x noprint"></th></tr></thead>
-          <tbody id="filas"></tbody>
-          <tfoot>
-            <tr class="glosa"><td></td><td colspan="3"><input class="in glosa-in" id="glosa" placeholder="Glosa: por el cobro de la fact. …" aria-label="Glosa"></td><td class="noprint"></td></tr>
-            <tr class="tot"><td></td><td class="r">Totales</td><td class="c-num" id="tDebe">0.00</td><td class="c-num" id="tHaber">0.00</td><td class="noprint"></td></tr>
-          </tfoot>
-        </table>
-      </div>
+      <div class="cx-work">
+        <article class="card-e">
+          <div class="e-top">
+            <span class="e-num" id="eNum"></span><span class="e-date" id="eFecha"></span><span class="e-tema" id="eTema"></span>
+            <span class="grow"></span>
+            <button class="nav-b noprint" id="prevEj" title="Ejercicio anterior" aria-label="Ejercicio anterior"><i data-icon="FaChevronLeft"></i></button>
+            <button class="nav-b noprint" id="nextEj" title="Ejercicio siguiente" aria-label="Ejercicio siguiente"><i data-icon="FaChevronRight"></i></button>
+          </div>
+          <p class="e-text" id="eTexto"></p>
+          <button class="lnk e-del noprint" id="borrarPropio" hidden>Eliminar este ejercicio propio</button>
+        </article>
 
-      <div class="acts noprint">
-        <button class="btn line sm" id="agregar">+ Agregar línea</button>
-        <span class="cuadre" id="cuadre"></span>
-        <span class="grow"></span>
-        <button class="btn line sm" id="limpiar">Limpiar</button>
-        <button class="btn line sm" id="solucion">Ver solución</button>
-        <button class="btn navy" id="verificar"><i data-icon="FaCheck"></i> Verificar</button>
-      </div>
-      <div id="feedback" class="fb"></div>
+        <ol class="pasos noprint">
+          <li><b>1</b> Busca la cuenta por código o palabra</li>
+          <li><b>2</b> Revisa el detalle</li>
+          <li><b>3</b> Escribe el monto en el debe o el haber</li>
+          <li><b>4</b> Verifica</li>
+        </ol>
 
-      <details class="tips noprint">
-        <summary>Recordatorio: ¿debe o haber?</summary>
-        <div class="tips-g">
-          <div><b>Activo</b> (elementos 1, 2, 3): aumenta por el <b>debe</b>, disminuye por el <b>haber</b>.</div>
-          <div><b>Pasivo y patrimonio</b> (elementos 4 y 5): aumentan por el <b>haber</b>, disminuyen por el <b>debe</b>.</div>
-          <div><b>Gastos</b> (elemento 6): van al <b>debe</b>.</div>
-          <div><b>Ingresos</b> (elemento 7): van al <b>haber</b>.</div>
+        <div class="tbl-wrap">
+          <table class="asiento" id="asiento">
+            <thead><tr><th class="c-cta">Cuenta</th><th>Detalle</th><th class="c-num">Debe</th><th class="c-num">Haber</th><th class="c-x noprint"></th></tr></thead>
+            <tbody id="filas"></tbody>
+            <tfoot>
+              <tr class="add noprint"><td colspan="5"><button class="lnk" id="agregar">+ Agregar línea</button></td></tr>
+              <tr class="glosa"><td class="lbl">Glosa</td><td colspan="3"><input class="in glosa-in" id="glosa" placeholder="Por el cobro de la fact. …" aria-label="Glosa"></td><td class="noprint"></td></tr>
+              <tr class="tot"><td></td><td class="r">Totales <span class="cuadre" id="cuadre"></span></td><td class="c-num" id="tDebe">0.00</td><td class="c-num" id="tHaber">0.00</td><td class="noprint"></td></tr>
+            </tfoot>
+          </table>
         </div>
-      </details>
 
-      <section class="buscador noprint">
-        <h2><i data-icon="FaSearch"></i> Buscador del plan contable</h2>
-        <input class="in" id="q" placeholder="Escribe un código (1212) o una palabra (letras, caja, préstamos…)" autocomplete="off">
-        <div id="res" class="res"></div>
-      </section>
-    </section>
-  </div>
+        <div class="acts noprint">
+          <button class="btn line sm" id="limpiar">Limpiar</button>
+          <button class="btn line sm" id="pista">💡 Pista</button>
+          <button class="btn line sm" id="solucion">Ver solución</button>
+          <span class="grow"></span>
+          <button class="btn navy" id="verificar"><i data-icon="FaCheck"></i> <span>Verificar</span></button>
+        </div>
+        <div id="feedback" class="fb" aria-live="polite"></div>
+
+        <details class="tips noprint">
+          <summary>Recordatorio: ¿debe o haber?</summary>
+          <div class="tips-g">
+            <div><span class="el el-a">Activo · 1, 2, 3</span> aumenta por el <b>debe</b> y disminuye por el <b>haber</b>.</div>
+            <div><span class="el el-p">Pasivo · 4</span> aumenta por el <b>haber</b> y disminuye por el <b>debe</b>.</div>
+            <div><span class="el el-pt">Patrimonio · 5</span> aumenta por el <b>haber</b>.</div>
+            <div><span class="el el-g">Gastos · 6</span> van al <b>debe</b>. <span class="el el-i">Ingresos · 7</span> van al <b>haber</b>.</div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PLAN DE CUENTAS ===================== -->
+  <section id="v-plan" class="view" hidden>
+    <div class="plan-head">
+      <label class="search"><i data-icon="FaSearch"></i><span class="sr">Buscar en el plan</span><input id="q" type="search" placeholder="Busca por código (1212) o palabra (letras, caja, préstamos…)" autocomplete="off"></label>
+      <div class="plan-tools"><button class="lnk" id="abrirTodo">Expandir todo</button><button class="lnk" id="cerrarTodo">Contraer todo</button><span class="tiny" id="planInfo"></span></div>
+    </div>
+    <div class="elems" id="elems"></div>
+    <div id="plan" class="plan"></div>
+  </section>
+
+  <!-- ===================== LIBRO DIARIO ===================== -->
+  <section id="v-diario" class="view" hidden>
+    <div class="diario-head noprint">
+      <p class="intro">Todos tus asientos en un solo libro, como en tu Excel.</p>
+      <div class="cx-tools">
+        <button class="btn line sm" id="exportar"><i data-icon="FaDownload"></i> Descargar en Excel</button>
+        <button class="btn line sm" id="imprimir"><i data-icon="FaFilePdf"></i> Imprimir / PDF</button>
+        <button class="btn line sm" id="respaldo">Guardar copia</button>
+        <label class="btn line sm">Recuperar copia<input type="file" id="importar" accept=".json" hidden></label>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table class="diario" id="diario"></table></div>
+    <p class="tiny noprint">Tu avance se guarda en este navegador. Para usarlo en otra computadora: «Guardar copia» aquí y «Recuperar copia» allá.</p>
+  </section>
 </main>
 
 <dialog id="dlgNuevo"><form method="dialog" class="box-d" id="fNuevo">
   <h2>Nuevo ejercicio propio</h2>
+  <p class="tiny">Escribe un caso de tu clase. Revisaré que el asiento cuadre y que las cuentas existan.</p>
   <label class="f">Fecha</label><input class="in" name="fecha" placeholder="Ej. 12/10/26">
   <label class="f">Tema <small>(opcional)</small></label><input class="in" name="tema" placeholder="Ej. Cobranzas">
   <label class="f">Enunciado *</label><textarea class="in" name="enunciado" required rows="4" placeholder="Ej. Se cobra la factura E001-123 a la empresa Gamma SAC por S/ 3,000 mediante transferencia."></textarea>
@@ -112,7 +146,8 @@
 </form></dialog>
 
 <div id="ac" class="ac" role="listbox" hidden></div>
-<footer class="foot noprint"><div class="wrap"><span>© 2026 José Manuel Guzmán Valverde</span><span>Cuentas: PCGE 2019 y 2026 (Consejo Normativo de Contabilidad)</span></div></footer>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<footer class="foot noprint"><div class="wrap"><span>© 2026 José Manuel Guzmán Valverde</span><span>Cuentas: PCGE 2019 y 2026 · Consejo Normativo de Contabilidad</span></div></footer>
 <script src="../assets/icons.js"></script>
 <script src="../assets/pcge-2019.js"></script>
 <script src="../assets/pcge-2026.js"></script>
