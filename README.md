@@ -17,5 +17,11 @@ Abre la ponencia y pulsa **F** para pantalla completa. El puntero USB avanza y r
 **S** abre la vista del presentador (notas, siguiente diapositiva y cronómetro); **B** pone la pantalla en negro; **K** pausa el video.
 En las diapositivas con video, «siguiente» primero reproduce el video y la siguiente pulsación avanza.
 
+## Panel
+`politon.pe/joseguzman/admin/` (con una llave de GitHub de grano fino: Contents lectura y escritura, Actions lectura).
+- Biblioteca: editar fichas, ocultar, mostrar o quitar ponencias (edita `assets/ponencias.js`).
+- Subir PowerPoint: deja el `.pptx` y su ficha en `entrada/`; la publicación lo convierte con `tools/convertir_pptx.py` (LibreOffice, poppler, ffmpeg, python-pptx).
+- Publicaciones: estado de las últimas ejecuciones.
+
 ## Publicación
 Cada cambio en la rama `main` se publica solo por FTP en politon.pe/joseguzman (`.github/workflows/publicar.yml`).

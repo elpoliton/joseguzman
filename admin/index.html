@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es-PE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel · José Manuel Guzmán Valverde</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="../favicon.ico" sizes="48x48">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  body { background: var(--soft); }
+  .panel { max-width: 1040px; margin: 0 auto; padding: 32px 24px 80px; }
+  @media (max-width: 600px) { .panel { padding: 22px 16px 60px; } }
+  .box { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 26px; }
+  h1.t { font-size: 30px; color: var(--navy); margin: 0 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 22px; }
+  label.f { display: block; font-weight: 700; color: var(--navy); font-size: 15px; margin: 16px 0 6px; }
+  label.f small { font-weight: 400; color: var(--muted); }
+  input.i, textarea.i, select.i { width: 100%; font: 400 16px/1.4 'Lato', sans-serif; padding: 11px 13px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); }
+  input.i:focus, textarea.i:focus { outline: none; border-color: var(--navy); }
+  textarea.i { min-height: 96px; resize: vertical; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+  @media (max-width: 640px) { .row2 { grid-template-columns: 1fr; } }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 18px; }
+  .tabs button { all: unset; cursor: pointer; padding: 10px 16px; border-radius: 10px; font-weight: 700; color: var(--navy); background: #fff; border: 1px solid var(--line); }
+  .tabs button[aria-selected="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .who { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; margin-left: auto; }
+  .who button { all: unset; cursor: pointer; color: var(--navy); font-weight: 700; }
+  .item { display: grid; grid-template-columns: 120px 1fr auto; gap: 18px; align-items: center; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: #fff; margin-bottom: 12px; }
+  .item img { width: 120px; height: 68px; object-fit: cover; object-position: top; border-radius: 8px; background: var(--navy); }
+  .item h3 { margin: 0; font-size: 18px; color: var(--navy); line-height: 1.25; }
+  .item .m { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .item .acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .item.off { opacity: .6; }
+  .pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--gold2); color: var(--navy); margin-left: 6px; vertical-align: 2px; }
+  @media (max-width: 700px) { .item { grid-template-columns: 1fr; } .item img { width: 100%; height: 120px; } .item .acts { justify-content: flex-start; } }
+  .sm { padding: 8px 12px; font-size: 14px; border-radius: 9px; }
+  .btn.red { border-color: #f1c4c6; color: #b3262d; background: #fff; }
+  .drop { border: 2px dashed var(--line); border-radius: 14px; padding: 30px; text-align: center; background: #fff; cursor: pointer; }
+  .drop.on { border-color: var(--navy); background: #f7f9fd; }
+  .drop b { color: var(--navy); font-size: 18px; }
+  .drop .fn { margin-top: 8px; color: var(--mag); font-weight: 700; }
+  .msg { margin-top: 16px; padding: 14px 16px; border-radius: 12px; font-size: 15px; display: none; }
+  .msg.on { display: block; }
+  .msg.ok { background: #e8f6ef; color: #145c3a; } .msg.err { background: #fdecec; color: #8a1c22; } .msg.info { background: #eef2fa; color: var(--navy); }
+  .runs { list-style: none; margin: 0; padding: 0; }
+  .runs li { display: grid; grid-template-columns: 30px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .runs .st { font-size: 20px; text-align: center; }
+  .runs .m { color: var(--muted); font-size: 13px; }
+  .steps { margin: 10px 0 0; padding-left: 20px; } .steps li { margin-bottom: 8px; }
+  dialog { border: 0; border-radius: 16px; padding: 0; width: min(720px, calc(100vw - 32px)); box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+  dialog::backdrop { background: rgba(8,14,30,.6); }
+  dialog .box { border: 0; max-height: 86vh; overflow: auto; }
+  .hidden { display: none !important; }
+  .url { font-size: 14px; color: var(--muted); margin-top: 8px; word-break: break-all; }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="../"><i class="mono">JG</i><span>Panel</span></a>
+  <nav><a href="../ponencias/">Ver ponencias</a></nav>
+</div></header>
+
+<main class="panel">
+
+  <!-- ===== acceso ===== -->
+  <section id="login" class="box hidden">
+    <h1 class="t">Panel de ponencias</h1>
+    <p class="sub">Para editar, pega tu llave de GitHub. Se guarda solo en este navegador.</p>
+    <label class="f" for="tok">Llave de GitHub <small>(empieza con github_pat_)</small></label>
+    <input class="i" id="tok" type="password" autocomplete="off" placeholder="github_pat_…">
+    <label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:15px"><input type="checkbox" id="rem" checked> Recordarla en este equipo</label>
+    <p style="margin-top:18px"><button class="btn navy" id="entrar">Entrar</button></p>
+    <div class="msg" id="loginMsg"></div>
+    <details style="margin-top:22px"><summary style="cursor:pointer;font-weight:700;color:var(--navy)">¿Cómo creo mi llave? (una sola vez)</summary>
+      <ol class="steps">
+        <li>Entra a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>.</li>
+        <li><b>Token name:</b> Panel joseguzman · <b>Expiration:</b> 1 año.</li>
+        <li><b>Repository access:</b> Only select repositories → <b>elpoliton/joseguzman</b>.</li>
+        <li><b>Permissions → Repository permissions:</b> <b>Contents</b>: Read and write · <b>Actions</b>: Read-only.</li>
+        <li>Pulsa <b>Generate token</b>, copia la llave y pégala aquí. No la compartas con nadie.</li>
+      </ol>
+    </details>
+  </section>
+
+  <!-- ===== panel ===== -->
+  <section id="app" class="hidden">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px">
+      <h1 class="t" style="margin:0">Panel de ponencias</h1>
+      <div class="who"><span id="whoName"></span> · <button id="salir">Salir</button></div>
+    </div>
+    <p class="sub">Cada cambio se guarda en GitHub y se publica solo en politon.pe/joseguzman en 1 o 2 minutos.</p>
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="bib" aria-selected="true">Biblioteca</button>
+      <button role="tab" data-tab="sub" aria-selected="false">Subir PowerPoint</button>
+      <button role="tab" data-tab="pub" aria-selected="false">Publicaciones</button>
+    </div>
+
+    <div id="tab-bib">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+        <span class="sub" style="margin:0" id="bibCount"></span>
+        <button class="btn line sm" id="recargar">Recargar</button>
+      </div>
+      <div id="lista"></div>
+      <div class="msg" id="bibMsg"></div>
+    </div>
+
+    <div id="tab-sub" class="hidden">
+      <div class="box">
+        <div class="drop" id="drop" tabindex="0"><b>Arrastra aquí tu PowerPoint (.pptx)</b><div class="sub" style="margin:6px 0 0">o haz clic para elegirlo · hasta 50 MB · los videos insertados se conservan</div><div class="fn" id="fn"></div></div>
+        <input type="file" id="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" class="hidden">
+        <form id="fSub" autocomplete="off"></form>
+        <p style="margin-top:20px"><button class="btn navy" id="subir" form="fSub" type="submit">Subir y publicar</button></p>
+        <div class="msg" id="subMsg"></div>
+        <p class="sub" style="margin-top:16px;font-size:14px">Consejo: escribe tus notas del orador en PowerPoint; aparecerán en la vista del presentador (tecla S). Las diapositivas ocultas no se publican.</p>
+      </div>
+    </div>
+
+    <div id="tab-pub" class="hidden">
+      <div class="box">
+        <p class="sub" style="margin:0 0 10px">Últimas publicaciones. Se actualiza solo mientras haya una en curso.</p>
+        <ul class="runs" id="runs"></ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog id="dlg"><div class="box">
+  <h2 style="margin:0 0 4px;color:var(--navy)">Editar ponencia</h2>
+  <form id="fEdit" autocomplete="off"></form>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px">
+    <button class="btn line" type="button" id="cancelar">Cancelar</button>
+    <button class="btn navy" type="submit" form="fEdit">Guardar</button>
+  </div>
+  <div class="msg" id="dlgMsg"></div>
+</div></dialog>
+
+<datalist id="dlCat"></datalist><datalist id="dlSub"></datalist>
+<script src="../assets/admin.js"></script>
+</body>
+</html>

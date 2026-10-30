@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   if (window.pintarIconos) window.pintarIconos();
-  var P = (window.PONENCIAS || []).slice().sort(function (a, b) { return a.fecha < b.fecha ? 1 : -1; });
+  var P = (window.PONENCIAS || []).filter(function (p) { return !p.oculto; }).sort(function (a, b) { return a.fecha < b.fecha ? 1 : -1; });
   var norm = function (s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var ICON = function (n) { return '<i class="ico">' + ((window.ICONOS || {})[n] || '') + '</i>'; };

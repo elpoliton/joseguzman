@@ -122,3 +122,8 @@ body.presenter .pv { display: grid; grid-template-columns: 1.55fr 1fr; grid-temp
 .pv .label { position: absolute; left: 10px; top: 8px; z-index: 2; font-size: 13px; letter-spacing: 1.5px; background: rgba(0,0,0,.6); padding: 4px 8px; border-radius: 6px; }
 
 @media print { .hud, .progress, .toast { display: none !important; } }
+
+/* diapositivas convertidas desde PowerPoint (imagen + video opcional) */
+.slide.img { background: #000; }
+.slide.img > img.full { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.slide.img .vbox { box-shadow: none; border-radius: 0; }

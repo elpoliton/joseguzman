@@ -1,19 +1,55 @@
 # Publica la web en politon.pe/joseguzman cada vez que hay cambios en la rama main.
-# Requiere 4 secretos en GitHub (Settings → Secrets and variables → Actions):
-#   FTP_SERVIDOR   p. ej. ftp.politon.pe (o la IP del servidor)
-#   FTP_USUARIO    usuario FTP de cPanel
-#   FTP_CLAVE      contraseña de ese usuario
-#   FTP_CARPETA    carpeta de destino en el servidor, terminada en / (p. ej. /public_html/joseguzman/)
+# Si el panel /admin dejó un PowerPoint en entrada/, primero lo convierte en presentación web y guarda el resultado.
+# Secretos (Settings → Secrets and variables → Actions): FTP_SERVIDOR, FTP_USUARIO, FTP_CLAVE, FTP_CARPETA
 name: Publicar en politon.pe/joseguzman
 on:
   push:
     branches: [main]
   workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: publicar
+  cancel-in-progress: false
 jobs:
   publicar:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: ¿Hay PowerPoint nuevos?
+        id: hay
+        run: |
+          if ls entrada/*.json >/dev/null 2>&1; then echo "si=1" >> "$GITHUB_OUTPUT"; ls -la entrada; fi
+
+      - name: Instalar LibreOffice, ffmpeg y python-pptx
+        if: steps.hay.outputs.si == '1'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends libreoffice-impress poppler-utils ffmpeg \
+            fonts-crosextra-carlito fonts-crosextra-caladea fonts-liberation fonts-lato fonts-dejavu fonts-noto-core
+          pip install --quiet python-pptx==1.0.2
+
+      - name: Convertir PowerPoint en presentación web
+        if: steps.hay.outputs.si == '1'
+        run: |
+          for f in entrada/*.json; do python3 tools/convertir_pptx.py "$f"; done
+
+      - name: Actualizar el mapa del sitio
+        run: python3 tools/sitemap.py
+
+      - name: Guardar el resultado en el repositorio
+        run: |
+          git config user.name "Publicador automático"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Publicación automática: presentaciones convertidas y mapa del sitio"
+            git pull --rebase origin main && git push origin HEAD:main
+          fi
+
       - name: Subir por FTP (solo los archivos que cambiaron)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -26,4 +62,5 @@ jobs:
             **/.git*/**
             .github/**
             tools/**
+            entrada/**
             README.md
