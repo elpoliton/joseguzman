@@ -24,5 +24,26 @@ window.PONENCIAS = [
     "pdf": "dinamica-plan-contable/clases-3-y-4/media/clases-3-y-4-v3.pdf",
     "portada": "dinamica-plan-contable/clases-3-y-4/media/exp04.jpg",
     "oculto": false
+  },
+  {
+    "id": "prueba-conversion",
+    "titulo": "Prueba de conversión",
+    "subtitulo": "PowerPoint con video",
+    "categoria": "Pruebas",
+    "subcategoria": "Conversión",
+    "fecha": "2026-10-30",
+    "fechaTexto": "Octubre 2026",
+    "lugar": "Lima",
+    "resumen": "Ponencia de prueba del conversor.",
+    "etiquetas": [
+      "prueba"
+    ],
+    "diapositivas": 3,
+    "videos": 1,
+    "ruta": "conversion/prueba-conversion/",
+    "pdf": "conversion/prueba-conversion/media/prueba-conversion.pdf",
+    "portada": "conversion/prueba-conversion/diapos/01.jpg",
+    "oculto": true,
+    "origen": "pptx"
   }
 ];
