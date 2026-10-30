@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es-PE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Practica asientos contables con el PCGE | José Manuel Guzmán Valverde</title>
+<meta name="description" content="Espacio de práctica de asientos contables con el Plan Contable General Empresarial (PCGE): busca cuentas, arma el asiento con debe y haber, verifica si cuadra y compáralo con la solución.">
+<link rel="canonical" href="https://politon.pe/joseguzman/contabilidad/">
+<meta name="author" content="José Manuel Guzmán Valverde">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_PE">
+<meta property="og:url" content="https://politon.pe/joseguzman/contabilidad/">
+<meta property="og:title" content="Practica asientos contables con el PCGE">
+<meta property="og:description" content="Busca cuentas del PCGE, arma tus asientos y verifica si cuadran.">
+<meta property="og:image" content="https://politon.pe/joseguzman/assets/img/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../favicon.ico" sizes="48x48">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<meta name="theme-color" content="#0F1E3D">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/contabilidad.css">
+</head>
+<body>
+<header class="top noprint"><div class="wrap">
+  <a class="brand" href="../"><i class="mono">JG</i><span>José Manuel Guzmán</span></a>
+  <nav><a class="opt" href="../#sobre-mi">Sobre mí</a><a href="../ponencias/">Ponencias</a><a href="./" aria-current="page">Contabilidad</a></nav>
+</div></header>
+
+<main class="cx">
+  <div class="cx-head noprint">
+    <div>
+      <div class="kick">Práctica</div>
+      <h1>Asientos contables con el PCGE</h1>
+      <p class="intro">Lee el caso, busca la cuenta, completa el detalle y escribe los montos en el debe o el haber. Luego pulsa <b>Verificar</b>.</p>
+    </div>
+    <label class="ver">Plan contable
+      <select id="version"><option value="2019">PCGE 2019 (vigente)</option><option value="2026">PCGE 2026 (desde 2028)</option></select>
+    </label>
+  </div>
+
+  <div class="cx-grid">
+    <!-- lista de ejercicios -->
+    <aside class="cx-list noprint">
+      <div class="cx-list-h"><b>Ejercicios</b><span id="avance"></span></div>
+      <div id="lista"></div>
+      <button class="btn line sm full" id="nuevo"><i data-icon="FaPencilAlt"></i> Nuevo ejercicio propio</button>
+      <div class="cx-tools">
+        <button class="lnk" id="exportar"><i data-icon="FaDownload"></i> Descargar en Excel</button>
+        <button class="lnk" id="imprimir"><i data-icon="FaFilePdf"></i> Imprimir / PDF</button>
+        <button class="lnk" id="respaldo">Guardar copia (.json)</button>
+        <label class="lnk">Recuperar copia<input type="file" id="importar" accept=".json" hidden></label>
+      </div>
+      <p class="tiny">Tu avance se guarda en este navegador.</p>
+    </aside>
+
+    <!-- área de trabajo -->
+    <section class="cx-work">
+      <article class="card-e">
+        <div class="e-top"><span class="e-date" id="eFecha"></span><span class="e-tema" id="eTema"></span><button class="lnk noprint" id="borrarPropio" hidden>Eliminar este ejercicio</button></div>
+        <p class="e-text" id="eTexto"></p>
+      </article>
+
+      <div class="tbl-wrap">
+        <table class="asiento" id="asiento">
+          <thead><tr><th class="c-cta">Cuenta</th><th>Detalle</th><th class="c-num">Debe</th><th class="c-num">Haber</th><th class="c-x noprint"></th></tr></thead>
+          <tbody id="filas"></tbody>
+          <tfoot>
+            <tr class="glosa"><td></td><td colspan="3"><input class="in glosa-in" id="glosa" placeholder="Glosa: por el cobro de la fact. …" aria-label="Glosa"></td><td class="noprint"></td></tr>
+            <tr class="tot"><td></td><td class="r">Totales</td><td class="c-num" id="tDebe">0.00</td><td class="c-num" id="tHaber">0.00</td><td class="noprint"></td></tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="acts noprint">
+        <button class="btn line sm" id="agregar">+ Agregar línea</button>
+        <span class="cuadre" id="cuadre"></span>
+        <span class="grow"></span>
+        <button class="btn line sm" id="limpiar">Limpiar</button>
+        <button class="btn line sm" id="solucion">Ver solución</button>
+        <button class="btn navy" id="verificar"><i data-icon="FaCheck"></i> Verificar</button>
+      </div>
+      <div id="feedback" class="fb"></div>
+
+      <details class="tips noprint">
+        <summary>Recordatorio: ¿debe o haber?</summary>
+        <div class="tips-g">
+          <div><b>Activo</b> (elementos 1, 2, 3): aumenta por el <b>debe</b>, disminuye por el <b>haber</b>.</div>
+          <div><b>Pasivo y patrimonio</b> (elementos 4 y 5): aumentan por el <b>haber</b>, disminuyen por el <b>debe</b>.</div>
+          <div><b>Gastos</b> (elemento 6): van al <b>debe</b>.</div>
+          <div><b>Ingresos</b> (elemento 7): van al <b>haber</b>.</div>
+        </div>
+      </details>
+
+      <section class="buscador noprint">
+        <h2><i data-icon="FaSearch"></i> Buscador del plan contable</h2>
+        <input class="in" id="q" placeholder="Escribe un código (1212) o una palabra (letras, caja, préstamos…)" autocomplete="off">
+        <div id="res" class="res"></div>
+      </section>
+    </section>
+  </div>
+</main>
+
+<dialog id="dlgNuevo"><form method="dialog" class="box-d" id="fNuevo">
+  <h2>Nuevo ejercicio propio</h2>
+  <label class="f">Fecha</label><input class="in" name="fecha" placeholder="Ej. 12/10/26">
+  <label class="f">Tema <small>(opcional)</small></label><input class="in" name="tema" placeholder="Ej. Cobranzas">
+  <label class="f">Enunciado *</label><textarea class="in" name="enunciado" required rows="4" placeholder="Ej. Se cobra la factura E001-123 a la empresa Gamma SAC por S/ 3,000 mediante transferencia."></textarea>
+  <div class="d-acts"><button class="btn line" value="cancel" formnovalidate>Cancelar</button><button class="btn navy" value="ok">Crear</button></div>
+</form></dialog>
+
+<div id="ac" class="ac" role="listbox" hidden></div>
+<footer class="foot noprint"><div class="wrap"><span>© 2026 José Manuel Guzmán Valverde</span><span>Cuentas: PCGE 2019 y 2026 (Consejo Normativo de Contabilidad)</span></div></footer>
+<script src="../assets/icons.js"></script>
+<script src="../assets/pcge-2019.js"></script>
+<script src="../assets/pcge-2026.js"></script>
+<script src="../assets/ejercicios.js"></script>
+<script src="../assets/contabilidad.js"></script>
+</body>
+</html>
