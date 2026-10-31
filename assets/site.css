@@ -130,3 +130,10 @@ footer.foot .redes { display: flex; flex-wrap: wrap; gap: 10px 22px; } footer.fo
 .lb img { max-width: 100%; max-height: 82vh; border-radius: 10px; }
 .lb p { color: #fff; text-align: center; margin: 12px 0 0; font-weight: 700; }
 .lb button { all: unset; cursor: pointer; position: absolute; top: 14px; right: 20px; color: #fff; font-size: 40px; line-height: 1; }
+
+.redes-b { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.redes-b a { display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 999px; color: var(--navy); font-weight: 700; font-size: 14px; text-decoration: none; background: #fff; }
+.redes-b a:hover { border-color: var(--navy); }
+.cursos b a { color: var(--navy); text-decoration: none; } .cursos b a:hover { text-decoration: underline; }
+.cursos b a[target]::after { content: ' ↗'; color: var(--mag); font-weight: 400; }
+.medios { grid-template-columns: 1fr; }

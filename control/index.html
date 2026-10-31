@@ -51,7 +51,7 @@
   .b.sm { background: var(--navy3); height: 54px; font-size: 14px; line-height: 1.15; }
   .b.sm small { display: block; font-size: 11px; font-weight: 700; color: var(--muted); }
   .b.on { background: var(--mag); }
-  .aux { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .aux { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
   .gate { flex: 1; display: grid; place-items: center; text-align: center; }
   .gate h1 { font-size: 26px; margin: 0 0 10px; }
   .gate p { color: var(--muted); margin: 0 0 22px; line-height: 1.5; }
@@ -116,6 +116,7 @@
       <button class="b sm" id="bGrid">▦<small>Diapos</small></button>
       <button class="b sm" id="bVideo">⏯<small>Video</small></button>
       <button class="b sm" id="bNegro">⬛<small>Negro</small></button>
+      <button class="b sm" id="bFull">⛶<small>Pantalla</small></button>
       <button class="b sm" id="bMas">⚙<small>Más</small></button>
     </div>
   </div>
@@ -139,8 +140,9 @@
   <div class="g3"><button class="b sm" id="bMenos">A−<small>Letra</small></button><button class="b sm" id="bMasL">A+<small>Letra</small></button><button class="b sm" id="bOsc">🌙<small>Fondo oscuro</small></button></div>
   <div class="g2" style="margin-top:8px"><button class="b sm" id="bEditar">✏️<small>Editar nota de esta diapo</small></button><button class="b sm" id="bMini">🖼<small>Miniatura: sí</small></button></div>
   <h4>Presentación</h4>
-  <div class="g2"><button class="b sm" id="bAbrir">📂<small>Abrir otra ponencia</small></button><button class="b sm" id="bAyuda">💡<small>Consejos</small></button></div>
-  <p class="hint" id="ayuda" hidden>Desliza el dedo a la izquierda o derecha sobre las notas para pasar de diapositiva. Toca ▦ para ver todas y saltar a una. El reloj se reinicia desde aquí. La pantalla del celular no se apaga mientras esta página esté abierta.</p>
+  <div class="g2"><button class="b sm" id="bFull2">⛶<small>Pantalla completa</small></button><button class="b sm" id="bAbrir">📂<small>Abrir otra ponencia</small></button></div>
+  <div class="g2" style="margin-top:8px"><button class="b sm" id="bTerminar" style="background:#8f1b22">⏹<small style="color:#ffd0d3">Terminar exposición</small></button><button class="b sm" id="bAyuda">💡<small>Consejos</small></button></div>
+  <p class="hint" id="ayuda" hidden>Para salir: «Terminar exposición» detiene el reloj; luego puedes cerrar la pestaña o la sesión. Desliza el dedo a la izquierda o derecha sobre las notas para pasar de diapositiva. Toca ▦ para ver todas y saltar a una. El reloj se reinicia desde aquí. La pantalla del celular no se apaga mientras esta página esté abierta.</p>
 </div></div>
 
 <!-- todas las diapositivas -->
@@ -169,6 +171,22 @@
   </div>
 </div>
 
+<!-- fin de la exposición -->
+<div class="full" id="ovFin" hidden><div class="hd"><b>Exposición terminada</b></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;padding:24px;text-align:center">
+    <div style="font-size:15px;color:var(--muted);font-weight:700;letter-spacing:1px">DURACIÓN</div>
+    <div id="finDur" style="font-size:64px;font-weight:900;font-variant-numeric:tabular-nums">00:00</div>
+    <div id="finInfo" style="color:var(--muted)"></div>
+    <p class="hint" style="max-width:340px">El reloj está detenido. La pantalla del celular ya puede apagarse.</p>
+    <div style="display:grid;gap:10px;width:100%;max-width:340px;margin-top:10px">
+      <button class="b sm" id="finSeguir" style="height:56px">▶ Seguir la misma exposición</button>
+      <button class="b sm" id="finNueva" style="height:56px;background:var(--gold);color:var(--navy)">↺ Empezar otra (reloj en cero)</button>
+      <button class="b sm" id="finSalir" style="height:56px">🚪 Cerrar sesión en este celular</button>
+    </div>
+    <p class="hint">Para salir, también puedes simplemente cerrar esta pestaña.</p>
+  </div>
+</div>
+
 <div class="aviso" id="aviso"></div>
 <script src="../assets/nube.js"></script>
 <script>
@@ -176,7 +194,8 @@
   'use strict';
   var $ = function (s) { return document.querySelector(s); }, $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
   var ref = null, refL = null, quitar = null, lock = null, latido = null, S = null;
-  var t0 = Date.now(), tDiapo = Date.now(), ultimoI = null, ultimaRuta = null;
+  var t0 = Date.now(), tDiapo = Date.now(), ultimoI = null, ultimaRuta = null, corriendo = true, congelado = 0;
+  function transcurrido() { return corriendo ? (Date.now() - t0) / 1000 : congelado; }
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var mmss = function (s) { s = Math.max(0, Math.floor(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
   function err(m) { $('#err').textContent = m || ''; }
@@ -232,11 +251,11 @@
 
   // ---------- reloj, meta y tiempo por diapositiva
   var avisos = {};
-  $('#relojCard').onclick = function () { abrir('#ovMas'); };
-  $('#bReset').onclick = function () { t0 = Date.now(); avisos = {}; aviso('Reloj reiniciado'); };
+  $('#bReset').onclick = function () { t0 = Date.now(); corriendo = true; avisos = {}; aviso('Reloj reiniciado'); };
   setInterval(function () {
-    var s = (Date.now() - t0) / 1000, card = $('#relojCard');
-    $('#enEsta').textContent = 'en esta: ' + mmss((Date.now() - tDiapo) / 1000).replace(/^0/, '');
+    var s = transcurrido(), card = $('#relojCard');
+    if (corriendo) $('#enEsta').textContent = 'en esta: ' + mmss((Date.now() - tDiapo) / 1000).replace(/^0/, '');
+    if (!corriendo) { $('#reloj').firstChild.nodeValue = mmss(s); $('#relojLbl').textContent = 'DETENIDO · TOCA'; card.className = 'card'; return; }
     if (!P.meta) { $('#reloj').firstChild.nodeValue = mmss(s); $('#relojLbl').textContent = 'TRANSCURRIDO'; card.className = 'card'; return; }
     var r = P.meta * 60 - s;
     $('#reloj').firstChild.nodeValue = (r < 0 ? '+' : '') + mmss(Math.abs(r)); $('#relojLbl').textContent = r < 0 ? 'TIEMPO EXTRA' : 'QUEDAN · META ' + P.meta;
@@ -253,6 +272,21 @@
   $('#bMasL').onclick = function () { P.letra = Math.min(34, P.letra + 2); guardarP(); };
   $('#bOsc').onclick = function () { P.oscuro = !P.oscuro; guardarP(); };
   $('#bMini').onclick = function () { P.mini = !P.mini; guardarP(); if (P.mini) sincronizarMini(true); };
+  // pantalla completa: la laptop pide pulsar un botón del puntero (el navegador no deja hacerlo a distancia sin eso)
+  function pedirFull() { enviar('full'); aviso(S && S.full ? 'Saliendo de pantalla completa…' : 'Pulsa cualquier botón del puntero (o haz clic) en la laptop'); }
+  $('#bFull').onclick = pedirFull; $('#bFull2').onclick = function () { pedirFull(); cerrar($('#ovMas')); };
+  // terminar la exposición: detiene el reloj y deja de mantener la pantalla encendida
+  $('#bTerminar').onclick = function () {
+    congelado = transcurrido(); corriendo = false; cerrar($('#ovMas'));
+    if (lock) { try { lock.release(); } catch (e) { } lock = null; }
+    $('#finDur').textContent = mmss(congelado);
+    $('#finInfo').textContent = S ? (S.titulo || '') + ' · llegaste a la diapositiva ' + (S.i + 1) + ' de ' + S.n : '';
+    abrir('#ovFin'); vibrar(30);
+  };
+  $('#finSeguir').onclick = function () { t0 = Date.now() - congelado * 1000; corriendo = true; despierto(); cerrar($('#ovFin')); };
+  $('#finNueva').onclick = function () { t0 = Date.now(); tDiapo = Date.now(); corriendo = true; avisos = {}; despierto(); cerrar($('#ovFin')); aviso('Reloj en cero'); };
+  $('#finSalir').onclick = function () { cerrar($('#ovFin')); Nube.salir(); };
+  $('#relojCard').onclick = function () { if (!corriendo) abrir('#ovFin'); else abrir('#ovMas'); };
   $('#bAyuda').onclick = function () { $('#ayuda').hidden = !$('#ayuda').hidden; };
 
   // ---------- miniaturas (la ponencia en modo «vista», del mismo sitio)
@@ -336,7 +370,7 @@
   });
 
   // ---------- mantener la pantalla encendida y avisar que el celular sigue conectado
-  function despierto() { if ('wakeLock' in navigator && document.visibilityState === 'visible') navigator.wakeLock.request('screen').then(function (l) { lock = l; }).catch(function () { }); }
+  function despierto() { if (corriendo && 'wakeLock' in navigator && document.visibilityState === 'visible') navigator.wakeLock.request('screen').then(function (l) { lock = l; }).catch(function () { }); }
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { despierto(); latir(); } });
   function latir() { if (ref) ref.set({ celular: { visto: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true }).catch(function () { }); }
 
@@ -361,7 +395,10 @@
     var cambioRuta = ultimaRuta !== s.ruta; ultimoI = s.i; ultimaRuta = s.ruta;
     $('#sig').textContent = s.i + 1 >= s.n ? 'Fin de la presentación' : ((s.siguiente && s.siguiente.titulo) || 'Diapositiva ' + (s.i + 2));
     var V = { idle: 'Video: «Siguiente» lo abre en grande', wait: '▶ Video abriéndose…', open: '▶ Video en grande', paused: '⏸ Video en pausa', ended: 'Video terminado: «Siguiente» vuelve', done: 'Video ya visto' }[s.video];
-    $('#chips').innerHTML = (V ? '<span class="chip v">' + esc(V) + '</span>' : '') + (s.negro ? '<span class="chip n">Pantalla en negro</span>' : '');
+    $('#chips').innerHTML = (V ? '<span class="chip v">' + esc(V) + '</span>' : '') + (s.negro ? '<span class="chip n">Pantalla en negro</span>' : '') +
+      (s.fullPend ? '<span class="chip v">⛶ Pulsa un botón del puntero en la laptop</span>' : '');
+    $('#bFull').classList.toggle('on', !!s.full);
+    $('#bFull').innerHTML = '⛶<small>' + (s.full ? 'Salir' : 'Pantalla') + '</small>';
     $('#bNegro').classList.toggle('on', !!s.negro);
     sincronizarMini(cambioRuta);
   }

@@ -83,6 +83,7 @@
       });
       ponerNota(k, Object.prototype.hasOwnProperty.call(notas, k) ? notas[k] : null);
       var im = s.querySelector('img.full'); if (im && orig[k].img) im.setAttribute('src', imgs[k] ? imgs[k] : orig[k].img);
+      pintarExtras(s, k, (aj.extras || {})[k] || []);
     });
     if (estructura) {
       var orden = Array.isArray(aj.orden) && aj.orden.length ? aj.orden.slice() : todas.map(function (_, k) { return k; });
@@ -96,6 +97,51 @@
     }
     slides.forEach(function (s, n) { var f = s.querySelector('.foot .n'); if (f) f.textContent = String(n + 1); });
   }
+
+  // ---------- cuadros de texto e imágenes encima de la diapositiva (los agrega el panel)
+  var COLOR = { navy: '#0F1E3D', blanco: '#ffffff', mag: '#BF0085', oro: '#C9A227', negro: '#111111', rojo: '#C4232A' };
+  var FONDO = { no: 'transparent', blanco: '#ffffff', amarillo: '#FFF3B0', navy: '#0F1E3D', mag: '#BF0085', oro: '#C9A227' };
+  function pintarExtras(s, k, lista) {
+    var capa = s.querySelector(':scope > .capa'); if (capa) capa.remove();
+    if (!lista.length) return;
+    capa = document.createElement('div'); capa.className = 'capa'; s.appendChild(capa);
+    lista.forEach(function (x, j) {
+      var el = document.createElement('div'); el.className = 'ex ' + (x.tipo === 'img' ? 'ex-img' : 'ex-txt');
+      el.setAttribute('data-j', String(j));
+      el.style.left = (+x.x || 0) + '%'; el.style.top = (+x.y || 0) + '%'; el.style.width = (+x.w || 30) + '%';
+      if (x.tipo === 'img') { var im = document.createElement('img'); im.src = x.src || ''; im.alt = x.alt || ''; el.appendChild(im); if (x.borde) el.classList.add('borde'); }
+      else {
+        el.innerHTML = aHtml(x.texto || '');
+        el.style.fontSize = (+x.tam || 32) + 'px'; el.style.color = COLOR[x.color] || COLOR.navy;
+        el.style.background = FONDO[x.fondo] || 'transparent'; el.style.textAlign = x.alin || 'left';
+        if (x.fondo && x.fondo !== 'no') el.classList.add('caja'); if (x.negrita) el.style.fontWeight = '700';
+      }
+      if (editor) { var h = document.createElement('span'); h.className = 'ex-h'; el.appendChild(h); }
+      capa.appendChild(el);
+    });
+  }
+  // en el panel: arrastrar para mover y la esquina para cambiar el tamaño
+  if (editor) (function () {
+    var ar = null;
+    document.addEventListener('pointerdown', function (e) {
+      var el = e.target.closest('.ex'); if (!el) return; e.preventDefault();
+      var s = el.closest('.slide'), r = stage.getBoundingClientRect(), esc = r.width / W;
+      ar = { el: el, k: +s.getAttribute('data-k'), j: +el.getAttribute('data-j'), modo: e.target.classList.contains('ex-h') ? 'tam' : 'mover',
+        x0: e.clientX, y0: e.clientY, l: parseFloat(el.style.left), t: parseFloat(el.style.top), w: parseFloat(el.style.width), esc: esc };
+      el.classList.add('arr'); try { el.setPointerCapture(e.pointerId); } catch (er) { }
+    });
+    document.addEventListener('pointermove', function (e) {
+      if (!ar) return;
+      var dx = (e.clientX - ar.x0) / ar.esc / W * 100, dy = (e.clientY - ar.y0) / ar.esc / H * 100;
+      if (ar.modo === 'mover') { ar.el.style.left = Math.max(-20, Math.min(98, ar.l + dx)) + '%'; ar.el.style.top = Math.max(-20, Math.min(98, ar.t + dy)) + '%'; }
+      else ar.el.style.width = Math.max(4, Math.min(100, ar.w + dx)) + '%';
+    });
+    document.addEventListener('pointerup', function () {
+      if (!ar) return; var a = ar; ar = null; a.el.classList.remove('arr');
+      var r = function (v) { return Math.round(parseFloat(v) * 10) / 10; };
+      try { parent.postMessage({ t: 'deck-extra', k: a.k, j: a.j, x: r(a.el.style.left), y: r(a.el.style.top), w: r(a.el.style.width) }, location.origin); } catch (er) { }
+    });
+  })();
 
   // ---------- escala
   function fit(st, w, h) {
@@ -200,7 +246,7 @@
     if (c === 'next') next(); else if (c === 'prev') prev(); else if (c === 'go') show(n);
     else if (c === 'video') toggleVideo(); else if (c === 'black') black();
     else if (c === 'vseek') seekVideo(n); else if (c === 'vvol') volVideo(n);
-    else if (c === 'zoom') zoom(n); else if (c === 'laser') puntero(n);
+    else if (c === 'zoom') zoom(n); else if (c === 'laser') puntero(n); else if (c === 'full' && !vista && !presenter) fullRemoto();
     else if (c === 'abrir' && n && !presenter && !vista) { location.href = root + 'ponencias/' + String(n).replace(/^\/+/, ''); }
   }
   if (chan) chan.onmessage = function (e) {
@@ -215,8 +261,31 @@
   function black() { var b = document.querySelector('.blackout'); if (b) b.classList.toggle('on'); broadcast(); }
   function fullscreen() {
     var d = document;
-    if (!d.fullscreenElement) { (d.documentElement.requestFullscreen || d.documentElement.webkitRequestFullscreen || function () { }).call(d.documentElement); }
-    else { (d.exitFullscreen || d.webkitExitFullscreen).call(d); }
+    if (!d.fullscreenElement) { var f = d.documentElement.requestFullscreen || d.documentElement.webkitRequestFullscreen; return f ? Promise.resolve(f.call(d.documentElement)) : Promise.reject(new Error('no')); }
+    (d.exitFullscreen || d.webkitExitFullscreen).call(d); return Promise.resolve();
+  }
+  // desde el celular: el navegador solo deja entrar a pantalla completa con un clic o una tecla en la laptop,
+  // así que se pide pulsar cualquier botón del puntero (esa pulsación no avanza la diapositiva)
+  var fullPend = false, fullAviso = null;
+  function fullRemoto() {
+    if (document.fullscreenElement) { fullscreen(); return; }
+    fullscreen().catch(function () {
+      fullPend = true;
+      if (!fullAviso) { fullAviso = document.createElement('div'); fullAviso.className = 'fullaviso'; fullAviso.innerHTML = '<b>⛶ Pantalla completa</b>Pulsa cualquier botón del puntero o haz clic'; document.body.appendChild(fullAviso); }
+      fullAviso.classList.add('on'); broadcast();
+    });
+  }
+  function usarFullPend(e) {
+    if (!fullPend) return false;
+    fullPend = false; if (fullAviso) fullAviso.classList.remove('on');
+    if (e) { e.preventDefault(); e.stopImmediatePropagation(); }
+    fullscreen().catch(function () { });
+    return true;
+  }
+  if (!vista) {
+    document.addEventListener('keydown', function (e) { if (fullPend && !['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) usarFullPend(e); }, true);
+    document.addEventListener('pointerdown', function (e) { if (fullPend) usarFullPend(e); }, true);
+    document.addEventListener('fullscreenchange', function () { broadcast(); });
   }
   var tt;
   function toast(msg) { var t = document.querySelector('.toast'); if (!t || vista) return; t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(function () { t.classList.remove('on'); }, 2600); }
@@ -245,7 +314,7 @@
         cmd('prev'); break;
       case 'Home': cmd('go', 0); break;
       case 'End': cmd('go', N - 1); break;
-      case 'f': case 'F': case 'F5': case 'BrowserHome': case 'Tab': fullscreen(); break;
+      case 'f': case 'F': case 'F5': case 'BrowserHome': case 'Tab': fullscreen().catch(function () { }); break;
       case 'b': case 'B': case '.': cmd('black'); break;
       case 'k': case 'K': cmd('video'); break;
       case 's': case 'S': if (!presenter) openPresenter(); break;
@@ -271,7 +340,7 @@
     hud.addEventListener('click', function (e) {
       var b = e.target.closest('[data-do]'); if (!b) return;
       var d = b.getAttribute('data-do');
-      if (d === 'prev') cmd('prev'); else if (d === 'next') cmd('next'); else if (d === 'full') fullscreen();
+      if (d === 'prev') cmd('prev'); else if (d === 'next') cmd('next'); else if (d === 'full') fullscreen().catch(function () { });
       else if (d === 'pres') openPresenter(); else if (d === 'help') help(true); else if (d === 'offline') saveOffline();
     });
     wake();
@@ -286,6 +355,7 @@
     var extra = []; // ajustes e imágenes cambiadas desde el panel
     if (ajustes && ajustes.t) extra.push('ajustes.json');
     Object.keys((ajustes && ajustes.imagenes) || {}).forEach(function (k) { extra.push(ajustes.imagenes[k]); });
+    Object.keys((ajustes && ajustes.extras) || {}).forEach(function (k) { ajustes.extras[k].forEach(function (x) { if (x.tipo === 'img' && x.src) extra.push(x.src); }); });
     toast('Guardando la ponencia para usarla sin internet…');
     navigator.serviceWorker.register(root + 'sw.js', { scope: root }).then(function () { return caches.open('jg-ponencias-v1'); })
       .then(function (c) {
@@ -378,7 +448,7 @@
     toast: toast,
     estado: function () {
       var b = document.querySelector('.blackout');
-      return { i: i, n: N, video: stateOf(vidOf(i)), negro: !!(b && b.classList.contains('on')),
+      return { i: i, n: N, video: stateOf(vidOf(i)), negro: !!(b && b.classList.contains('on')), full: !!document.fullscreenElement, fullPend: fullPend,
         actual: textoDe(i), siguiente: textoDe(i + 1), lista: slides.map(function (s, n) { return tituloDe(s) || ('Diapositiva ' + (n + 1)); }) };
     },
     ponerNota: function (k, texto) { ponerNota(k, texto); if (chan) chan.postMessage({ t: 'nota', k: k, texto: texto }); },

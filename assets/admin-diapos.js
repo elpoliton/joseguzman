@@ -6,9 +6,9 @@
   var A = window.ADMIN; if (!A) return;
   var $ = function (s) { return document.querySelector(s); };
   var esc = A.esc;
-  var P = null, lista = [], aj = null, base = '', sel = 0, frameListo = false, nuevas = {}, previas = {}, mostrado = false;
+  var previasEx = {}, P = null, lista = [], aj = null, base = '', sel = 0, frameListo = false, nuevas = {}, previas = {}, mostrado = false;
 
-  function vacio() { return { version: 1, t: 0, orden: [], ocultas: [], notas: {}, textos: {}, imagenes: {} }; }
+  function vacio() { return { version: 1, t: 0, orden: [], ocultas: [], notas: {}, textos: {}, imagenes: {}, extras: {} }; }
   function sucio() { return JSON.stringify(aj) !== base || Object.keys(nuevas).length > 0; }
   function marcar() { var s = !!aj && sucio(); $('#dDirty').hidden = !s; $('#dGuardar').disabled = !s; }
   window.addEventListener('beforeunload', function (e) { if (aj && sucio()) { e.preventDefault(); e.returnValue = ''; } });
@@ -59,7 +59,7 @@
   // ---------- lista de diapositivas
   function numVisible(k) { var n = 0; for (var j = 0; j < aj.orden.length; j++) { if (aj.ocultas.indexOf(aj.orden[j]) < 0) n++; if (aj.orden[j] === k) return aj.ocultas.indexOf(k) < 0 ? n : null; } return null; }
   function tieneNota(k) { return Object.prototype.hasOwnProperty.call(aj.notas, k) ? !!aj.notas[k] : !!lista[k].nota; }
-  function editada(k) { return Object.prototype.hasOwnProperty.call(aj.notas, k) || aj.imagenes[k] || Object.keys(aj.textos).some(function (id) { return id.indexOf(k + ':') === 0; }); }
+  function editada(k) { return Object.prototype.hasOwnProperty.call(aj.notas, k) || (aj.extras[k] || []).length || aj.imagenes[k] || Object.keys(aj.textos).some(function (id) { return id.indexOf(k + ':') === 0; }); }
   function pintarLista() {
     $('#dList').innerHTML = aj.orden.map(function (k, pos) {
       var d = lista[k], n = numVisible(k), oc = n === null;
@@ -99,6 +99,23 @@
         (aj.imagenes[k] || previas[k] ? '<button class="btn line sm" type="button" id="fImgO">Volver a la original</button>' : '') + '</div>' +
         '<p class="dhint">Para cambiar el texto de una diapositiva que vino de PowerPoint, cambia la imagen o vuelve a subir el PowerPoint corregido.</p>';
     }
+    // cuadros de texto e imágenes encima de la diapositiva
+    var ex = aj.extras[k] || [];
+    h += '<label class="f">➕ Agregar encima de la diapositiva <small>(el público sí lo ve)</small></label>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn navy sm" type="button" id="exTxt">🅣 Cuadro de texto</button><button class="btn navy sm" type="button" id="exImgB">🖼 Imagen o pantallazo</button><input type="file" id="exImg" accept="image/*" class="hidden"></div>' +
+      '<p class="dhint">Para un pantallazo: cópialo (tecla Impr Pant o Win + Shift + S) y pulsa <b>Ctrl + V</b> aquí. En la vista previa, <b>arrastra</b> el cuadro para moverlo y usa el punto rosado de la esquina para el tamaño.</p>' +
+      ex.map(function (x, j) {
+        var cab = '<div class="exc" data-j="' + j + '"><div class="exh"><b>' + (x.tipo === 'img' ? '🖼 Imagen ' : '🅣 Texto ') + (j + 1) + '</b><span><button type="button" class="btn line sm" data-exa="subir" title="Traer al frente">⇡</button> <button type="button" class="btn red sm" data-exa="quitar">Eliminar</button></span></div>';
+        var pos = '<div class="exrow"><label>Ancho <input type="range" min="4" max="100" step="1" data-ex="w" value="' + (x.w || 30) + '"></label></div>';
+        if (x.tipo === 'img') return cab + '<div class="exrow"><img class="exth" src="' + esc(previasEx[x.src] || ('../ponencias/' + P.ruta + x.src)) + '" alt=""><label><input type="checkbox" data-ex="borde"' + (x.borde ? ' checked' : '') + '> Marco blanco con sombra</label></div>' + pos + '</div>';
+        var sel = function (campo, ops) { return '<select class="i" data-ex="' + campo + '">' + ops.map(function (o) { return '<option value="' + o[0] + '"' + (String(x[campo]) === String(o[0]) ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'; };
+        return cab + '<textarea class="i" data-ex="texto" rows="2">' + esc(x.texto) + '</textarea>' +
+          '<div class="exrow">' + sel('tam', [[24, 'Letra pequeña'], [32, 'Letra mediana'], [40, 'Letra grande'], [56, 'Letra muy grande'], [72, 'Gigante']]) +
+          sel('color', [['navy', 'Texto azul'], ['blanco', 'Texto blanco'], ['mag', 'Texto magenta'], ['oro', 'Texto dorado'], ['negro', 'Texto negro'], ['rojo', 'Texto rojo']]) +
+          sel('fondo', [['no', 'Sin fondo'], ['amarillo', 'Fondo amarillo'], ['blanco', 'Fondo blanco'], ['navy', 'Fondo azul'], ['mag', 'Fondo magenta'], ['oro', 'Fondo dorado']]) +
+          sel('alin', [['left', 'Alinear a la izquierda'], ['center', 'Centrado'], ['right', 'A la derecha']]) +
+          '<label><input type="checkbox" data-ex="negrita"' + (x.negrita ? ' checked' : '') + '> Negrita</label></div>' + pos + '</div>';
+      }).join('');
     if (d.textos.length) {
       h += '<details class="dtx"' + (d.tipo === 'html' ? ' open' : '') + '><summary>✏️ Textos en pantalla (' + d.textos.length + ')</summary><p class="dhint">Cambia lo que el público ve. Los campos en amarillo están cambiados; bórralo todo para volver al original.</p><div class="dform-t">' +
         d.textos.map(function (t) { var v = aj.textos[t.id] != null ? aj.textos[t.id] : t.texto; return '<label for="tx' + t.id + '">' + esc(t.etiqueta) + '</label><textarea class="i' + (aj.textos[t.id] != null ? ' ed' : '') + '" data-tx="' + t.id + '" id="tx' + t.id + '" rows="' + Math.min(5, Math.max(1, Math.ceil(v.length / 70))) + '">' + esc(v) + '</textarea>'; }).join('') + '</div></details>';
@@ -106,7 +123,14 @@
     h += '<div style="display:flex;gap:10px;justify-content:space-between;margin-top:20px;flex-wrap:wrap"><button class="btn line sm" type="button" id="fAnt">◀ Anterior</button><a class="btn line sm" target="_blank" href="../ponencias/' + esc(P.ruta) + '#' + (numVisible(k) || 1) + '">Ver la ponencia publicada ↗</a><button class="btn line sm" type="button" id="fSig">Siguiente ▶</button></div>';
     $('#dForm').innerHTML = h;
   }
+  function campoExtra(t) {
+    var c = t.closest('.exc'); if (!c || !t.getAttribute('data-ex')) return false;
+    var x = aj.extras[sel][+c.getAttribute('data-j')], campo = t.getAttribute('data-ex');
+    x[campo] = t.type === 'checkbox' ? t.checked : t.type === 'range' || campo === 'tam' ? +t.value : t.value;
+    marcar(); vista(); return true;
+  }
   $('#dForm').addEventListener('input', function (e) {
+    if (campoExtra(e.target)) return;
     var k = sel, d = lista[k], t = e.target;
     if (t.id === 'fNota') { var v = t.value.replace(/\s+$/, ''); if (v === d.nota) delete aj.notas[k]; else aj.notas[k] = v; }
     var id = t.getAttribute('data-tx');
@@ -116,14 +140,25 @@
   var tLista = null; function pintarListaSuave() { clearTimeout(tLista); tLista = setTimeout(pintarLista, 400); }
   $('#dForm').addEventListener('change', function (e) {
     var k = sel, t = e.target;
+    if (t.id === 'exImg' && t.files[0]) { agregarImagen(t.files[0]); return; }
+    if (t.tagName === 'SELECT' || t.type === 'checkbox') { if (campoExtra(t)) return; }
     if (t.id === 'fOculta') { aj.ocultas = aj.ocultas.filter(function (x) { return x !== k; }); if (t.checked) aj.ocultas.push(k); aj.ocultas.sort(function (a, b) { return a - b; }); pintarLista(); pintarForm(); marcar(); }
     if (t.id === 'fImg' && t.files[0]) cambiarImagen(k, t.files[0]);
   });
   $('#dForm').addEventListener('click', function (e) {
     var t = e.target, k = sel;
+    if (t.id === 'exTxt') { (aj.extras[k] = aj.extras[k] || []).push({ tipo: 'texto', texto: 'Escribe aquí', x: 8, y: 22, w: 40, tam: 40, color: 'navy', fondo: 'amarillo', alin: 'left', negrita: true }); pintarForm(); vista(); pintarLista(); marcar(); var tas = document.querySelectorAll('[data-ex="texto"]'); if (tas.length) { tas[tas.length - 1].focus(); tas[tas.length - 1].select(); } return; }
+    if (t.id === 'exImgB') { $('#exImg').click(); return; }
+    var ea = t.closest('[data-exa]');
+    if (ea) {
+      var j = +ea.closest('.exc').getAttribute('data-j'), L = aj.extras[k];
+      if (ea.getAttribute('data-exa') === 'quitar') { var x = L[j]; if (x.tipo === 'img') delete nuevas[x.src]; L.splice(j, 1); if (!L.length) delete aj.extras[k]; }
+      else { L.push(L.splice(j, 1)[0]); }
+      pintarForm(); vista(); pintarLista(); marcar(); return;
+    }
     if (t.id === 'fNotaOrig') { e.preventDefault(); delete aj.notas[k]; pintarForm(); vista(); pintarLista(); marcar(); }
     if (t.id === 'fImgB') $('#fImg').click();
-    if (t.id === 'fImgO') { delete aj.imagenes[k]; delete previas[k]; Object.keys(nuevas).forEach(function (p) { if (nuevas[p].k === k) delete nuevas[p]; }); pintarForm(); pintarLista(); vista(); marcar(); }
+    if (t.id === 'fImgO') { delete aj.imagenes[k]; delete previas[k]; Object.keys(nuevas).forEach(function (p) { if (nuevas[p].k === k && nuevas[p].fondo) delete nuevas[p]; }); pintarForm(); pintarLista(); vista(); marcar(); }
     if (t.id === 'fAnt' || t.id === 'fSig') { var pos = aj.orden.indexOf(k) + (t.id === 'fSig' ? 1 : -1); if (pos >= 0 && pos < aj.orden.length) { sel = aj.orden[pos]; pintarLista(); pintarForm(); vista(); var it = document.querySelector('.dit.sel'); if (it) it.scrollIntoView({ block: 'nearest' }); } }
   });
 
@@ -136,9 +171,9 @@
       var s = Math.min(1600 / im.width, 900 / im.height), w = im.width * s, h = im.height * s;
       g.drawImage(im, (1600 - w) / 2, (900 - h) / 2, w, h);
       var datos = c.toDataURL('image/jpeg', 0.88);
-      Object.keys(nuevas).forEach(function (p) { if (nuevas[p].k === k) delete nuevas[p]; });
+      Object.keys(nuevas).forEach(function (p) { if (nuevas[p].k === k && nuevas[p].fondo) delete nuevas[p]; });
       var rel = 'diapos/editada-' + (k + 1) + '-' + Date.now().toString(36) + '.jpg';
-      nuevas[rel] = { k: k, b64: datos.split(',')[1] };
+      nuevas[rel] = { k: k, fondo: true, b64: datos.split(',')[1] };
       aj.imagenes[k] = rel; previas[k] = datos;
       URL.revokeObjectURL(url); pintarForm(); pintarLista(); vista(); marcar();
     };
@@ -146,12 +181,46 @@
     im.src = url;
   }
 
+  // imagen o pantallazo encima de la diapositiva (máx. 1600 px; PNG se mantiene para pantallazos nítidos)
+  function agregarImagen(f) {
+    if (!aj || !f || !/^image\//.test(f.type)) return;
+    var k = sel, url = URL.createObjectURL(f), im = new Image();
+    im.onload = function () {
+      var s = Math.min(1, 1600 / im.width), c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      var png = /png/.test(f.type), datos = c.toDataURL(png ? 'image/png' : 'image/jpeg', 0.88);
+      if (datos.length > 4e6 && png) { datos = c.toDataURL('image/jpeg', 0.9); png = false; }
+      var rel = 'diapos/extra-' + (k + 1) + '-' + Date.now().toString(36) + (png ? '.png' : '.jpg');
+      nuevas[rel] = { k: k, b64: datos.split(',')[1] }; previasEx[rel] = datos;
+      var w = Math.min(60, Math.round(c.width / 16)); // ancho inicial según su tamaño
+      (aj.extras[k] = aj.extras[k] || []).push({ tipo: 'img', src: rel, x: Math.round((100 - w) / 2), y: 18, w: Math.max(20, w), borde: true });
+      URL.revokeObjectURL(url); pintarForm(); vista(); pintarLista(); marcar();
+      A.msg('#dMsg', 'ok', 'Imagen agregada. Arrástrala en la vista previa para ubicarla y pulsa <b>Guardar y publicar</b>.');
+    };
+    im.onerror = function () { A.msg('#dMsg', 'err', 'No se pudo leer esa imagen.'); };
+    im.src = url;
+  }
+  document.addEventListener('paste', function (e) {
+    if (!aj || $('#tab-dia').classList.contains('hidden')) return;
+    var items = (e.clipboardData && e.clipboardData.items) || [];
+    for (var i = 0; i < items.length; i++) if (items[i].type.indexOf('image') === 0) { e.preventDefault(); agregarImagen(items[i].getAsFile()); return; }
+  });
+  window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin || !aj) return;
+    var m = e.data || {}; if (m.t !== 'deck-extra') return;
+    var x = (aj.extras[m.k] || [])[m.j]; if (!x) return;
+    x.x = m.x; x.y = m.y; x.w = m.w; marcar();
+    var c = document.querySelector('.exc[data-j="' + m.j + '"] [data-ex="w"]'); if (c && m.k === sel) c.value = m.w;
+    vista();
+  });
+
   // ---------- vista previa en vivo (la misma ponencia, dentro del panel)
   function vista() {
     if (!frameListo) return;
     try {
       var D = $('#dPrev').contentWindow.DECK, copia = JSON.parse(JSON.stringify(aj));
       Object.keys(previas).forEach(function (k) { copia.imagenes[k] = previas[k]; });
+      Object.keys(copia.extras || {}).forEach(function (k) { copia.extras[k].forEach(function (x) { if (x.tipo === 'img') x.src = previasEx[x.src] || x.src; }); });
       Object.keys(copia.imagenes).forEach(function (k) { if (!previas[k]) copia.imagenes[k] = copia.imagenes[k]; });
       D.editor.aplicar(copia); D.editor.ir(sel);
     } catch (e) { }
