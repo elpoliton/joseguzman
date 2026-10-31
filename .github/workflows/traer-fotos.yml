@@ -1,0 +1,18 @@
+name: Traer fotos del blog
+on:
+  workflow_dispatch:
+  push:
+    paths: [tools/fotos_blog.txt]
+permissions:
+  contents: write
+jobs:
+  fotos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Descargar a la rama fotos-blog
+        run: |
+          mkdir -p /tmp/f
+          while read n u; do [ -z "$n" ] && continue; curl -sSL -m 60 -o "/tmp/f/$n.bin" "$u" && echo "$n $(file -b /tmp/f/$n.bin | cut -c1-50)"; done < tools/fotos_blog.txt
+          git config user.name "github-actions"; git config user.email "actions@github.com"
+          git checkout --orphan fotos-blog; git rm -rfq .; cp /tmp/f/* .; git add .; git commit -qm "Fotos del blog (originales)"; git push -f origin fotos-blog
