@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es-PE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Control de ponencias · José Manuel Guzmán Valverde</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0F1E3D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="../favicon.ico" sizes="48x48">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="stylesheet" href="../assets/base.css">
+<style>
+  :root { --navy: #0F1E3D; --navy2: #182C55; --gold: #C9A227; --mag: #BF0085; --line: #2a3d66; --muted: #9fb3d9; }
+  html, body { height: 100%; }
+  body { background: var(--navy); color: #fff; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+  .app { min-height: 100%; display: flex; flex-direction: column; padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom)); gap: 12px; max-width: 560px; margin: 0 auto; }
+  .top { display: flex; align-items: center; gap: 10px; }
+  .top .mono { width: 34px; height: 34px; border-radius: 50%; background: var(--gold); color: var(--navy); display: grid; place-items: center; font-weight: 900; font-size: 14px; flex: none; }
+  .top .t { flex: 1; min-width: 0; }
+  .top .t b { display: block; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .top .t span { font-size: 12px; color: var(--muted); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #c4232a; flex: none; }
+  .dot.ok { background: #2fd08a; box-shadow: 0 0 0 4px rgba(47,208,138,.2); }
+  .row { display: flex; gap: 10px; align-items: stretch; }
+  .card { background: var(--navy2); border-radius: 16px; padding: 14px 16px; }
+  .num { font-size: 13px; color: var(--muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .num b { color: #fff; font-size: 26px; letter-spacing: 0; margin-right: 4px; }
+  .clock { font-size: 30px; font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; }
+  .clock small { display: block; font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 1px; }
+  .cur h2 { margin: 4px 0 0; font-size: 20px; line-height: 1.25; }
+  .notes { flex: 1; min-height: 120px; overflow: auto; background: #fff; color: #1b2333; border-radius: 16px; padding: 14px 16px; font-size: 19px; line-height: 1.45; user-select: text; -webkit-user-select: text; }
+  .notes p { margin: 0 0 10px; }
+  .notes .vacio { color: #8a93a6; }
+  .next { font-size: 14px; color: var(--muted); } .next b { color: #fff; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 99px; background: rgba(255,255,255,.1); }
+  .chip.v { background: var(--mag); } .chip.n { background: #000; border: 1px solid #555; }
+  .ctrl { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+  .b { all: unset; box-sizing: border-box; cursor: pointer; display: grid; place-items: center; border-radius: 18px; font-weight: 900; font-size: 20px; text-align: center; transition: transform .06s, filter .1s; }
+  .b:active { transform: scale(.97); filter: brightness(1.15); }
+  .b.prev { background: #24396a; height: 110px; } .b.nextb { background: var(--gold); color: var(--navy); height: 110px; font-size: 26px; }
+  .b.sm { background: #24396a; height: 54px; font-size: 15px; }
+  .aux { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .gate { flex: 1; display: grid; place-items: center; text-align: center; }
+  .gate h1 { font-size: 26px; margin: 0 0 10px; }
+  .gate p { color: var(--muted); margin: 0 0 22px; line-height: 1.5; }
+  .gbtn { all: unset; cursor: pointer; background: #fff; color: var(--navy); font-weight: 900; padding: 14px 22px; border-radius: 12px; }
+  .err { color: #ffb3b3; font-size: 14px; margin-top: 14px; }
+  .foot { font-size: 12px; color: var(--muted); text-align: center; }
+  .foot button { all: unset; cursor: pointer; text-decoration: underline; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><span class="mono">JG</span><div class="t"><b id="titulo">Control de ponencias</b><span id="estado">Conectando…</span></div><span class="dot" id="dot"></span></div>
+
+  <div class="gate" id="gate"><div>
+    <h1>📱 Control remoto</h1>
+    <p id="gateTxt">Entra con la misma cuenta de Google que usaste en la laptop.</p>
+    <button class="gbtn" id="entrar">Entrar con Google</button>
+    <p class="err" id="err"></p>
+  </div></div>
+
+  <div id="panel" hidden style="display:flex;flex-direction:column;gap:12px;flex:1">
+    <div class="row">
+      <div class="card" style="flex:1"><div class="num"><b id="pos">–</b> de <span id="tot">–</span></div><div class="chips" id="chips"></div></div>
+      <div class="card" style="min-width:120px" id="relojCard" title="Toca para reiniciar"><div class="clock" id="reloj">00:00<small>TOCA PARA REINICIAR</small></div></div>
+    </div>
+    <div class="card cur"><div class="num">Ahora</div><h2 id="actual">–</h2></div>
+    <div class="notes" id="notas"></div>
+    <div class="next">Siguiente: <b id="sig">–</b></div>
+    <div class="ctrl"><button class="b prev" id="bPrev">◀<br><small style="font-size:13px">Anterior</small></button><button class="b nextb" id="bNext">Siguiente ▶</button></div>
+    <div class="aux"><button class="b sm" id="bVideo">⏯ Video</button><button class="b sm" id="bNegro">⬛ Negro</button><button class="b sm" id="bInicio">⏮ Inicio</button></div>
+  </div>
+  <div class="foot"><span id="quien"></span> <button id="salir" hidden>Salir</button></div>
+</div>
+<script src="../assets/nube.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var ref = null, quitar = null, t0 = Date.now(), lock = null, latido = null, ultimoEstado = null;
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  function err(m) { $('#err').textContent = m || ''; }
+  $('#entrar').onclick = function () { this.textContent = 'Abriendo Google…'; Nube.entrar().catch(function (e) { $('#entrar').textContent = 'Entrar con Google'; err(Nube.mensajeError(e)); }); };
+  $('#salir').onclick = function () { Nube.salir(); };
+
+  var cola = [];
+  function enviar(c, n) {
+    if (!ref) return;
+    if (navigator.vibrate) navigator.vibrate(12);
+    cola = cola.slice(-9).concat([{ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), c: c, n: n == null ? null : n }]);
+    ref.set({ cola: cola, celular: { visto: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true }).catch(function (e) { $('#estado').textContent = Nube.mensajeError(e); });
+  }
+  $('#bNext').onclick = function () { enviar('next'); };
+  $('#bPrev').onclick = function () { enviar('prev'); };
+  $('#bVideo').onclick = function () { enviar('video'); };
+  $('#bNegro').onclick = function () { enviar('black'); };
+  $('#bInicio').onclick = function () { if (confirm('¿Volver a la primera diapositiva?')) enviar('go', 0); };
+  $('#relojCard').onclick = function () { t0 = Date.now(); };
+  setInterval(function () { var s = Math.floor((Date.now() - t0) / 1000); $('#reloj').firstChild.nodeValue = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 500);
+
+  function despierto() { if ('wakeLock' in navigator && document.visibilityState === 'visible') navigator.wakeLock.request('screen').then(function (l) { lock = l; }).catch(function () { }); }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { despierto(); latir(); } });
+
+  function latir() { if (ref) ref.set({ celular: { visto: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true }).catch(function () { }); }
+
+  function pintar(d) {
+    var s = d && d.sesion, t = s && s.t && s.t.toMillis ? s.t.toMillis() : 0;
+    var viva = s && Date.now() - t < 12 * 3600 * 1000;
+    if (!viva) {
+      $('#titulo').textContent = 'Control de ponencias'; $('#estado').textContent = 'Abre una ponencia en la laptop y pulsa «📱 Celular»'; $('#dot').className = 'dot';
+      $('#pos').textContent = '–'; $('#tot').textContent = '–'; $('#actual').textContent = 'Sin ponencia abierta'; $('#notas').innerHTML = '<p class="vacio">Cuando abras la ponencia en la laptop, aquí verás tus notas.</p>'; $('#sig').textContent = '–'; $('#chips').innerHTML = '';
+      return;
+    }
+    $('#titulo').textContent = s.titulo || 'Ponencia'; $('#estado').textContent = 'Conectado con la laptop'; $('#dot').className = 'dot ok';
+    $('#pos').textContent = s.i + 1; $('#tot').textContent = s.n;
+    $('#actual').textContent = (s.actual && s.actual.titulo) || ('Diapositiva ' + (s.i + 1));
+    var notas = (s.actual && s.actual.notas) || '';
+    $('#notas').innerHTML = notas ? notas.split(/\n{2,}/).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') : '<p class="vacio">Sin notas en esta diapositiva.</p>';
+    if (ultimoEstado !== s.i) $('#notas').scrollTop = 0; ultimoEstado = s.i;
+    $('#sig').textContent = s.i + 1 >= s.n ? 'Fin de la presentación' : ((s.siguiente && s.siguiente.titulo) || 'Diapositiva ' + (s.i + 2));
+    var V = { idle: 'Video: «Siguiente» lo abre en grande', open: '▶ Video en grande', ended: 'Video terminado: «Siguiente» vuelve', done: 'Video ya visto' }[s.video];
+    $('#chips').innerHTML = (V ? '<span class="chip v">' + esc(V) + '</span>' : '') + (s.negro ? '<span class="chip n">Pantalla en negro</span>' : '');
+  }
+
+  Nube.alCambiarUsuario(function (u) {
+    if (quitar) { quitar(); quitar = null; } ref = null; clearInterval(latido);
+    $('#gate').hidden = !!u; $('#panel').hidden = !u; $('#salir').hidden = !u;
+    $('#quien').textContent = u ? (u.email || '') + ' ·' : '';
+    if (!u) { $('#estado').textContent = 'Sin sesión'; $('#dot').className = 'dot'; $('#entrar').textContent = 'Entrar con Google'; return; }
+    $('#panel').style.display = 'flex';
+    Nube.doc('ponencias').then(function (r) {
+      ref = r; latir(); latido = setInterval(latir, 20000); despierto();
+      quitar = r.onSnapshot(function (s) { pintar(s.exists ? s.data() : null); }, function (e) { $('#estado').textContent = Nube.mensajeError(e); });
+    }).catch(function (e) { $('#estado').textContent = Nube.mensajeError(e); });
+  }).catch(function () { err('No se pudo conectar con Firebase. Revisa el internet.'); });
+})();
+</script>
+</body>
+</html>

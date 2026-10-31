@@ -195,3 +195,12 @@ dialog::backdrop { background: rgba(8,14,30,.6); }
   .asiento tr.tot { background: var(--soft); }
   .pasos { display: none; }
 }
+
+/* nube */
+.nube { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 38px; }
+.nube img { width: 30px; height: 30px; border-radius: 50%; }
+.nube-st { font-size: 13px; font-weight: 700; padding: 5px 9px; border-radius: 8px; background: #e2f5ea; color: #145c3a; }
+.nube-st.sync { background: #eef2fa; color: var(--navy); }
+.nube-st.err { background: #fdecec; color: #8a1c22; max-width: 340px; }
+.nube-who { font-size: 13px; color: var(--muted); }
+.nube-btn { white-space: nowrap; }

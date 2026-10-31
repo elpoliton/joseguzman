@@ -23,5 +23,10 @@ En las diapositivas con video, «siguiente» primero reproduce el video y la sig
 - Subir PowerPoint: deja el `.pptx` y su ficha en `entrada/`; la publicación lo convierte con `tools/convertir_pptx.py` (LibreOffice, poppler, ffmpeg, python-pptx).
 - Publicaciones: estado de las últimas ejecuciones.
 
+## Nube (Firebase · proyecto organizador-politon)
+`assets/nube.js` carga el SDK solo cuando hace falta. Cada web usa su propio documento, separado del organizador:
+- `apps/contabilidad/usuarios/{uid}`: práctica de /contabilidad sincronizada entre dispositivos (`assets/contabilidad-nube.js`).
+- `apps/ponencias/usuarios/{uid}`: control remoto. La laptop publica `sesion` (diapositiva, notas, siguiente) y ejecuta la `cola` de comandos que escribe el celular desde `/control/` (`assets/remoto.js`).
+
 ## Publicación
 Cada cambio en la rama `main` se publica solo por FTP en politon.pe/joseguzman (`.github/workflows/publicar.yml`).

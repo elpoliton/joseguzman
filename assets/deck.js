@@ -81,7 +81,10 @@
   function prev() { if (openV) { closeVideo(); return; } if (i > 0) show(i - 1); }
 
   // ---------- canal entre la ventana del público y la del presentador
-  function broadcast() { if (chan && !presenter) chan.postMessage({ t: 'state', i: i, v: stateOf(vidOf(i)) }); }
+  function broadcast() {
+    if (!presenter) { try { document.dispatchEvent(new CustomEvent('deck:cambio')); } catch (e) { } }
+    if (chan && !presenter) chan.postMessage({ t: 'state', i: i, v: stateOf(vidOf(i)) });
+  }
   function cmd(c, n) {
     if (presenter && mainAlive) { chan.postMessage({ t: 'cmd', c: c, n: n }); return; }
     run(c, n);
@@ -98,7 +101,7 @@
   };
 
   // ---------- pantalla negra, completa, ayuda, avisos
-  function black() { var b = document.querySelector('.blackout'); b.classList.toggle('on'); }
+  function black() { var b = document.querySelector('.blackout'); b.classList.toggle('on'); broadcast(); }
   function fullscreen() {
     var d = document;
     if (!d.fullscreenElement) { (d.documentElement.requestFullscreen || d.documentElement.webkitRequestFullscreen || function () { }).call(d.documentElement); }
@@ -216,6 +219,26 @@
     setInterval(clock, 500);
     if (chan) chan.postMessage({ t: 'hello' });
   }
+
+  // ---------- API para el control desde el celular (remoto.js)
+  function textoDe(k) {
+    var s = slides[k]; if (!s) return { titulo: '', notas: '' };
+    var t = s.querySelector('.title, h1, .vside div[style*="font-size:46px"]'), img = s.querySelector('img.full');
+    var titulo = t ? t.textContent.trim() : img ? (img.getAttribute('alt') || '').replace(/^Diapositiva \d+:?\s*/, '') : '';
+    var k2 = s.querySelector('.kicker, .ck'); if (k2 && !titulo) titulo = k2.textContent.trim();
+    var simple = s.querySelector('.simple, .say'), notas = s.querySelector('aside.notes');
+    var partes = [];
+    if (simple) partes.push(simple.textContent.replace(/^\s*(EN PALABRAS SIMPLES|ANTES DE DAR PLAY)\s*/i, '').trim());
+    if (notas) Array.prototype.forEach.call(notas.querySelectorAll('p'), function (p) { partes.push(p.textContent.trim()); });
+    return { titulo: titulo, notas: partes.join('\n\n') };
+  }
+  window.DECK = {
+    cmd: function (c, n) { run(c, n); },
+    pantallaCompleta: fullscreen,
+    toast: toast,
+    estado: function () { return { i: i, n: N, video: stateOf(vidOf(i)), negro: document.querySelector('.blackout').classList.contains('on'), actual: textoDe(i), siguiente: textoDe(i + 1) }; },
+    presentador: presenter
+  };
 
   // ---------- inicio
   var h = parseInt((location.hash || '').replace('#', ''), 10);

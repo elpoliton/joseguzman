@@ -15,7 +15,7 @@
   var num = function (s) { s = String(s || '').replace(/[^\d.,-]/g, '').replace(/,/g, ''); var n = parseFloat(s); return isNaN(n) ? 0 : n; };
   var cap = function (s) { s = String(s || ''); return s === s.toUpperCase() ? s.charAt(0) + s.slice(1).toLowerCase() : s; };
   function cargar() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
-  function guardar() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }
+  function guardar() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } if (window.CXnube) window.CXnube.cambio(); }
   var tt; function toast(m) { var t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(function () { t.classList.remove('on'); }, 2400); }
 
   // ---------- naturaleza de cada elemento
@@ -135,7 +135,7 @@
   }
   function persistir() {
     if (!actual) return;
-    S.trabajo[actual.id] = { lineas: leer(), glosa: $('#glosa').value };
+    S.trabajo[actual.id] = { lineas: leer(), glosa: $('#glosa').value, t: Date.now() };
     if (S.estado[actual.id] === 'ok') { delete S.estado[actual.id]; pintarLista(); }
     guardar(); totales();
   }
@@ -387,6 +387,20 @@
     var f = e.target.files[0]; if (!f) return;
     f.text().then(function (t) { var d = JSON.parse(t); if (!d.trabajo) throw 0; S = d; S.propios = S.propios || []; S.estado = S.estado || {}; guardar(); usarVersion(S.version || '2019'); abrir(S.ultimo || todos()[0].id); pintarDiario(); toast('Copia recuperada'); })
       .catch(function () { alert('Ese archivo no es una copia válida.'); });
+  };
+
+  // ---------- puente con la nube (contabilidad-nube.js)
+  window.CX = {
+    estado: function () { return S; },
+    escribiendo: function () { var a = document.activeElement; return !!(a && a.closest && a.closest('#filas, #glosa')); },
+    aplicar: function (nuevo) {
+      S = nuevo; S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {};
+      try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
+      usarVersion(S.version || ver);
+      var id = actual && todos().some(function (e) { return e.id === actual.id; }) ? actual.id : (S.ultimo || todos()[0].id);
+      abrir(id); if (!$('#v-diario').hidden) pintarDiario(); if (!$('#v-plan').hidden) pintarPlan();
+    },
+    toast: function (m) { toast(m); }
   };
 
   // ---------- inicio

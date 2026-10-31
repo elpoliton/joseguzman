@@ -200,6 +200,8 @@ def main(meta_path):
 </div></div>
 <script src="{base}assets/icons.js"></script>
 <script src="{base}assets/deck.js"></script>
+<script src="{base}assets/nube.js"></script>
+<script src="{base}assets/remoto.js"></script>
 </body>
 </html>
 '''

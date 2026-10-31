@@ -127,3 +127,24 @@ body.presenter .pv { display: grid; grid-template-columns: 1.55fr 1fr; grid-temp
 .slide.img { background: #000; }
 .slide.img > img.full { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .slide.img .vbox { box-shadow: none; border-radius: 0; }
+
+/* control desde el celular */
+.hud .rm-btn { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; padding: 9px 11px; border-radius: 9px; color: #fff; white-space: nowrap; }
+.hud .rm-btn:hover { background: rgba(255,255,255,.14); }
+.rm-dot { width: 8px; height: 8px; border-radius: 50%; background: #5b6577; }
+.rm-btn.on .rm-dot { background: #2fd08a; box-shadow: 0 0 0 3px rgba(47,208,138,.25); }
+.rm-modal { position: fixed; inset: 0; z-index: 90; background: rgba(5,8,16,.8); display: grid; place-items: center; padding: 16px; }
+.rm-modal[hidden] { display: none; }
+.rm-box { position: relative; background: #fff; color: var(--ink); border-radius: 18px; padding: 28px 30px; width: min(620px, 100%); font: 400 16px/1.5 'Lato', sans-serif; }
+.rm-box h3 { margin: 0 0 14px; color: var(--navy); font-size: 22px; padding-right: 30px; }
+.rm-x { all: unset; cursor: pointer; position: absolute; right: 16px; top: 12px; font-size: 28px; color: var(--muted); }
+.rm-grid { display: grid; grid-template-columns: 230px 1fr; gap: 24px; align-items: center; }
+@media (max-width: 560px) { .rm-grid { grid-template-columns: 1fr; } }
+.rm-qr { width: 230px; height: 230px; } .rm-qr svg { width: 100%; height: 100%; }
+.rm-st { font-weight: 700; color: var(--navy); background: #eef2fa; padding: 8px 12px; border-radius: 10px; display: inline-block; }
+.rm-st.ok { background: #e2f5ea; color: #145c3a; }
+.rm-small { font-size: 13px; color: var(--muted); }
+.rm-link { all: unset; cursor: pointer; color: var(--navy); font-weight: 700; text-decoration: underline; }
+.rm-pasos { margin: 0 0 18px; padding-left: 22px; } .rm-pasos li { margin-bottom: 6px; }
+.rm-g { all: unset; cursor: pointer; background: var(--navy); color: #fff; font-weight: 700; padding: 12px 18px; border-radius: 10px; }
+.rm-err { color: #8a1c22; background: #fdecec; padding: 10px 12px; border-radius: 10px; font-size: 14px; }
