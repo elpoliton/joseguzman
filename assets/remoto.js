@@ -3,11 +3,15 @@
    Solo se activa cuando el presentador pulsa «Celular» e inicia sesión con Google. */
 (function () {
   'use strict';
-  if (!window.DECK || window.DECK.presentador || !window.Nube) return;
+  if (!window.DECK || window.DECK.presentador || window.DECK.vista || !window.Nube) return;
   var root = document.body.getAttribute('data-root') || './';
   var CONTROL = 'https://politon.pe/joseguzman/control/';
   var ref = null, usuario = null, quitar = null, vistos = null, inicio = Date.now(), tPub = null, celularVisto = 0;
   var ACT = 'jg-remoto-activo';
+  // clave de esta ponencia (para las notas escritas desde el celular): su ruta dentro de /ponencias/
+  var RUTA = (location.pathname.split('/ponencias/')[1] || location.pathname).replace(/index\.html$/, '');
+  var CLAVE = RUTA.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '');
+  var refLaser = null, quitarLaser = null, notasAplicadas = {};
   var activo = function () { try { return sessionStorage.getItem(ACT) === '1'; } catch (e) { return false; } };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
 
@@ -62,8 +66,8 @@
     clearTimeout(tPub);
     tPub = setTimeout(function () {
       var e = DECK.estado();
-      ref.set({ sesion: { deck: location.pathname, titulo: document.title.replace(/\s*\|.*$/, ''), i: e.i, n: e.n, video: e.video, negro: e.negro,
-        actual: e.actual, siguiente: e.siguiente, url: location.href.split('#')[0], t: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true })
+      ref.set({ sesion: { deck: location.pathname, ruta: RUTA, clave: CLAVE, titulo: document.title.replace(/\s*\|.*$/, ''), i: e.i, n: e.n, video: e.video, negro: e.negro,
+        actual: e.actual, siguiente: e.siguiente, lista: e.lista, url: location.href.split('#')[0].split('?')[0], t: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true })
         .catch(function (er) { pintarModal(Nube.mensajeError(er)); });
     }, 120);
   }
@@ -71,6 +75,7 @@
 
   function alUsuario(u) {
     usuario = u; if (quitar) { quitar(); quitar = null; } ref = null;
+    if (quitarLaser) { quitarLaser(); quitarLaser = null; } refLaser = null;
     btn.classList.remove('on');
     if (!u || !activo()) { if (!modal.hidden) pintarModal(); return; }
     Nube.doc('ponencias').then(function (r) {
@@ -80,6 +85,15 @@
         var d = s.data(), cel = d.celular;
         if (cel && cel.visto && cel.visto.toMillis) { var antes = celularVisto; celularVisto = cel.visto.toMillis(); if (!antes && Date.now() - celularVisto < 45000) DECK.toast('📱 Celular conectado'); }
         if (!modal.hidden) pintarModal();
+        // notas escritas desde el celular (ganan si son más nuevas que lo guardado en el panel)
+        var mias = d.notas && d.notas[CLAVE], cambio = false, base = (DECK.ajustes() || {}).t || 0;
+        if (mias) Object.keys(mias).forEach(function (k) {
+          var x = mias[k]; if (!x || typeof x.texto !== 'string') return;
+          var tt = x.t && x.t.toMillis ? x.t.toMillis() : (+x.t || 0);
+          if (tt <= base || notasAplicadas[k] === tt) return;
+          notasAplicadas[k] = tt; DECK.ponerNota(+k, x.texto); cambio = true;
+        });
+        if (cambio) publicar();
         // cola de comandos del celular: se ejecutan en orden los que no se han visto (al conectar, los existentes se ignoran)
         var cola = Array.isArray(d.cola) ? d.cola : [];
         if (!vistos) { vistos = {}; cola.forEach(function (x) { vistos[x.id] = 1; }); return; }
@@ -88,6 +102,12 @@
           DECK.cmd(x.c, x.n);
         });
       }, function (e) { pintarModal(Nube.mensajeError(e)); });
+      // puntero láser: documento aparte para no mezclarse con los comandos
+      return Nube.doc('ponencias-laser').then(function (rl) {
+        refLaser = rl;
+        quitarLaser = rl.onSnapshot(function (s) { var p = s.exists ? s.data() : null; var t = p && p.t && p.t.toMillis ? p.t.toMillis() : 0;
+          DECK.cmd('laser', p && p.on && Date.now() - t < 15000 ? p : null); }, function () { });
+      });
     }).catch(function (e) { pintarModal(Nube.mensajeError(e)); });
   }
   var escuchando = false;

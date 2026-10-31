@@ -12,37 +12,46 @@
 <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
 <link rel="stylesheet" href="../assets/base.css">
 <style>
-  :root { --navy: #0F1E3D; --navy2: #182C55; --gold: #C9A227; --mag: #BF0085; --line: #2a3d66; --muted: #9fb3d9; }
+  :root { --navy: #0F1E3D; --navy2: #182C55; --navy3: #24396a; --gold: #C9A227; --mag: #BF0085; --line: #2a3d66; --muted: #9fb3d9; --fs: 19px; }
   html, body { height: 100%; }
-  body { background: var(--navy); color: #fff; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-  .app { min-height: 100%; display: flex; flex-direction: column; padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom)); gap: 12px; max-width: 560px; margin: 0 auto; }
+  body { background: var(--navy); color: #fff; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; overscroll-behavior: none; }
+  .app { min-height: 100%; display: flex; flex-direction: column; padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); gap: 10px; max-width: 560px; margin: 0 auto; }
   .top { display: flex; align-items: center; gap: 10px; }
-  .top .mono { width: 34px; height: 34px; border-radius: 50%; background: var(--gold); color: var(--navy); display: grid; place-items: center; font-weight: 900; font-size: 14px; flex: none; }
+  .top .mono { width: 32px; height: 32px; border-radius: 50%; background: var(--gold); color: var(--navy); display: grid; place-items: center; font-weight: 900; font-size: 13px; flex: none; }
   .top .t { flex: 1; min-width: 0; }
   .top .t b { display: block; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .top .t span { font-size: 12px; color: var(--muted); }
   .dot { width: 10px; height: 10px; border-radius: 50%; background: #c4232a; flex: none; }
   .dot.ok { background: #2fd08a; box-shadow: 0 0 0 4px rgba(47,208,138,.2); }
   .row { display: flex; gap: 10px; align-items: stretch; }
-  .card { background: var(--navy2); border-radius: 16px; padding: 14px 16px; }
-  .num { font-size: 13px; color: var(--muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-  .num b { color: #fff; font-size: 26px; letter-spacing: 0; margin-right: 4px; }
-  .clock { font-size: 30px; font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; }
-  .clock small { display: block; font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 1px; }
-  .cur h2 { margin: 4px 0 0; font-size: 20px; line-height: 1.25; }
-  .notes { flex: 1; min-height: 120px; overflow: auto; background: #fff; color: #1b2333; border-radius: 16px; padding: 14px 16px; font-size: 19px; line-height: 1.45; user-select: text; -webkit-user-select: text; }
+  .card { background: var(--navy2); border-radius: 14px; padding: 10px 14px; }
+  .num { font-size: 12px; color: var(--muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .num b { color: #fff; font-size: 24px; letter-spacing: 0; margin-right: 4px; }
+  .sub { font-size: 12px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .clock { font-size: 28px; font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; line-height: 1.1; }
+  .clock small { display: block; font-size: 10px; color: var(--muted); font-weight: 700; letter-spacing: 1px; }
+  #relojCard.amb { background: #7a5a00; } #relojCard.roj { background: #8f1b22; animation: late 1.2s ease-in-out infinite; }
+  @keyframes late { 50% { filter: brightness(1.25); } }
+  .mini { position: relative; border-radius: 12px; overflow: hidden; background: #000; aspect-ratio: 16 / 9; flex: none; }
+  .mini iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; }
+  .mini .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 10px 6px; background: linear-gradient(transparent, rgba(5,10,25,.85)); font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cur h2 { margin: 2px 0 0; font-size: 18px; line-height: 1.25; }
+  .notes { flex: 1; min-height: 110px; overflow: auto; background: #fff; color: #1b2333; border-radius: 14px; padding: 12px 15px; font-size: var(--fs); line-height: 1.45; user-select: text; -webkit-user-select: text; }
+  body.oscuro .notes { background: #0a1430; color: #e8eefc; border: 1px solid var(--line); }
   .notes p { margin: 0 0 10px; }
   .notes .vacio { color: #8a93a6; }
-  .next { font-size: 14px; color: var(--muted); } .next b { color: #fff; }
-  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .chip { font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 99px; background: rgba(255,255,255,.1); }
+  .next { font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .next b { color: #fff; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .chip { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; background: rgba(255,255,255,.1); }
   .chip.v { background: var(--mag); } .chip.n { background: #000; border: 1px solid #555; }
   .ctrl { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
-  .b { all: unset; box-sizing: border-box; cursor: pointer; display: grid; place-items: center; border-radius: 18px; font-weight: 900; font-size: 20px; text-align: center; transition: transform .06s, filter .1s; }
+  .b { all: unset; box-sizing: border-box; cursor: pointer; display: grid; place-items: center; border-radius: 16px; font-weight: 900; font-size: 18px; text-align: center; transition: transform .06s, filter .1s; }
   .b:active { transform: scale(.97); filter: brightness(1.15); }
-  .b.prev { background: #24396a; height: 110px; } .b.nextb { background: var(--gold); color: var(--navy); height: 110px; font-size: 26px; }
-  .b.sm { background: #24396a; height: 54px; font-size: 15px; }
-  .aux { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .b.prev { background: var(--navy3); height: 96px; } .b.nextb { background: var(--gold); color: var(--navy); height: 96px; font-size: 25px; }
+  .b.sm { background: var(--navy3); height: 54px; font-size: 14px; line-height: 1.15; }
+  .b.sm small { display: block; font-size: 11px; font-weight: 700; color: var(--muted); }
+  .b.on { background: var(--mag); }
+  .aux { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .gate { flex: 1; display: grid; place-items: center; text-align: center; }
   .gate h1 { font-size: 26px; margin: 0 0 10px; }
   .gate p { color: var(--muted); margin: 0 0 22px; line-height: 1.5; }
@@ -51,6 +60,35 @@
   .foot { font-size: 12px; color: var(--muted); text-align: center; }
   .foot button { all: unset; cursor: pointer; text-decoration: underline; }
   [hidden] { display: none !important; }
+  /* hoja «Más funciones» y ventanas */
+  .ov { position: fixed; inset: 0; z-index: 50; background: rgba(3,8,20,.6); display: flex; flex-direction: column; justify-content: flex-end; }
+  .sheet { background: var(--navy); border-radius: 20px 20px 0 0; padding: 8px 14px max(16px, env(safe-area-inset-bottom)); max-height: 88vh; overflow: auto; max-width: 560px; width: 100%; margin: 0 auto; box-shadow: 0 -10px 40px rgba(0,0,0,.4); }
+  .sheet .grip { width: 44px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.25); margin: 4px auto 10px; }
+  .sheet h3 { margin: 0 0 4px; font-size: 19px; display: flex; align-items: center; justify-content: space-between; }
+  .sheet h4 { margin: 16px 0 8px; font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--gold); }
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .x { all: unset; cursor: pointer; font-size: 15px; font-weight: 700; color: var(--muted); padding: 6px 4px; }
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+  .seg button { all: unset; cursor: pointer; padding: 9px 13px; border-radius: 10px; background: var(--navy3); font-weight: 700; font-size: 14px; }
+  .seg button.sel { background: var(--gold); color: var(--navy); }
+  .hint { font-size: 13px; color: var(--muted); margin: 6px 0 0; line-height: 1.4; }
+  .full { position: fixed; inset: 0; z-index: 60; background: var(--navy); display: flex; flex-direction: column; }
+  .full .hd { display: flex; align-items: center; gap: 10px; padding: max(10px, env(safe-area-inset-top)) 14px 10px; border-bottom: 1px solid var(--line); }
+  .full .hd b { flex: 1; font-size: 17px; }
+  .full .hd button { all: unset; cursor: pointer; background: var(--gold); color: var(--navy); font-weight: 900; padding: 9px 14px; border-radius: 10px; }
+  .full iframe { flex: 1; border: 0; width: 100%; background: var(--navy); }
+  .senal { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 14px; gap: 12px; }
+  .pad { position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; touch-action: none; }
+  .pad iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; }
+  .pad .touch { position: absolute; inset: 0; }
+  .pad .pt { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #ff3b3b; box-shadow: 0 0 14px 4px rgba(255,40,40,.6); pointer-events: none; display: none; }
+  .lista { list-style: none; margin: 0; padding: 0; overflow: auto; flex: 1; }
+  .lista li { padding: 14px 16px; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .lista li b { display: block; font-size: 16px; } .lista li span { font-size: 13px; color: var(--muted); }
+  .lista li.cur { background: var(--navy2); }
+  textarea.nt { width: 100%; min-height: 40vh; font: 400 17px/1.45 'Lato', sans-serif; padding: 12px; border-radius: 12px; border: 0; color: #1b2333; user-select: text; -webkit-user-select: text; box-sizing: border-box; }
+  .aviso { position: fixed; left: 50%; top: max(14px, env(safe-area-inset-top)); transform: translateX(-50%); z-index: 90; background: #fff; color: var(--navy); font-weight: 900; padding: 12px 18px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.4); opacity: 0; transition: opacity .3s; pointer-events: none; max-width: 90vw; text-align: center; }
+  .aviso.on { opacity: 1; }
 </style>
 </head>
 <body>
@@ -64,34 +102,110 @@
     <p class="err" id="err"></p>
   </div></div>
 
-  <div id="panel" hidden style="display:flex;flex-direction:column;gap:12px;flex:1">
+  <div id="panel" hidden style="display:flex;flex-direction:column;gap:10px;flex:1;min-height:0">
     <div class="row">
-      <div class="card" style="flex:1"><div class="num"><b id="pos">–</b> de <span id="tot">–</span></div><div class="chips" id="chips"></div></div>
-      <div class="card" style="min-width:120px" id="relojCard" title="Toca para reiniciar"><div class="clock" id="reloj">00:00<small>TOCA PARA REINICIAR</small></div></div>
+      <div class="card" style="flex:1"><div class="num"><b id="pos">–</b> de <span id="tot">–</span></div><div class="sub" id="enEsta">en esta: 0:00</div><div class="chips" id="chips"></div></div>
+      <div class="card" style="min-width:118px" id="relojCard"><div class="clock" id="reloj">00:00<small id="relojLbl">TRANSCURRIDO</small></div></div>
     </div>
-    <div class="card cur"><div class="num">Ahora</div><h2 id="actual">–</h2></div>
+    <div class="mini" id="mini"><iframe id="miniF" title="Diapositiva actual" tabindex="-1"></iframe><div class="cap" id="actual">–</div></div>
+    <div class="card cur" id="curCard" hidden><div class="num">Ahora</div><h2 id="actual2">–</h2></div>
     <div class="notes" id="notas"></div>
     <div class="next">Siguiente: <b id="sig">–</b></div>
     <div class="ctrl"><button class="b prev" id="bPrev">◀<br><small style="font-size:13px">Anterior</small></button><button class="b nextb" id="bNext">Siguiente ▶</button></div>
-    <div class="aux"><button class="b sm" id="bVideo">⏯ Video</button><button class="b sm" id="bNegro">⬛ Negro</button><button class="b sm" id="bInicio">⏮ Inicio</button></div>
+    <div class="aux">
+      <button class="b sm" id="bGrid">▦<small>Diapos</small></button>
+      <button class="b sm" id="bVideo">⏯<small>Video</small></button>
+      <button class="b sm" id="bNegro">⬛<small>Negro</small></button>
+      <button class="b sm" id="bMas">⚙<small>Más</small></button>
+    </div>
   </div>
   <div class="foot"><span id="quien"></span> <button id="salir" hidden>Salir</button></div>
 </div>
+
+<!-- Más funciones -->
+<div class="ov" id="ovMas" hidden><div class="sheet">
+  <div class="grip"></div>
+  <h3>Más funciones <button class="x" data-cerrar>Cerrar ✕</button></h3>
+  <h4>Señalar en la pantalla</h4>
+  <div class="g2"><button class="b sm" data-sen="laser">🔴<small>Puntero láser</small></button><button class="b sm" data-sen="zoom">🔍<small>Acercar (zoom)</small></button></div>
+  <h4>Video de la diapositiva</h4>
+  <div class="g3"><button class="b sm" data-c="vseek" data-n="-10">⏪<small>10 s atrás</small></button><button class="b sm" data-c="video">⏯<small>Play / pausa</small></button><button class="b sm" data-c="vseek" data-n="10">⏩<small>10 s adelante</small></button></div>
+  <div class="g2" style="margin-top:8px"><button class="b sm" data-c="vvol" data-n="-0.1">🔉<small>Bajar volumen</small></button><button class="b sm" data-c="vvol" data-n="0.1">🔊<small>Subir volumen</small></button></div>
+  <h4>Tiempo de la exposición</h4>
+  <div class="seg" id="metas"></div>
+  <p class="hint">Con una meta, el reloj cuenta hacia atrás y el celular vibra cuando quedan 5 minutos, 1 minuto y al terminar.</p>
+  <div class="g2" style="margin-top:8px"><button class="b sm" id="bReset">↺<small>Reiniciar reloj</small></button><button class="b sm" id="bInicio">⏮<small>Ir a la diapo 1</small></button></div>
+  <h4>Notas</h4>
+  <div class="g3"><button class="b sm" id="bMenos">A−<small>Letra</small></button><button class="b sm" id="bMasL">A+<small>Letra</small></button><button class="b sm" id="bOsc">🌙<small>Fondo oscuro</small></button></div>
+  <div class="g2" style="margin-top:8px"><button class="b sm" id="bEditar">✏️<small>Editar nota de esta diapo</small></button><button class="b sm" id="bMini">🖼<small>Miniatura: sí</small></button></div>
+  <h4>Presentación</h4>
+  <div class="g2"><button class="b sm" id="bAbrir">📂<small>Abrir otra ponencia</small></button><button class="b sm" id="bAyuda">💡<small>Consejos</small></button></div>
+  <p class="hint" id="ayuda" hidden>Desliza el dedo a la izquierda o derecha sobre las notas para pasar de diapositiva. Toca ▦ para ver todas y saltar a una. El reloj se reinicia desde aquí. La pantalla del celular no se apaga mientras esta página esté abierta.</p>
+</div></div>
+
+<!-- todas las diapositivas -->
+<div class="full" id="ovGrid" hidden><div class="hd"><b>Todas las diapositivas</b><button data-cerrar>Cerrar</button></div><iframe id="gridF" title="Todas las diapositivas"></iframe></div>
+
+<!-- láser y zoom -->
+<div class="full" id="ovSen" hidden>
+  <div class="hd"><b id="senTit">Puntero láser</b><button data-cerrar>Listo</button></div>
+  <div class="senal">
+    <div class="seg"><button data-modo="laser" class="sel">🔴 Láser</button><button data-modo="zoom">🔍 Zoom</button><button id="bSinZoom">Quitar zoom</button></div>
+    <div class="pad" id="pad"><iframe id="padF" title="Diapositiva actual" tabindex="-1"></iframe><div class="touch" id="touch"></div><div class="pt" id="pt"></div></div>
+    <p class="hint" id="senHint">Desliza el dedo sobre la diapositiva: aparece un punto rojo en la pantalla grande. Al soltar, desaparece.</p>
+    <div class="ctrl"><button class="b prev" style="height:64px" data-c="prev">◀</button><button class="b nextb" style="height:64px;font-size:20px" data-c="next">Siguiente ▶</button></div>
+  </div>
+</div>
+
+<!-- abrir otra ponencia -->
+<div class="full" id="ovAbrir" hidden><div class="hd"><b>Abrir en la laptop</b><button data-cerrar>Cerrar</button></div><ul class="lista" id="listaP"></ul></div>
+
+<!-- editar nota -->
+<div class="full" id="ovNota" hidden><div class="hd"><b id="notaTit">Nota de la diapositiva</b><button id="guardarNota">Guardar</button></div>
+  <div style="padding:14px;display:flex;flex-direction:column;gap:10px;flex:1;overflow:auto">
+    <textarea class="nt" id="notaTxt" placeholder="Escribe lo que quieres recordar en esta diapositiva…"></textarea>
+    <p class="hint">Solo tú la ves (en el celular y en la vista del presentador). Se guarda en tu cuenta al instante. Para dejarla fija en la web, en el panel usa «Traer notas del celular».</p>
+    <button class="x" data-cerrar style="align-self:flex-start">Cancelar</button>
+  </div>
+</div>
+
+<div class="aviso" id="aviso"></div>
 <script src="../assets/nube.js"></script>
 <script>
 (function () {
   'use strict';
-  var $ = function (s) { return document.querySelector(s); };
-  var ref = null, quitar = null, t0 = Date.now(), lock = null, latido = null, ultimoEstado = null;
+  var $ = function (s) { return document.querySelector(s); }, $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  var ref = null, refL = null, quitar = null, lock = null, latido = null, S = null;
+  var t0 = Date.now(), tDiapo = Date.now(), ultimoI = null, ultimaRuta = null;
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var mmss = function (s) { s = Math.max(0, Math.floor(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
   function err(m) { $('#err').textContent = m || ''; }
+  var tAv; function aviso(m) { var a = $('#aviso'); a.textContent = m; a.classList.add('on'); clearTimeout(tAv); tAv = setTimeout(function () { a.classList.remove('on'); }, 2600); }
+  function vibrar(p) { if (navigator.vibrate) navigator.vibrate(p); }
+
+  // ---------- preferencias (en este celular)
+  var PREF = 'jg-control-pref', P = { meta: 0, letra: 19, oscuro: false, mini: true };
+  try { Object.assign(P, JSON.parse(localStorage.getItem(PREF) || '{}')); } catch (e) { }
+  function guardarP() { try { localStorage.setItem(PREF, JSON.stringify(P)); } catch (e) { } aplicarP(); }
+  function aplicarP() {
+    document.documentElement.style.setProperty('--fs', P.letra + 'px');
+    document.body.classList.toggle('oscuro', !!P.oscuro);
+    $('#mini').hidden = !P.mini; $('#curCard').hidden = !!P.mini;
+    $('#bMini').innerHTML = '🖼<small>Miniatura: ' + (P.mini ? 'sí' : 'no') + '</small>';
+    $('#bOsc').classList.toggle('on', !!P.oscuro);
+    $('#metas').innerHTML = [0, 10, 15, 20, 30, 45, 60].map(function (m) { return '<button data-meta="' + m + '"' + (P.meta === m ? ' class="sel"' : '') + '>' + (m ? m + ' min' : 'Sin meta') + '</button>'; }).join('');
+  }
+  aplicarP();
+
+  // ---------- acceso
   $('#entrar').onclick = function () { this.textContent = 'Abriendo Google…'; Nube.entrar().catch(function (e) { $('#entrar').textContent = 'Entrar con Google'; err(Nube.mensajeError(e)); }); };
   $('#salir').onclick = function () { Nube.salir(); };
 
+  // ---------- comandos
   var cola = [];
   function enviar(c, n) {
     if (!ref) return;
-    if (navigator.vibrate) navigator.vibrate(12);
+    vibrar(12);
     cola = cola.slice(-9).concat([{ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), c: c, n: n == null ? null : n }]);
     ref.set({ cola: cola, celular: { visto: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true }).catch(function (e) { $('#estado').textContent = Nube.mensajeError(e); });
   }
@@ -99,36 +213,161 @@
   $('#bPrev').onclick = function () { enviar('prev'); };
   $('#bVideo').onclick = function () { enviar('video'); };
   $('#bNegro').onclick = function () { enviar('black'); };
-  $('#bInicio').onclick = function () { if (confirm('¿Volver a la primera diapositiva?')) enviar('go', 0); };
-  $('#relojCard').onclick = function () { t0 = Date.now(); };
-  setInterval(function () { var s = Math.floor((Date.now() - t0) / 1000); $('#reloj').firstChild.nodeValue = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 500);
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-c]'); if (b) { var n = b.getAttribute('data-n'); enviar(b.getAttribute('data-c'), n == null ? null : parseFloat(n)); return; }
+    var x = e.target.closest('[data-cerrar]'); if (x) { cerrar(x.closest('.ov, .full')); return; }
+    var m = e.target.closest('[data-meta]'); if (m) { P.meta = +m.getAttribute('data-meta'); avisos = {}; guardarP(); aviso(P.meta ? 'Meta: ' + P.meta + ' minutos' : 'Sin meta de tiempo'); return; }
+    if (e.target.classList && e.target.classList.contains('ov')) cerrar(e.target);
+  });
+  function abrir(id) { $(id).hidden = false; }
+  function cerrar(el) { if (!el) return; el.hidden = true; if (el.id === 'ovSen') { soltar(); } if (el.id === 'ovGrid') $('#gridF').src = 'about:blank'; }
 
+  // deslizar sobre las notas para pasar de diapositiva
+  var sx = null, sy = null;
+  $('#notas').addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  $('#notas').addEventListener('touchend', function (e) {
+    if (sx === null) return; var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > 2 * Math.abs(dy)) enviar(dx < 0 ? 'next' : 'prev');
+  }, { passive: true });
+
+  // ---------- reloj, meta y tiempo por diapositiva
+  var avisos = {};
+  $('#relojCard').onclick = function () { abrir('#ovMas'); };
+  $('#bReset').onclick = function () { t0 = Date.now(); avisos = {}; aviso('Reloj reiniciado'); };
+  setInterval(function () {
+    var s = (Date.now() - t0) / 1000, card = $('#relojCard');
+    $('#enEsta').textContent = 'en esta: ' + mmss((Date.now() - tDiapo) / 1000).replace(/^0/, '');
+    if (!P.meta) { $('#reloj').firstChild.nodeValue = mmss(s); $('#relojLbl').textContent = 'TRANSCURRIDO'; card.className = 'card'; return; }
+    var r = P.meta * 60 - s;
+    $('#reloj').firstChild.nodeValue = (r < 0 ? '+' : '') + mmss(Math.abs(r)); $('#relojLbl').textContent = r < 0 ? 'TIEMPO EXTRA' : 'QUEDAN · META ' + P.meta;
+    card.className = 'card' + (r <= 0 ? ' roj' : r <= 300 ? ' amb' : '');
+    if (r <= 300 && r > 290 && !avisos[5] && P.meta > 5) { avisos[5] = 1; vibrar([200, 100, 200]); aviso('⏰ Quedan 5 minutos'); }
+    if (r <= 60 && r > 50 && !avisos[1]) { avisos[1] = 1; vibrar([300, 120, 300, 120, 300]); aviso('⏰ Queda 1 minuto'); }
+    if (r <= 0 && r > -10 && !avisos[0]) { avisos[0] = 1; vibrar([700, 200, 700]); aviso('⏰ Se acabó el tiempo'); }
+  }, 500);
+
+  // ---------- más funciones
+  $('#bMas').onclick = function () { abrir('#ovMas'); };
+  $('#bInicio').onclick = function () { if (confirm('¿Volver a la primera diapositiva?')) { enviar('go', 0); cerrar($('#ovMas')); } };
+  $('#bMenos').onclick = function () { P.letra = Math.max(14, P.letra - 2); guardarP(); };
+  $('#bMasL').onclick = function () { P.letra = Math.min(34, P.letra + 2); guardarP(); };
+  $('#bOsc').onclick = function () { P.oscuro = !P.oscuro; guardarP(); };
+  $('#bMini').onclick = function () { P.mini = !P.mini; guardarP(); if (P.mini) sincronizarMini(true); };
+  $('#bAyuda').onclick = function () { $('#ayuda').hidden = !$('#ayuda').hidden; };
+
+  // ---------- miniaturas (la ponencia en modo «vista», del mismo sitio)
+  function urlVista(extra) { return S && S.ruta ? '../ponencias/' + S.ruta + '?vista' + (extra || '') + '#' + (S.i + 1) : 'about:blank'; }
+  function irEn(fr, i) {
+    try { var w = fr.contentWindow; if (w && w.DECK && w.DECK.vista) { w.DECK.cmd('go', i); return true; } } catch (e) { }
+    return false;
+  }
+  function sincronizar(fr, forzar) {
+    if (!S || !S.ruta) return;
+    var quiere = '../ponencias/' + S.ruta;
+    if (forzar || fr.getAttribute('data-ruta') !== quiere) { fr.setAttribute('data-ruta', quiere); fr.src = urlVista(); return; }
+    if (!irEn(fr, S.i)) fr.onload = function () { setTimeout(function () { irEn(fr, S.i); }, 300); };
+  }
+  function sincronizarMini(f) { if (P.mini) sincronizar($('#miniF'), f); if (!$('#ovSen').hidden) sincronizar($('#padF'), f); }
+  // la ponencia en miniatura puede tardar en cargar ajustes; al terminar, se vuelve a posicionar
+  ['#miniF', '#padF'].forEach(function (id) { $(id).addEventListener('load', function () { var fr = $(id); setTimeout(function () { if (S) irEn(fr, S.i); }, 400); }); });
+
+  $('#bGrid').onclick = function () {
+    if (!S || !S.ruta) { aviso('Abre una ponencia en la laptop primero'); return; }
+    abrir('#ovGrid'); $('#gridF').src = urlVista('=grid');
+  };
+  window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin) return;
+    var m = e.data || {}; if (m.t === 'deck-elegir') { enviar('go', m.i); cerrar($('#ovGrid')); }
+  });
+
+  // ---------- puntero láser y zoom
+  var modo = 'laser', ultimoEnvio = 0, pendiente = null, tEnv = null;
+  $$('[data-sen]').forEach(function (b) { b.onclick = function () { if (!S || !S.ruta) { aviso('Abre una ponencia en la laptop primero'); return; } cerrar($('#ovMas')); abrir('#ovSen'); ponerModo(b.getAttribute('data-sen')); sincronizar($('#padF'), true); }; });
+  $$('[data-modo]').forEach(function (b) { b.onclick = function () { ponerModo(b.getAttribute('data-modo')); }; });
+  $('#bSinZoom').onclick = function () { enviar('zoom', null); aviso('Zoom quitado'); };
+  function ponerModo(m) {
+    modo = m; $$('[data-modo]').forEach(function (b) { b.classList.toggle('sel', b.getAttribute('data-modo') === m); });
+    $('#senTit').textContent = m === 'laser' ? 'Puntero láser' : 'Acercar (zoom)';
+    $('#senHint').textContent = m === 'laser' ? 'Desliza el dedo sobre la diapositiva: aparece un punto rojo en la pantalla grande. Al soltar, desaparece.' : 'Toca la parte de la diapositiva que quieres acercar. Toca otra parte para moverte; «Quitar zoom» vuelve a la vista normal (también se quita al cambiar de diapositiva).';
+  }
+  function pos(e) { var r = $('#touch').getBoundingClientRect(); var t = e.touches ? e.touches[0] || e.changedTouches[0] : e; return { x: Math.max(0, Math.min(1, (t.clientX - r.left) / r.width)), y: Math.max(0, Math.min(1, (t.clientY - r.top) / r.height)) }; }
+  function enviarLaser(p) {
+    pendiente = p; if (tEnv) return;
+    var espera = Math.max(0, 160 - (Date.now() - ultimoEnvio));
+    tEnv = setTimeout(function () { tEnv = null; ultimoEnvio = Date.now(); var q = pendiente; if (refL && q) refL.set({ x: q.x, y: q.y, on: q.on, t: firebase.firestore.FieldValue.serverTimestamp() }).catch(function () { }); }, espera);
+  }
+  function verPunto(p) { var pt = $('#pt'); if (!p) { pt.style.display = 'none'; return; } pt.style.display = 'block'; pt.style.left = (p.x * 100) + '%'; pt.style.top = (p.y * 100) + '%'; }
+  var tocando = false;
+  function inicio(e) { e.preventDefault(); var p = pos(e); if (modo === 'zoom') { enviar('zoom', { x: p.x, y: p.y }); verPunto(p); setTimeout(function () { verPunto(null); }, 400); return; } tocando = true; verPunto(p); enviarLaser({ x: p.x, y: p.y, on: true }); }
+  function mover(e) { if (!tocando) return; e.preventDefault(); var p = pos(e); verPunto(p); enviarLaser({ x: p.x, y: p.y, on: true }); }
+  function soltar() { if (!tocando) return; tocando = false; verPunto(null); enviarLaser({ x: 0, y: 0, on: false }); }
+  var tz = $('#touch');
+  tz.addEventListener('touchstart', inicio, { passive: false }); tz.addEventListener('touchmove', mover, { passive: false }); tz.addEventListener('touchend', soltar); tz.addEventListener('touchcancel', soltar);
+  tz.addEventListener('mousedown', inicio); window.addEventListener('mousemove', mover); window.addEventListener('mouseup', soltar);
+
+  // ---------- editar la nota de esta diapositiva
+  $('#bEditar').onclick = function () {
+    if (!S || !S.actual) { aviso('Abre una ponencia en la laptop primero'); return; }
+    cerrar($('#ovMas')); $('#notaTit').textContent = 'Nota · diapositiva ' + (S.i + 1);
+    $('#notaTxt').value = S.actual.nota || ''; $('#notaTxt').setAttribute('data-k', S.actual.k); $('#notaTxt').setAttribute('data-clave', S.clave || '');
+    abrir('#ovNota'); setTimeout(function () { $('#notaTxt').focus(); }, 50);
+  };
+  $('#guardarNota').onclick = function () {
+    var k = $('#notaTxt').getAttribute('data-k'), clave = $('#notaTxt').getAttribute('data-clave'); if (!ref || !clave || k == null) return;
+    var o = { notas: {} }; o.notas[clave] = {}; o.notas[clave][k] = { texto: $('#notaTxt').value.trim(), t: firebase.firestore.FieldValue.serverTimestamp() };
+    ref.set(o, { merge: true }).then(function () { aviso('✅ Nota guardada'); cerrar($('#ovNota')); }).catch(function (e) { aviso(Nube.mensajeError(e)); });
+  };
+
+  // ---------- abrir otra ponencia
+  $('#bAbrir').onclick = function () {
+    cerrar($('#ovMas')); abrir('#ovAbrir');
+    var pintar = function () {
+      var L = (window.PONENCIAS || []).filter(function (p) { return !p.oculto; }).sort(function (a, b) { return a.fecha < b.fecha ? 1 : -1; });
+      $('#listaP').innerHTML = L.map(function (p) { return '<li data-ruta="' + esc(p.ruta) + '"' + (S && S.ruta === p.ruta ? ' class="cur"' : '') + '><b>' + esc(p.titulo) + '</b><span>' + esc(p.subcategoria) + ' · ' + esc(p.fechaTexto || p.fecha) + (S && S.ruta === p.ruta ? ' · abierta ahora' : '') + '</span></li>'; }).join('') || '<li>No hay ponencias.</li>';
+    };
+    if (window.PONENCIAS) return pintar();
+    $('#listaP').innerHTML = '<li>Cargando…</li>';
+    var s = document.createElement('script'); s.src = '../assets/ponencias.js?' + Date.now(); s.onload = pintar; s.onerror = function () { $('#listaP').innerHTML = '<li>No se pudo cargar la lista.</li>'; }; document.head.appendChild(s);
+  };
+  $('#listaP').addEventListener('click', function (e) {
+    var li = e.target.closest('[data-ruta]'); if (!li) return;
+    if (!confirm('¿Abrir «' + li.querySelector('b').textContent + '» en la laptop?')) return;
+    enviar('abrir', li.getAttribute('data-ruta')); cerrar($('#ovAbrir')); aviso('Abriendo en la laptop…');
+  });
+
+  // ---------- mantener la pantalla encendida y avisar que el celular sigue conectado
   function despierto() { if ('wakeLock' in navigator && document.visibilityState === 'visible') navigator.wakeLock.request('screen').then(function (l) { lock = l; }).catch(function () { }); }
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { despierto(); latir(); } });
-
   function latir() { if (ref) ref.set({ celular: { visto: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true }).catch(function () { }); }
 
+  // ---------- pintar el estado que manda la laptop
   function pintar(d) {
     var s = d && d.sesion, t = s && s.t && s.t.toMillis ? s.t.toMillis() : 0;
     var viva = s && Date.now() - t < 12 * 3600 * 1000;
     if (!viva) {
+      S = null;
       $('#titulo').textContent = 'Control de ponencias'; $('#estado').textContent = 'Abre una ponencia en la laptop y pulsa «📱 Celular»'; $('#dot').className = 'dot';
-      $('#pos').textContent = '–'; $('#tot').textContent = '–'; $('#actual').textContent = 'Sin ponencia abierta'; $('#notas').innerHTML = '<p class="vacio">Cuando abras la ponencia en la laptop, aquí verás tus notas.</p>'; $('#sig').textContent = '–'; $('#chips').innerHTML = '';
+      $('#pos').textContent = '–'; $('#tot').textContent = '–'; $('#actual').textContent = $('#actual2').textContent = 'Sin ponencia abierta'; $('#notas').innerHTML = '<p class="vacio">Cuando abras la ponencia en la laptop, aquí verás tus notas.</p>'; $('#sig').textContent = '–'; $('#chips').innerHTML = '';
       return;
     }
+    S = s;
     $('#titulo').textContent = s.titulo || 'Ponencia'; $('#estado').textContent = 'Conectado con la laptop'; $('#dot').className = 'dot ok';
     $('#pos').textContent = s.i + 1; $('#tot').textContent = s.n;
-    $('#actual').textContent = (s.actual && s.actual.titulo) || ('Diapositiva ' + (s.i + 1));
+    var tit = (s.actual && s.actual.titulo) || ('Diapositiva ' + (s.i + 1));
+    $('#actual').textContent = $('#actual2').textContent = tit;
     var notas = (s.actual && s.actual.notas) || '';
-    $('#notas').innerHTML = notas ? notas.split(/\n{2,}/).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') : '<p class="vacio">Sin notas en esta diapositiva.</p>';
-    if (ultimoEstado !== s.i) $('#notas').scrollTop = 0; ultimoEstado = s.i;
+    $('#notas').innerHTML = notas ? notas.split(/\n{2,}/).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') : '<p class="vacio">Sin notas en esta diapositiva. Puedes escribir una en ⚙ Más → «Editar nota».</p>';
+    if (ultimoI !== s.i || ultimaRuta !== s.ruta) { $('#notas').scrollTop = 0; tDiapo = Date.now(); }
+    var cambioRuta = ultimaRuta !== s.ruta; ultimoI = s.i; ultimaRuta = s.ruta;
     $('#sig').textContent = s.i + 1 >= s.n ? 'Fin de la presentación' : ((s.siguiente && s.siguiente.titulo) || 'Diapositiva ' + (s.i + 2));
-    var V = { idle: 'Video: «Siguiente» lo abre en grande', open: '▶ Video en grande', ended: 'Video terminado: «Siguiente» vuelve', done: 'Video ya visto' }[s.video];
+    var V = { idle: 'Video: «Siguiente» lo abre en grande', wait: '▶ Video abriéndose…', open: '▶ Video en grande', paused: '⏸ Video en pausa', ended: 'Video terminado: «Siguiente» vuelve', done: 'Video ya visto' }[s.video];
     $('#chips').innerHTML = (V ? '<span class="chip v">' + esc(V) + '</span>' : '') + (s.negro ? '<span class="chip n">Pantalla en negro</span>' : '');
+    $('#bNegro').classList.toggle('on', !!s.negro);
+    sincronizarMini(cambioRuta);
   }
 
   Nube.alCambiarUsuario(function (u) {
-    if (quitar) { quitar(); quitar = null; } ref = null; clearInterval(latido);
+    if (quitar) { quitar(); quitar = null; } ref = null; refL = null; clearInterval(latido);
     $('#gate').hidden = !!u; $('#panel').hidden = !u; $('#salir').hidden = !u;
     $('#quien').textContent = u ? (u.email || '') + ' ·' : '';
     if (!u) { $('#estado').textContent = 'Sin sesión'; $('#dot').className = 'dot'; $('#entrar').textContent = 'Entrar con Google'; return; }
@@ -136,6 +375,7 @@
     Nube.doc('ponencias').then(function (r) {
       ref = r; latir(); latido = setInterval(latir, 20000); despierto();
       quitar = r.onSnapshot(function (s) { pintar(s.exists ? s.data() : null); }, function (e) { $('#estado').textContent = Nube.mensajeError(e); });
+      return Nube.doc('ponencias-laser').then(function (rl) { refL = rl; });
     }).catch(function (e) { $('#estado').textContent = Nube.mensajeError(e); });
   }).catch(function () { err('No se pudo conectar con Firebase. Revisa el internet.'); });
 })();

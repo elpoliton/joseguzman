@@ -22,7 +22,7 @@ self.addEventListener('fetch', function (e) {
   var req = e.request; if (req.method !== 'GET') return;
   var url = new URL(req.url); if (url.origin !== self.location.origin) return;
   var key = url.origin + url.pathname;
-  var isPage = req.mode === 'navigate' || /\.html?$/.test(url.pathname) || url.pathname.slice(-1) === '/';
+  var isPage = req.mode === 'navigate' || /\.(html?|json)$/.test(url.pathname) || url.pathname.slice(-1) === '/';
   e.respondWith(caches.open(CACHE).then(function (cache) {
     if (isPage) {
       return fetch(req).then(function (r) { if (r.ok) cache.put(key, r.clone()); return r; })

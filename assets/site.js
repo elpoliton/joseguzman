@@ -61,3 +61,12 @@
   document.addEventListener('keydown', function (e) { if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); } });
   render();
 })();
+
+// galería: ver la foto en grande
+(function () {
+  var g = document.getElementById('gal'), lb = document.getElementById('lb'); if (!g || !lb) return;
+  function cerrar() { lb.hidden = true; lb.querySelector('img').src = ''; }
+  g.addEventListener('click', function (e) { var a = e.target.closest('a.g'); if (!a) return; e.preventDefault(); lb.querySelector('img').src = a.getAttribute('href'); lb.querySelector('img').alt = a.querySelector('img').alt; lb.querySelector('p').textContent = a.querySelector('span').textContent; lb.hidden = false; });
+  lb.addEventListener('click', function (e) { if (e.target === lb || e.target.closest('button')) cerrar(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lb.hidden) cerrar(); });
+})();

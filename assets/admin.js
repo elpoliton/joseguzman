@@ -109,7 +109,8 @@
         '<div><h3>' + esc(p.titulo) + (p.oculto ? '<span class="pill">Oculta</span>' : '') + '</h3>' +
         '<div class="m">' + esc(p.categoria) + ' › ' + esc(p.subcategoria) + ' · ' + esc(p.fechaTexto || p.fecha) + ' · ' + (p.diapositivas || '?') + ' diapositivas</div></div>' +
         '<div class="acts"><a class="btn line sm" href="../ponencias/' + esc(p.ruta) + '" target="_blank">Ver</a>' +
-        '<button class="btn line sm" data-a="editar">Editar</button>' +
+        '<button class="btn line sm" data-a="editar">Editar ficha</button>' +
+        '<button class="btn navy sm" data-a="diapos">Diapositivas y notas</button>' +
         '<button class="btn line sm" data-a="ocultar">' + (p.oculto ? 'Mostrar' : 'Ocultar') + '</button>' +
         '<button class="btn red sm" data-a="quitar">Quitar</button></div></div>';
     }).join('') || '<div class="empty">Aún no hay ponencias.</div>';
@@ -118,6 +119,7 @@
     var b = e.target.closest('[data-a]'); if (!b) return;
     var id = b.closest('.item').getAttribute('data-id'), p = catalogo.find(function (x) { return x.id === id; });
     var a = b.getAttribute('data-a');
+    if (a === 'diapos') { irTab('dia'); if (window.EditorDiapos) window.EditorDiapos.abrir(id); return; }
     if (a === 'editar') { editando = id; campos($('#fEdit'), p); clear('#dlgMsg'); $('#dlg').showModal(); return; }
     var P = catalogo.map(function (x) { return Object.assign({}, x); }), q = P.find(function (x) { return x.id === id; });
     var m;
@@ -195,12 +197,17 @@
   }
 
   // ---------- pestañas
-  document.querySelector('.tabs').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-tab]'); if (!b) return;
-    document.querySelectorAll('.tabs [data-tab]').forEach(function (x) { x.setAttribute('aria-selected', String(x === b)); });
-    ['bib', 'sub', 'pub'].forEach(function (t) { $('#tab-' + t).classList.toggle('hidden', t !== b.getAttribute('data-tab')); });
-    if (b.getAttribute('data-tab') === 'pub') pintarRuns();
-  });
+  function irTab(t) {
+    document.querySelectorAll('.tabs [data-tab]').forEach(function (x) { x.setAttribute('aria-selected', String(x.getAttribute('data-tab') === t)); });
+    ['bib', 'dia', 'sub', 'pub'].forEach(function (x) { $('#tab-' + x).classList.toggle('hidden', x !== t); });
+    if (t === 'pub') pintarRuns();
+    if (t === 'dia' && window.EditorDiapos) window.EditorDiapos.mostrar();
+  }
+  document.querySelector('.tabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) irTab(b.getAttribute('data-tab')); });
+
+  // lo usa el editor de diapositivas (admin-diapos.js)
+  window.ADMIN = { api: api, commit: commit, esc: esc, msg: msg, clear: clear, b64FromText: b64FromText, textFromB64: textFromB64, vigilar: vigilar,
+    catalogo: function () { return catalogo; }, ponerCatalogo: function (C) { catalogo = C; pintarLista(); }, guardarCatalogo: guardarCatalogo, textoCatalogo: textoCatalogo, CAT: CAT, irTab: irTab };
 
   // ---------- acceso
   function entrar(t, recordar) {

@@ -148,3 +148,22 @@ body.presenter .pv { display: grid; grid-template-columns: 1.55fr 1fr; grid-temp
 .rm-pasos { margin: 0 0 18px; padding-left: 22px; } .rm-pasos li { margin-bottom: 6px; }
 .rm-g { all: unset; cursor: pointer; background: var(--navy); color: #fff; font-weight: 700; padding: 12px 18px; border-radius: 10px; }
 .rm-err { color: #8a1c22; background: #fdecec; padding: 10px 12px; border-radius: 10px; font-size: 14px; }
+
+/* ---------- puntero láser y zoom (desde el celular) */
+.laser { position: absolute; left: 0; top: 0; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: radial-gradient(circle, #ff3b3b 0 35%, rgba(255,40,40,.55) 55%, rgba(255,0,0,0) 72%); box-shadow: 0 0 18px 6px rgba(255,30,30,.45); z-index: 30; pointer-events: none; opacity: 0; transition: left .14s linear, top .14s linear, opacity .2s; }
+.laser.on { opacity: 1; }
+.viewport { transform-origin: 50% 50%; }
+.vlayer.wait video { opacity: .0; }
+.vlayer.wait::after { content: ''; position: absolute; width: 54px; height: 54px; border-radius: 50%; border: 4px solid rgba(255,255,255,.18); border-top-color: #fff; animation: vgira 0.9s linear infinite; }
+@keyframes vgira { to { transform: rotate(360deg); } }
+
+/* ---------- miniatura (?vista) y cuadrícula (?vista=grid) para el celular y el panel */
+body.vista .hud, body.vista .progress, body.vista .toast, body.vista .help, body.vista .rm-btn, body.vista .rm-modal, body.vista .vbox .hint { display: none !important; }
+body.vista { cursor: default !important; background: #000; }
+body.grid { overflow: auto; background: #0F1E3D; }
+body.grid .viewport, body.grid .blackout { display: none; }
+.dgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 10px; }
+.dcell { position: relative; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #fff; cursor: pointer; outline: 3px solid transparent; }
+.dcell.cur { outline-color: #C9A227; }
+.dcell .stage { pointer-events: none; }
+.dcell .dnum { position: absolute; left: 6px; bottom: 6px; background: rgba(12,20,40,.85); color: #fff; font: 700 13px/1 'Lato', sans-serif; padding: 4px 7px; border-radius: 6px; }
