@@ -229,26 +229,21 @@
   // ---------- notas escritas desde el celular (Firebase)
   $('#dCel').onclick = function () {
     if (!P || !aj) { A.msg('#dMsg', 'err', 'Primero elige una ponencia.'); return; }
-    if (!window.Nube) { A.msg('#dMsg', 'err', 'No se pudo cargar la conexión con tu cuenta de Google.'); return; }
-    A.msg('#dMsg', 'info', 'Conectando con tu cuenta de Google…');
-    var hecho = false;
-    Nube.alCambiarUsuario(function (u) {
-      if (hecho) return;
-      if (!u) { A.msg('#dMsg', 'info', 'Entra con la misma cuenta de Google que usas en el celular. <button class="btn line sm" id="dG">Entrar con Google</button>');
-        var b = document.getElementById('dG'); if (b) b.onclick = function () { Nube.entrar().catch(function (e) { A.msg('#dMsg', 'err', esc(Nube.mensajeError(e))); }); }; return; }
-      hecho = true;
-      Nube.doc('ponencias').then(function (r) { return r.get(); }).then(function (s) {
-        var d = s.exists ? s.data() : {}, mias = (d.notas || {})[clave(P.ruta)] || {}, n = 0;
-        Object.keys(mias).forEach(function (k) {
-          var x = mias[k]; if (!x || typeof x.texto !== 'string' || !lista[+k]) return;
-          var t = x.t && x.t.toMillis ? x.t.toMillis() : 0; if (t && t <= (aj.t || 0)) return; // ya incorporada antes
-          if (x.texto === (Object.prototype.hasOwnProperty.call(aj.notas, k) ? aj.notas[k] : lista[+k].nota)) return;
-          aj.notas[k] = x.texto; n++;
-        });
-        pintarLista(); pintarForm(); vista(); marcar();
-        A.msg('#dMsg', n ? 'ok' : 'info', n ? 'Se trajeron ' + n + (n === 1 ? ' nota' : ' notas') + ' del celular (marcadas con 📝). Revísalas y pulsa <b>Guardar y publicar</b>.' : 'No hay notas nuevas del celular para esta ponencia.');
-      }).catch(function (e) { A.msg('#dMsg', 'err', esc(Nube.mensajeError(e))); });
-    }).catch(function () { A.msg('#dMsg', 'err', 'No se pudo conectar con Firebase. Revisa el internet.'); });
+    var sala = null; try { sala = localStorage.getItem('jg-sala'); } catch (e) { }
+    if (!sala) { A.msg('#dMsg', 'err', 'Esta laptop aún no tiene un celular emparejado. Abre una ponencia, pulsa «📱 Celular» y escanea el QR; luego vuelve aquí.'); return; }
+    if (!window.Nube) { A.msg('#dMsg', 'err', 'No se pudo cargar la conexión con Firebase.'); return; }
+    A.msg('#dMsg', 'info', 'Buscando notas del celular…');
+    Nube.sala(sala).then(function (r) { return r.get(); }).then(function (s) {
+      var d = s.exists ? s.data() : {}, mias = (d.notas || {})[clave(P.ruta)] || {}, n = 0;
+      Object.keys(mias).forEach(function (k) {
+        var x = mias[k]; if (!x || typeof x.texto !== 'string' || !lista[+k]) return;
+        var t = x.t && x.t.toMillis ? x.t.toMillis() : 0; if (t && t <= (aj.t || 0)) return; // ya incorporada antes
+        if (x.texto === (Object.prototype.hasOwnProperty.call(aj.notas, k) ? aj.notas[k] : lista[+k].nota)) return;
+        aj.notas[k] = x.texto; n++;
+      });
+      pintarLista(); pintarForm(); vista(); marcar();
+      A.msg('#dMsg', n ? 'ok' : 'info', n ? 'Se trajeron ' + n + (n === 1 ? ' nota' : ' notas') + ' del celular (marcadas con 📝). Revísalas y pulsa <b>Guardar y publicar</b>.' : 'No hay notas nuevas del celular para esta ponencia.');
+    }).catch(function (e) { A.msg('#dMsg', 'err', esc(Nube.mensajeError(e))); });
   };
 
   // ---------- guardar

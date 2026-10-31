@@ -97,8 +97,7 @@
 
   <div class="gate" id="gate"><div>
     <h1>📱 Control remoto</h1>
-    <p id="gateTxt">Entra con la misma cuenta de Google que usaste en la laptop.</p>
-    <button class="gbtn" id="entrar">Entrar con Google</button>
+    <p id="gateTxt">En la laptop, abre tu ponencia y pulsa <b>«📱 Celular»</b>.<br>Luego escanea el código QR con la cámara de este celular.<br><br>No necesitas registrarte.</p>
     <p class="err" id="err"></p>
   </div></div>
 
@@ -120,7 +119,7 @@
       <button class="b sm" id="bMas">⚙<small>Más</small></button>
     </div>
   </div>
-  <div class="foot"><span id="quien"></span> <button id="salir" hidden>Salir</button></div>
+  <div class="foot"><button id="salir" hidden>Desconectar este celular</button></div>
 </div>
 
 <!-- Más funciones -->
@@ -142,7 +141,7 @@
   <h4>Presentación</h4>
   <div class="g2"><button class="b sm" id="bFull2">⛶<small>Pantalla completa</small></button><button class="b sm" id="bAbrir">📂<small>Abrir otra ponencia</small></button></div>
   <div class="g2" style="margin-top:8px"><button class="b sm" id="bTerminar" style="background:#8f1b22">⏹<small style="color:#ffd0d3">Terminar exposición</small></button><button class="b sm" id="bAyuda">💡<small>Consejos</small></button></div>
-  <p class="hint" id="ayuda" hidden>Para salir: «Terminar exposición» detiene el reloj; luego puedes cerrar la pestaña o la sesión. Desliza el dedo a la izquierda o derecha sobre las notas para pasar de diapositiva. Toca ▦ para ver todas y saltar a una. El reloj se reinicia desde aquí. La pantalla del celular no se apaga mientras esta página esté abierta.</p>
+  <p class="hint" id="ayuda" hidden>Para salir: «Terminar exposición» detiene el reloj; luego puedes cerrar la pestaña (el celular queda emparejado para la próxima vez). Desliza el dedo a la izquierda o derecha sobre las notas para pasar de diapositiva. Toca ▦ para ver todas y saltar a una. El reloj se reinicia desde aquí. La pantalla del celular no se apaga mientras esta página esté abierta.</p>
 </div></div>
 
 <!-- todas las diapositivas -->
@@ -181,9 +180,9 @@
     <div style="display:grid;gap:10px;width:100%;max-width:340px;margin-top:10px">
       <button class="b sm" id="finSeguir" style="height:56px">▶ Seguir la misma exposición</button>
       <button class="b sm" id="finNueva" style="height:56px;background:var(--gold);color:var(--navy)">↺ Empezar otra (reloj en cero)</button>
-      <button class="b sm" id="finSalir" style="height:56px">🚪 Cerrar sesión en este celular</button>
+      <button class="b sm" id="finSalir" style="height:56px">🔌 Desconectar este celular</button>
     </div>
-    <p class="hint">Para salir, también puedes simplemente cerrar esta pestaña.</p>
+    <p class="hint">Para salir, basta con cerrar esta pestaña: la próxima vez se conecta solo. «Desconectar» hace que tengas que volver a escanear el QR.</p>
   </div>
 </div>
 
@@ -217,8 +216,11 @@
   aplicarP();
 
   // ---------- acceso
-  $('#entrar').onclick = function () { this.textContent = 'Abriendo Google…'; Nube.entrar().catch(function (e) { $('#entrar').textContent = 'Entrar con Google'; err(Nube.mensajeError(e)); }); };
-  $('#salir').onclick = function () { Nube.salir(); };
+  function desconectar() {
+    if (!confirm('¿Desconectar este celular? Para volver a usarlo tendrás que escanear el QR de la laptop.')) return;
+    try { localStorage.removeItem(KSALA); } catch (e) { } location.replace(location.pathname);
+  }
+  $('#salir').onclick = desconectar;
 
   // ---------- comandos
   var cola = [];
@@ -285,7 +287,7 @@
   };
   $('#finSeguir').onclick = function () { t0 = Date.now() - congelado * 1000; corriendo = true; despierto(); cerrar($('#ovFin')); };
   $('#finNueva').onclick = function () { t0 = Date.now(); tDiapo = Date.now(); corriendo = true; avisos = {}; despierto(); cerrar($('#ovFin')); aviso('Reloj en cero'); };
-  $('#finSalir').onclick = function () { cerrar($('#ovFin')); Nube.salir(); };
+  $('#finSalir').onclick = function () { cerrar($('#ovFin')); desconectar(); };
   $('#relojCard').onclick = function () { if (!corriendo) abrir('#ovFin'); else abrir('#ovMas'); };
   $('#bAyuda').onclick = function () { $('#ayuda').hidden = !$('#ayuda').hidden; };
 
@@ -380,7 +382,7 @@
     var viva = s && Date.now() - t < 12 * 3600 * 1000;
     if (!viva) {
       S = null;
-      $('#titulo').textContent = 'Control de ponencias'; $('#estado').textContent = 'Abre una ponencia en la laptop y pulsa «📱 Celular»'; $('#dot').className = 'dot';
+      $('#titulo').textContent = 'Control de ponencias'; $('#estado').textContent = 'Esperando a la laptop: abre una ponencia allí'; $('#dot').className = 'dot';
       $('#pos').textContent = '–'; $('#tot').textContent = '–'; $('#actual').textContent = $('#actual2').textContent = 'Sin ponencia abierta'; $('#notas').innerHTML = '<p class="vacio">Cuando abras la ponencia en la laptop, aquí verás tus notas.</p>'; $('#sig').textContent = '–'; $('#chips').innerHTML = '';
       return;
     }
@@ -403,18 +405,20 @@
     sincronizarMini(cambioRuta);
   }
 
-  Nube.alCambiarUsuario(function (u) {
-    if (quitar) { quitar(); quitar = null; } ref = null; refL = null; clearInterval(latido);
-    $('#gate').hidden = !!u; $('#panel').hidden = !u; $('#salir').hidden = !u;
-    $('#quien').textContent = u ? (u.email || '') + ' ·' : '';
-    if (!u) { $('#estado').textContent = 'Sin sesión'; $('#dot').className = 'dot'; $('#entrar').textContent = 'Entrar con Google'; return; }
-    $('#panel').style.display = 'flex';
-    Nube.doc('ponencias').then(function (r) {
+  // ---------- emparejar con la laptop: el código llega en el QR (#sala=…) y se recuerda en este celular
+  var KSALA = 'jg-sala-celular';
+  var m = /[#&]sala=([0-9a-f]{20,64})/i.exec(location.hash);
+  if (m) { try { localStorage.setItem(KSALA, m[1].toLowerCase()); } catch (e) { } try { history.replaceState(null, '', location.pathname); } catch (e) { } }
+  var sala = null; try { sala = localStorage.getItem(KSALA); } catch (e) { }
+  if (!sala) { $('#gate').hidden = false; $('#panel').hidden = true; $('#estado').textContent = 'Sin emparejar'; }
+  else {
+    $('#gate').hidden = true; $('#panel').hidden = false; $('#panel').style.display = 'flex'; $('#salir').hidden = false;
+    Nube.sala(sala).then(function (r) {
       ref = r; latir(); latido = setInterval(latir, 20000); despierto();
       quitar = r.onSnapshot(function (s) { pintar(s.exists ? s.data() : null); }, function (e) { $('#estado').textContent = Nube.mensajeError(e); });
-      return Nube.doc('ponencias-laser').then(function (rl) { refL = rl; });
-    }).catch(function (e) { $('#estado').textContent = Nube.mensajeError(e); });
-  }).catch(function () { err('No se pudo conectar con Firebase. Revisa el internet.'); });
+      return Nube.sala(sala + '-laser').then(function (rl) { refL = rl; });
+    }).catch(function (e) { $('#estado').textContent = Nube.mensajeError(e); err(Nube.mensajeError(e)); });
+  }
 })();
 </script>
 </body>

@@ -1,19 +1,26 @@
-/* remoto.js — controlar una ponencia desde el celular (politon.pe/joseguzman/control/).
-   La laptop publica el estado en apps/ponencias/usuarios/{uid} (Firebase) y obedece los comandos que escribe el celular.
-   Solo se activa cuando el presentador pulsa «Celular» e inicia sesión con Google. */
+/* remoto.js — controlar una ponencia desde el celular (politon.pe/joseguzman/control/), sin registrarse.
+   Al pulsar «📱 Celular», la laptop crea un código de sala largo y aleatorio y lo muestra en un QR.
+   El celular que escanea ese QR queda emparejado (lo recuerda) y ambos comparten el documento salas-ponencias/{código} en Firebase:
+   la laptop publica el estado y obedece los comandos que escribe el celular. El código se guarda en esta laptop
+   para que el celular siga conectado en otras ponencias; «Cambiar código» desconecta a los celulares anteriores. */
 (function () {
   'use strict';
   if (!window.DECK || window.DECK.presentador || window.DECK.vista || !window.Nube) return;
-  var root = document.body.getAttribute('data-root') || './';
   var CONTROL = 'https://politon.pe/joseguzman/control/';
-  var ref = null, usuario = null, quitar = null, vistos = null, inicio = Date.now(), tPub = null, celularVisto = 0;
-  var ACT = 'jg-remoto-activo';
+  var KSALA = 'jg-sala';
+  var ref = null, quitar = null, vistos = null, tPub = null, celularVisto = 0, sala = null;
   // clave de esta ponencia (para las notas escritas desde el celular): su ruta dentro de /ponencias/
   var RUTA = (location.pathname.split('/ponencias/')[1] || location.pathname).replace(/index\.html$/, '');
   var CLAVE = RUTA.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '');
   var refLaser = null, quitarLaser = null, notasAplicadas = {};
-  var activo = function () { try { return sessionStorage.getItem(ACT) === '1'; } catch (e) { return false; } };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  function leerSala() { try { return localStorage.getItem(KSALA); } catch (e) { return null; } }
+  function nuevaSala() {
+    var b = new Uint8Array(18); (window.crypto || window.msCrypto).getRandomValues(b);
+    var s = Array.prototype.map.call(b, function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    try { localStorage.setItem(KSALA, s); } catch (e) { }
+    return s;
+  }
 
   // ---------- botón en los controles
   var hud = document.querySelector('.hud'), help = hud && hud.querySelector('[data-do="help"]');
@@ -34,30 +41,33 @@
     return new Promise(function (ok) {
       function hacer() { var q = qrcode(0, 'M'); q.addData(texto); q.make(); ok(q.createSvgTag({ cellSize: 6, margin: 2, scalable: true })); }
       if (window.qrcode) return hacer();
-      var s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js'; s.onload = hacer;
-      s.onerror = function () { ok('<p>No se pudo generar el QR. Abre en tu celular: <b>' + esc(CONTROL) + '</b></p>'); }; document.head.appendChild(s);
+      var s = document.createElement('script'); s.src = (document.body.getAttribute('data-root') || './') + 'assets/qrcode.js'; s.onload = hacer; // copia local del generador de QR
+      s.onerror = function () { ok('<p>No se pudo generar el QR. Revisa el internet.</p>'); }; document.head.appendChild(s);
     });
   }
+  function enlace() { return CONTROL + '#sala=' + sala; }
+  var qrHecho = null;
   function pintarModal(err) {
-    if (!usuario) {
-      body.innerHTML = '<ol class="rm-pasos"><li>Entra con tu cuenta de Google aquí (una vez).</li><li>Escanea el QR con tu celular y entra con la misma cuenta.</li><li>Listo: pasa las diapositivas, ve tus notas y el cronómetro desde el celular.</li></ol>' +
-        '<button class="rm-g" id="rmEntrar">Entrar con Google</button>' + (err ? '<p class="rm-err">' + esc(err) + '</p>' : '');
-      body.querySelector('#rmEntrar').onclick = function () { this.textContent = 'Abriendo Google…'; Nube.entrar().catch(function (e) { pintarModal(Nube.mensajeError(e)); }); };
-      return;
-    }
+    if (!sala) { body.innerHTML = '<p>Preparando…</p>'; return; }
     var conectado = Date.now() - celularVisto < 45000;
-    body.innerHTML = '<div class="rm-grid"><div class="rm-qr" id="rmQr"></div><div>' +
-      '<p class="rm-st ' + (conectado ? 'ok' : '') + '">' + (conectado ? '✅ Celular conectado' : '⏳ Esperando al celular…') + '</p>' +
-      '<p>Escanea el código o abre en tu celular:<br><b>politon.pe/joseguzman/control</b></p>' +
-      '<p class="rm-small">Sesión: ' + esc(usuario.email || '') + ' · <button class="rm-link" id="rmSalir">Cerrar sesión</button></p>' +
-      (err ? '<p class="rm-err">' + esc(err) + '</p>' : '') + '</div></div>';
-    qr(CONTROL).then(function (svg) { var q = document.getElementById('rmQr'); if (q) q.innerHTML = svg; });
-    body.querySelector('#rmSalir').onclick = function () { try { sessionStorage.removeItem(ACT); } catch (e) { } Nube.salir(); };
+    if (qrHecho !== sala || !body.querySelector('#rmQr')) {
+      body.innerHTML = '<div class="rm-grid"><div class="rm-qr" id="rmQr"></div><div>' +
+        '<p class="rm-st" id="rmSt"></p>' +
+        '<ol class="rm-pasos"><li>Abre la <b>cámara</b> del celular y apunta a este código.</li><li>Toca el enlace que aparece. <b>No necesitas registrarte.</b></li><li>Listo: el celular queda emparejado con esta laptop, también para tus otras ponencias.</li></ol>' +
+        '<p class="rm-small"><button class="rm-link" id="rmCopiar">Copiar enlace</button> · <button class="rm-link" id="rmNuevo">Cambiar código</button> (desconecta los celulares anteriores)</p>' +
+        '<p class="rm-err" id="rmErr"></p></div></div>';
+      qrHecho = sala;
+      qr(enlace()).then(function (svg) { var q = document.getElementById('rmQr'); if (q) q.innerHTML = svg; });
+      body.querySelector('#rmCopiar').onclick = function () { var b = this; (navigator.clipboard ? navigator.clipboard.writeText(enlace()) : Promise.reject()).then(function () { b.textContent = '¡Copiado!'; }, function () { prompt('Copia este enlace:', enlace()); }); };
+      body.querySelector('#rmNuevo').onclick = function () { if (!confirm('¿Crear un código nuevo? El celular tendrá que escanear el QR otra vez.')) return; sala = nuevaSala(); conectar(); pintarModal(); };
+    }
+    var st = body.querySelector('#rmSt'); st.className = 'rm-st' + (conectado ? ' ok' : ''); st.textContent = conectado ? '✅ Celular conectado' : '⏳ Esperando al celular…';
+    body.querySelector('#rmErr').textContent = err || '';
   }
   btn.onclick = function () {
-    try { sessionStorage.setItem(ACT, '1'); } catch (e) { }
-    modal.hidden = false; body.innerHTML = '<p>Conectando…</p>';
-    escuchar();
+    if (!sala) sala = leerSala() || nuevaSala();
+    modal.hidden = false; pintarModal();
+    if (!ref) conectar();
   };
 
   // ---------- publicar el estado y obedecer comandos
@@ -73,13 +83,13 @@
   }
   document.addEventListener('deck:cambio', publicar);
 
-  function alUsuario(u) {
-    usuario = u; if (quitar) { quitar(); quitar = null; } ref = null;
-    if (quitarLaser) { quitarLaser(); quitarLaser = null; } refLaser = null;
-    btn.classList.remove('on');
-    if (!u || !activo()) { if (!modal.hidden) pintarModal(); return; }
-    Nube.doc('ponencias').then(function (r) {
-      ref = r; vistos = null; btn.classList.add('on'); publicar();
+  function conectar() {
+    if (quitar) { quitar(); quitar = null; } if (quitarLaser) { quitarLaser(); quitarLaser = null; }
+    ref = null; refLaser = null; vistos = null; celularVisto = 0; btn.classList.remove('on');
+    var miSala = sala;
+    Nube.sala(miSala).then(function (r) {
+      if (miSala !== sala) return;
+      ref = r; btn.classList.add('on'); publicar();
       quitar = r.onSnapshot(function (s) {
         if (!s.exists) return;
         var d = s.data(), cel = d.celular;
@@ -101,16 +111,16 @@
           if (!x || !x.id || vistos[x.id]) return; vistos[x.id] = 1;
           DECK.cmd(x.c, x.n);
         });
-      }, function (e) { pintarModal(Nube.mensajeError(e)); });
+      }, function (e) { pintarModal(Nube.mensajeError(e)); btn.classList.remove('on'); });
       // puntero láser: documento aparte para no mezclarse con los comandos
-      return Nube.doc('ponencias-laser').then(function (rl) {
+      return Nube.sala(miSala + '-laser').then(function (rl) {
         refLaser = rl;
         quitarLaser = rl.onSnapshot(function (s) { var p = s.exists ? s.data() : null; var t = p && p.t && p.t.toMillis ? p.t.toMillis() : 0;
           DECK.cmd('laser', p && p.on && Date.now() - t < 15000 ? p : null); }, function () { });
       });
     }).catch(function (e) { pintarModal(Nube.mensajeError(e)); });
   }
-  var escuchando = false;
-  function escuchar() { if (escuchando) { alUsuario(usuario); return; } escuchando = true; Nube.alCambiarUsuario(alUsuario).catch(function () { pintarModal('No se pudo conectar con Firebase'); }); }
-  if (activo()) escuchar(); // al recargar la página sigue conectado
+  // si esta laptop ya tiene un celular emparejado, se conecta sola (también en otras ponencias)
+  sala = leerSala();
+  if (sala) conectar();
 })();

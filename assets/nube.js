@@ -42,10 +42,13 @@
     },
     salir: function () { return cargar().then(function (F) { try { localStorage.setItem(MARCA, '0'); } catch (e) { } return F.auth.signOut(); }); },
     doc: function (appSlug) { return cargar().then(function (F) { var u = F.auth.currentUser; if (!u) throw new Error('Sin sesión'); return F.db.collection('apps').doc(appSlug).collection('usuarios').doc(u.uid); }); },
+    // sala del control remoto: documento compartido entre la laptop y el celular, sin iniciar sesión.
+    // El código es largo y aleatorio (solo lo conoce quien escanea el QR).
+    sala: function (id) { return cargar().then(function (F) { return F.db.collection('salas-ponencias').doc(id); }); },
     mensajeError: function (e) {
       var c = (e && e.code) || '';
       if (c === 'auth/unauthorized-domain') return 'Este dominio no está autorizado en Firebase (Authentication → Configuración → Dominios autorizados → agrega politon.pe).';
-      if (c === 'permission-denied' || /permission/i.test(e && e.message)) return 'Firebase rechazó el acceso: revisa las reglas de Firestore para apps/{app}/usuarios/{uid}.';
+      if (c === 'permission-denied' || /permission/i.test(e && e.message)) return 'Firebase rechazó el acceso: revisa las reglas de Firestore (apps/{app}/usuarios/{uid} y salas-ponencias/{sala}).';
       if (c === 'auth/popup-closed-by-user' || c === 'auth/cancelled-popup-request') return 'Se cerró la ventana de Google antes de terminar.';
       if (c === 'unavailable' || c === 'auth/network-request-failed') return 'Sin conexión con Firebase. Revisa el internet.';
       return (e && e.message) || 'Error desconocido';

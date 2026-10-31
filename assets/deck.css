@@ -180,3 +180,4 @@ body.vista .capa .ex:hover, body.vista .capa .ex.arr { outline-color: #BF0085; }
 .fullaviso { position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%); z-index: 90; background: rgba(12,20,40,.94); color: #fff; padding: 16px 24px; border-radius: 14px; font: 400 17px/1.4 'Lato', sans-serif; text-align: center; display: none; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
 .fullaviso b { display: block; font-size: 20px; color: #C9A227; }
 .fullaviso.on { display: block; }
+.rm-err:empty { display: none; }
