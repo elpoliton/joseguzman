@@ -24,5 +24,31 @@ window.PONENCIAS = [
     "pdf": "dinamica-plan-contable/clases-3-y-4/media/clases-3-y-4-v3.pdf",
     "portada": "dinamica-plan-contable/clases-3-y-4/media/exp04.jpg",
     "oculto": false
+  },
+  {
+    "id": "casacion-3470-2015",
+    "titulo": "Casación 3470-2015, Lima Norte",
+    "subtitulo": "Indemnización por daños y perjuicios: Graco contra El Mirador",
+    "categoria": "Derecho",
+    "subcategoria": "Jurisprudencia civil",
+    "fecha": "2026-11-07",
+    "fechaTexto": "Noviembre 2026",
+    "lugar": "",
+    "resumen": "Análisis de la Casación 3470-2015 Lima Norte (Sala Civil Transitoria, 9 de setiembre de 2016): una contratista pide a su subcontratista la penalidad de US$ 75,000 que le cobró la dueña de la obra. La Suprema anula por falta de motivación y exige analizar el nexo causal y los cuatro elementos de la responsabilidad civil.",
+    "etiquetas": [
+      "Casación",
+      "Responsabilidad civil",
+      "Nexo causal",
+      "Motivación",
+      "Penalidad",
+      "Subcontrato"
+    ],
+    "diapositivas": 8,
+    "videos": 0,
+    "ruta": "jurisprudencia-civil/casacion-3470-2015/",
+    "pdf": "jurisprudencia-civil/casacion-3470-2015/media/casacion-3470-2015-v1.pdf",
+    "portada": "jurisprudencia-civil/casacion-3470-2015/diapos/01.jpg",
+    "oculto": false,
+    "origen": "pdf"
   }
 ];
