@@ -243,12 +243,12 @@
     var link = S.drive || DRIVE;
     $('#v-materiales').innerHTML =
       '<div class="box drive"><h3><i data-icon="FaFilePdf"></i> Mis PDF y Excel del curso</h3>' +
-      '<p>Los archivos originales del curso están guardados en mi carpeta privada de Google Drive.</p>' +
+      '<p>Abajo puedes descargar los archivos del curso. Si quieres tenerlos también en tu Google Drive, pega aquí el enlace de tu carpeta.</p>' +
       (link ? '<a class="btn gold" href="' + esc(link) + '" target="_blank" rel="noopener"><i data-icon="FaExternalLinkAlt"></i> Abrir la carpeta del curso</a> <button class="lnk" id="dCambiar">Cambiar enlace</button>'
             : '<div class="drive-f"><input class="in" id="dLink" placeholder="Pega aquí el enlace de tu carpeta de Google Drive"><button class="btn navy sm-b" id="dGuardar">Guardar</button></div>') +
       '<p class="tiny">El enlace se guarda solo en este navegador.</p></div>' +
       C.materiales.map(function (g) {
-        return '<h3 class="h-ef">' + esc(g.grupo) + '</h3><div class="mats">' + g.items.map(function (m) { return '<div class="mat"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p></div>'; }).join('') + '</div>';
+        return '<h3 class="h-ef">' + esc(g.grupo) + '</h3><div class="mats">' + g.items.map(function (m) { return '<div class="mat"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p><div class="mat-f">' + (m[2] || []).map(function (f) { return '<a class="chip" href="materiales/' + esc(f[1]) + '" download><i data-icon="FaDownload"></i> ' + esc(f[0]) + '</a>'; }).join('') + '</div></div>'; }).join('') + '</div>';
       }).join('') +
       '<h3 class="h-ef">Fuentes oficiales y de consulta</h3><ul class="links">' + C.enlaces.map(function (l) { return '<li><a href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + esc(l[0]) + ' <i data-icon="FaExternalLinkAlt"></i></a></li>'; }).join('') + '</ul>';
     var g = $('#dGuardar'); if (g) g.onclick = function () { var v = $('#dLink').value.trim(); if (!/^https:\/\/(drive|docs)\.google\.com\//.test(v)) { alert('Pega un enlace de Google Drive (empieza con https://drive.google.com/).'); return; } S.drive = v; guardar(); hechas.materiales = 0; vista('materiales'); };

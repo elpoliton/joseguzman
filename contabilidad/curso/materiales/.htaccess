@@ -1,0 +1,4 @@
+# Pide a los buscadores que no indexen estos archivos del curso
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow, noarchive"
+</IfModule>

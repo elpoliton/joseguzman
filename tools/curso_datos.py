@@ -383,15 +383,16 @@ PREGUNTAS = [{'sem': s, 'q': q, 'op': o, 'ok': k, 'exp': e} for s, q, o, k, e in
 # ---------------------------------------------------------------- materiales
 MATERIALES = [
  {'grupo': 'Documentos del curso (CERTUS)', 'items': [
-   ['Sílabo – Dinámica del Plan Contable', 'Sumilla, indicadores de logro (IL1–IL4), contenidos por sesión, evaluación y bibliografía. Nota mínima 13; inasistencias hasta 30 %.'],
-   ['Descripción del proyecto', 'Proyecto de empresa comercial simulada, del asiento de apertura a los estados financieros, en equipos de 4 o 5. Entrega en Excel + Word y exposición.'],
-   ['Lineamiento – evaluación formativa', 'Avance de la AA1 en la semana 2, sin nota pero obligatorio. Incluye la carátula del Anexo 1.'],
-   ['Lineamientos AA1, AA2 y AA3', 'Qué entregar, formato, nombre del archivo y etapas por semana.'],
-   ['Rúbricas AA1, AA2 y AA3', 'Cinco criterios de 1 a 4 puntos (inicio, en proceso, logrado, sobresaliente) = 20 puntos.'],
-   ['PPT de las semanas 1 a 8', 'Teoría y casos «Resuelve el caso» de cada clase (resueltos en la pestaña Casos de clase).']]},
- {'grupo': 'Plantillas en Excel', 'items': [
-   ['Formatos de contabilidad', 'Libro diario (formato 5.1), registro de ventas, registro de compras, caja y bancos (efectivo y cuenta corriente).'],
-   ['Tablas de la SUNAT', 'Tablas de códigos de los libros electrónicos: medios de pago, tipos de comprobante, documentos de identidad, monedas, entre otras.']]},
+   ['Sílabo – Dinámica del Plan Contable', 'Sumilla, indicadores de logro (IL1–IL4), contenidos por sesión, evaluación y bibliografía. Nota mínima 13; inasistencias hasta 30 %.', [['PDF', 'silabo-dinamica-plan-contable.pdf']]],
+   ['Descripción del proyecto', 'Proyecto de empresa comercial simulada, del asiento de apertura a los estados financieros, en equipos de 4 o 5. Entrega en Excel + Word y exposición.', [['PDF', 'descripcion-proyecto.pdf']]],
+   ['Evaluación formativa (avance AA1)', 'Avance de la AA1 en la semana 2, sin nota pero obligatorio. Incluye la carátula del Anexo 1.', [['PDF', 'lineamiento-formativa-aa1.pdf']]],
+   ['Lineamientos de evaluación', 'Qué entregar, formato, nombre del archivo y etapas por semana.', [['AA1', 'lineamiento-aa1.pdf'], ['AA2', 'lineamiento-aa2.pdf'], ['AA3', 'lineamiento-aa3.pdf']]],
+   ['Rúbricas', 'Cinco criterios de 1 a 4 puntos (inicio, en proceso, logrado, sobresaliente) = 20 puntos.', [['AA1', 'rubrica-aa1.pdf'], ['AA2', 'rubrica-aa2.pdf'], ['AA3', 'rubrica-aa3.pdf']]],
+   ['PPT de las semanas 1 a 8', 'Teoría y casos «Resuelve el caso» de cada clase (resueltos en la pestaña Casos de clase).', [['S%d' % n, 'ppt-semana-%d.pdf' % n] for n in range(1, 9)]]]},
+ {'grupo': 'Plantillas y casos en Excel', 'items': [
+   ['Formatos de contabilidad', 'Libro diario (formato 5.1), registro de ventas, registro de compras, caja y bancos (efectivo y cuenta corriente). Hay dos versiones que dio el profesor.', [['Versión 2', 'formatos-contabilidad-v2.xlsx'], ['Versión 1', 'formatos-contabilidad-v1.xlsx']]],
+   ['Tablas de la SUNAT', 'Tablas de códigos de los libros electrónicos: medios de pago, tipos de comprobante, documentos de identidad, monedas, entre otras.', [['Excel', 'tablas-sunat.xlsx']]],
+   ['Caso: Estado de Situación Financiera (resuelto)', 'Comercial Mendoza: clasificación de partidas, estado de situación financiera y asiento de apertura. Capital S/ 155,300. Resuelto con fórmulas sobre tu hoja TAREA.', [['Excel', 'caso-estado-situacion-financiera-resuelto-v1.xlsx']]]]},
 ]
 ENLACES = [
   ['PCGE 2019 (PDF oficial, MEF)', 'https://www.mef.gob.pe/contenidos/conta_publ/documentac/PCGE_2019.pdf'],
