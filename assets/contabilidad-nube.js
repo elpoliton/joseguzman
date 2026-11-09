@@ -26,7 +26,11 @@
     var out = Object.assign({}, b, { version: a.version || b.version, ultimo: a.ultimo || b.ultimo });
     out.trabajo = {}; var ids = Object.keys(Object.assign({}, a.trabajo, b.trabajo));
     ids.forEach(function (id) { var x = (a.trabajo || {})[id], y = (b.trabajo || {})[id]; out.trabajo[id] = !x ? y : !y ? x : ((x.t || 0) >= (y.t || 0) ? x : y); });
-    var vistos = {}; out.propios = (b.propios || []).concat(a.propios || []).filter(function (p) { if (vistos[p.id]) return false; vistos[p.id] = 1; return true; });
+    var pm = {}; (b.propios || []).concat(a.propios || []).forEach(function (p) { if (!pm[p.id] || (p.t || 0) >= (pm[p.id].t || 0)) pm[p.id] = p; });
+    var orden = []; (b.propios || []).concat(a.propios || []).forEach(function (p) { if (orden.indexOf(p.id) < 0) orden.push(p.id); });
+    out.propios = orden.map(function (id) { return pm[id]; });
+    out.editados = {}; var eb = b.editados || {}, ea = a.editados || {};
+    Object.keys(Object.assign({}, eb, ea)).forEach(function (id) { var x = ea[id], y = eb[id]; out.editados[id] = !x ? y : !y ? x : ((x.t || 0) >= (y.t || 0) ? x : y); });
     out.estado = Object.assign({}, b.estado, a.estado);
     Object.keys(out.estado).forEach(function (id) { var x = (a.trabajo || {})[id], y = (b.trabajo || {})[id]; if (x && y && (y.t || 0) > (x.t || 0) && !(b.estado || {})[id]) delete out.estado[id]; });
     return out;

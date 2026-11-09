@@ -243,17 +243,95 @@
     var link = S.drive || DRIVE;
     $('#v-materiales').innerHTML =
       '<div class="box drive"><h3><i data-icon="FaFilePdf"></i> Mis PDF y Excel del curso</h3>' +
-      '<p>Abajo puedes descargar los archivos del curso. Si quieres tenerlos también en tu Google Drive, pega aquí el enlace de tu carpeta.</p>' +
+      '<p>Toca un documento para abrirlo aquí mismo; dentro del visor hay un botón para descargarlo. Si quieres tenerlos también en tu Google Drive, pega aquí el enlace de tu carpeta.</p>' +
       (link ? '<a class="btn gold" href="' + esc(link) + '" target="_blank" rel="noopener"><i data-icon="FaExternalLinkAlt"></i> Abrir la carpeta del curso</a> <button class="lnk" id="dCambiar">Cambiar enlace</button>'
             : '<div class="drive-f"><input class="in" id="dLink" placeholder="Pega aquí el enlace de tu carpeta de Google Drive"><button class="btn navy sm-b" id="dGuardar">Guardar</button></div>') +
       '<p class="tiny">El enlace se guarda solo en este navegador.</p></div>' +
       C.materiales.map(function (g) {
-        return '<h3 class="h-ef">' + esc(g.grupo) + '</h3><div class="mats">' + g.items.map(function (m) { return '<div class="mat"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p><div class="mat-f">' + (m[2] || []).map(function (f) { return '<a class="chip" href="materiales/' + esc(f[1]) + '" download><i data-icon="FaDownload"></i> ' + esc(f[0]) + '</a>'; }).join('') + '</div></div>'; }).join('') + '</div>';
+        return '<h3 class="h-ef">' + esc(g.grupo) + '</h3><div class="mats">' + g.items.map(function (m) { return '<div class="mat"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p><div class="mat-f">' + (m[2] || []).map(function (f) { return '<button class="chip" data-abrir="' + esc(f[1]) + '" data-tit="' + esc(m[0] + (m[2].length > 1 ? ' – ' + f[0] : '')) + '"><i data-icon="' + (/\.pdf$/.test(f[1]) ? 'FaFilePdf' : 'FaFileInvoiceDollar') + '"></i> ' + esc(f[0]) + '</button>'; }).join('') + '</div></div>'; }).join('') + '</div>';
       }).join('') +
       '<h3 class="h-ef">Fuentes oficiales y de consulta</h3><ul class="links">' + C.enlaces.map(function (l) { return '<li><a href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + esc(l[0]) + ' <i data-icon="FaExternalLinkAlt"></i></a></li>'; }).join('') + '</ul>';
     var g = $('#dGuardar'); if (g) g.onclick = function () { var v = $('#dLink').value.trim(); if (!/^https:\/\/(drive|docs)\.google\.com\//.test(v)) { alert('Pega un enlace de Google Drive (empieza con https://drive.google.com/).'); return; } S.drive = v; guardar(); hechas.materiales = 0; vista('materiales'); };
     var c = $('#dCambiar'); if (c) c.onclick = function () { S.drive = ''; guardar(); hechas.materiales = 0; vista('materiales'); };
   }
+
+
+  // ---------------------------------------------------------------- VISOR de documentos (PDF con PDF.js local; Excel como tablas)
+  var V = { dlg: null, doc: null, zoom: 1, obs: null, pdfjs: null };
+  function crearVisor() {
+    if (V.dlg) return;
+    var d = document.createElement('dialog'); d.id = 'visor';
+    d.innerHTML = '<div class="vs-bar"><b id="vsT"></b><span class="grow"></span><span class="vs-pdf" hidden><button class="vs-b" id="vsMenos" aria-label="Alejar">−</button><span id="vsZ">100 %</span><button class="vs-b" id="vsMas" aria-label="Acercar">+</button><span class="vs-pg" id="vsPg"></span></span>' +
+      '<a class="vs-b vs-dl" id="vsDl" download><i data-icon="FaDownload"></i> <span>Descargar</span></a><button class="vs-b" id="vsX" aria-label="Cerrar">✕</button></div><div class="vs-body" id="vsB"></div>';
+    document.body.appendChild(d); V.dlg = d;
+    $('#vsX').onclick = function () { d.close(); };
+    d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+    d.addEventListener('close', function () { if (V.doc) { try { V.doc.destroy(); } catch (e) { } V.doc = null; } if (V.obs) V.obs.disconnect(); $('#vsB').innerHTML = ''; try { history.replaceState(null, '', '#materiales'); } catch (e) { } });
+    $('#vsMenos').onclick = function () { zoomPdf(-0.25); }; $('#vsMas').onclick = function () { zoomPdf(0.25); };
+    $('#vsB').addEventListener('scroll', function () { if (V.raf) return; V.raf = requestAnimationFrame(function () { V.raf = 0; marcarPagina(); }); });
+    if (window.pintarIconos) pintarIconos(d);
+  }
+  function abrirDoc(archivo, titulo) {
+    crearVisor(); var url = 'materiales/' + archivo, esPdf = /\.pdf$/i.test(archivo);
+    $('#vsT').textContent = titulo || archivo; $('#vsDl').href = url; $('#vsDl').setAttribute('download', archivo);
+    $('.vs-pdf', V.dlg).hidden = !esPdf; $('#vsB').className = 'vs-body ' + (esPdf ? 'es-pdf' : 'es-xls');
+    $('#vsB').innerHTML = '<p class="vs-cargando">Abriendo el documento…</p>';
+    if (!V.dlg.open) V.dlg.showModal();
+    try { history.replaceState(null, '', '#materiales'); } catch (e) { }
+    (esPdf ? verPdf(url) : verExcel(archivo)).catch(function () { $('#vsB').innerHTML = '<p class="vs-cargando">No se pudo abrir aquí. Usa el botón <b>Descargar</b>.</p>'; });
+  }
+  function cargarPdfjs() {
+    if (window.pdfjsLib) return Promise.resolve();
+    return new Promise(function (ok, no) {
+      var s = document.createElement('script'); s.src = '../../assets/vendor/pdfjs/pdf.min.js';
+      s.onload = function () { window.pdfjsLib.GlobalWorkerOptions.workerSrc = '../../assets/vendor/pdfjs/pdf.worker.min.js'; ok(); }; s.onerror = no; document.head.appendChild(s);
+    });
+  }
+  function verPdf(url) {
+    return cargarPdfjs().then(function () { return window.pdfjsLib.getDocument(url).promise; }).then(function (doc) {
+      V.doc = doc; V.zoom = 1; return doc.getPage(1).then(function (p) { V.p1 = p.getViewport({ scale: 1 }); pintarPaginas(); });
+    });
+  }
+  function anchoBase() { var w = Math.min($('#vsB').clientWidth - 24, 980); return Math.max(w, 260); }
+  function pintarPaginas() {
+    var b = $('#vsB'), n = V.doc.numPages, esc1 = anchoBase() / V.p1.width * V.zoom, alto = V.p1.height * esc1, ancho = V.p1.width * esc1;
+    V.escala = esc1; b.innerHTML = '';
+    if (V.obs) V.obs.disconnect();
+    V.obs = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { V.obs.unobserve(e.target); renderPag(e.target); } }); }, { root: b, rootMargin: '700px 0px' });
+    for (var i = 1; i <= n; i++) {
+      var d = document.createElement('div'); d.className = 'pg'; d.setAttribute('data-n', i); d.style.width = ancho + 'px'; d.style.height = alto + 'px';
+      b.appendChild(d); V.obs.observe(d);
+    }
+    $('#vsZ').textContent = Math.round(V.zoom * 100) + ' %'; marcarPagina();
+  }
+  function renderPag(div) {
+    var doc = V.doc, esc1 = V.escala, n = +div.getAttribute('data-n'); if (!doc) return;
+    doc.getPage(n).then(function (page) {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2), vp = page.getViewport({ scale: esc1 * dpr }), c = document.createElement('canvas');
+      c.width = vp.width; c.height = vp.height; c.style.width = vp.width / dpr + 'px'; c.style.height = vp.height / dpr + 'px';
+      return page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise.then(function () { if (div.isConnected) { div.style.height = 'auto'; div.appendChild(c); } });
+    });
+  }
+  function zoomPdf(d) { if (!V.doc) return; var z = Math.max(0.5, Math.min(4, V.zoom + d)); if (z === V.zoom) return; V.zoom = z; var b = $('#vsB'), ratio = b.scrollTop / Math.max(1, b.scrollHeight); pintarPaginas(); b.scrollTop = ratio * b.scrollHeight; }
+  function marcarPagina() {
+    if (!V.doc) return; var b = $('#vsB'), pgs = $$('.pg', b), cur = 1, y = b.scrollTop + b.clientHeight / 3;
+    for (var i = 0; i < pgs.length; i++) { if (pgs[i].offsetTop - b.offsetTop <= y) cur = i + 1; else break; }
+    $('#vsPg').textContent = 'pág. ' + cur + ' / ' + pgs.length;
+  }
+  function verExcel(archivo) {
+    return fetch('materiales/vistas/' + archivo + '.json').then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (j) {
+      var b = $('#vsB'), n = j.hojas.length;
+      b.innerHTML = '<div class="xl-tabs">' + j.hojas.map(function (h, i) { return '<button class="chip' + (i ? '' : ' on') + '" data-h="' + i + '">' + esc(h.nombre) + '</button>'; }).join('') + '</div><div class="xl-t" id="xlT"></div>' +
+        '<p class="tiny xl-n">Vista de solo lectura con los valores del archivo. Para editar o usar las fórmulas, descárgalo.</p>';
+      function hoja(i) {
+        var h = j.hojas[i]; $$('.xl-tabs .chip', b).forEach(function (c, k) { c.classList.toggle('on', k === i); });
+        $('#xlT').innerHTML = '<table class="xl"><tbody>' + h.filas.map(function (f) { return '<tr>' + f.map(function (c) { return '<td' + (/^-?[\d.,]+%?$/.test(c) && c !== '' ? ' class="n"' : '') + '>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>' + (h.recortado ? '<p class="tiny">Se muestran las primeras filas; descarga el archivo para ver todo.</p>' : '');
+      }
+      $('.xl-tabs', b).onclick = function (e) { var c = e.target.closest('[data-h]'); if (c) hoja(+c.getAttribute('data-h')); };
+      hoja(0);
+    });
+  }
+  document.addEventListener('click', function (e) { var a = e.target.closest('[data-abrir]'); if (a) abrirDoc(a.getAttribute('data-abrir'), a.getAttribute('data-tit')); });
 
   // ---------------------------------------------------------------- inicio
   var h = decodeURIComponent((location.hash || '').slice(1)), m = /^([a-z]+)(?:-(.+))?$/.exec(h) || [];

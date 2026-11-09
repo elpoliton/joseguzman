@@ -208,3 +208,8 @@ dialog::backdrop { background: rgba(8,14,30,.6); }
 /* acceso a /contabilidad/curso/ */
 .vtabs a.vt-curso { display: inline-flex; gap: 8px; align-items: center; padding: 11px 16px; border-radius: 11px; font-weight: 700; color: var(--navy); background: var(--gold2); border: 1px solid var(--gold); white-space: nowrap; margin-left: auto; text-decoration: none; }
 .vtabs a.vt-curso:hover { filter: brightness(1.03); }
+
+.e-acts { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+.e-acts .lnk { font-size: 13px; }
+.e-ed { color: var(--gold2); }
+.e-acts .e-del { margin-top: 0; }

@@ -7,7 +7,7 @@
   var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
   var KEY = 'jg-contabilidad-v1';
   var S = cargar();
-  S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {};
+  S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {};
   var ver = S.version || '2019', MAP = {}, LIST = [], actual = null;
   var norm = function (s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
@@ -60,7 +60,7 @@
   $('.vtabs').addEventListener('click', function (e) { var b = e.target.closest('[data-v]'); if (b) vista(b.getAttribute('data-v')); });
 
   // ---------- ejercicios
-  function todos() { return (window.EJERCICIOS || []).concat(S.propios.map(function (p) { return Object.assign({ propio: true }, p); })); }
+  function todos() { S.editados = S.editados || {}; return (window.EJERCICIOS || []).map(function (e) { var x = S.editados[e.id]; return x ? Object.assign({}, e, x, { editado: true }) : e; }).concat(S.propios.map(function (p) { return Object.assign({ propio: true }, p); })); }
   function estadoDe(e) { return S.estado[e.id] || (S.trabajo[e.id] && S.trabajo[e.id].lineas.some(function (l) { return l.cuenta || l.debe || l.haber; }) ? 'wip' : ''); }
   function pintarLista() {
     var E = todos();
@@ -83,7 +83,7 @@
     $('#eFecha').textContent = actual.fecha || 'Sin fecha'; $('#eFecha').hidden = !actual.fecha;
     $('#eTema').textContent = actual.tema || '';
     $('#eTexto').textContent = actual.enunciado;
-    $('#borrarPropio').hidden = !actual.propio;
+    $('#borrarPropio').hidden = !actual.propio; $('#restaurarEj').hidden = !actual.editado;
     $('#prevEj').disabled = k === 0; $('#nextEj').disabled = k === E.length - 1;
     $('#solucion').hidden = $('#pista').hidden = !actual.solucion;
     $('#verificar span').textContent = actual.solucion ? 'Verificar' : 'Revisar cuadre';
@@ -358,13 +358,36 @@
   }
 
   // ---------- ejercicios propios
-  $('#nuevo').onclick = function () { $('#fNuevo').reset(); $('#dlgNuevo').showModal(); };
+  var editando = null;   // id del ejercicio que se está editando (null = creando uno nuevo)
+  $('#nuevo').onclick = function () {
+    editando = null; $('#fNuevo').reset();
+    $('#dlgTitulo').textContent = 'Nuevo ejercicio propio'; $('#dlgOk').textContent = 'Crear';
+    $('#dlgAyuda').textContent = 'Escribe un caso de tu clase. Revisaré que el asiento cuadre y que las cuentas existan.';
+    $('#dlgNuevo').showModal();
+  };
+  $('#editarEj').onclick = function () {
+    editando = actual.id; var f = $('#fNuevo').elements;
+    f.fecha.value = actual.fecha || ''; f.tema.value = actual.tema || ''; f.enunciado.value = actual.enunciado || '';
+    $('#dlgTitulo').textContent = 'Editar ejercicio'; $('#dlgOk').textContent = 'Guardar cambios';
+    $('#dlgAyuda').textContent = actual.solucion ? 'Cambia el texto, la fecha o el tema. Ojo: la verificación sigue usando la solución original; si cambias cuentas o montos, la corrección no coincidirá con tu versión.' : 'Cambia la fecha, el tema o el enunciado. Tu asiento ya escrito se conserva.';
+    $('#dlgNuevo').showModal();
+  };
   $('#dlgNuevo').addEventListener('close', function () {
     if ($('#dlgNuevo').returnValue !== 'ok') return;
     var f = $('#fNuevo').elements, en = f.enunciado.value.trim(); if (!en) return;
-    var p = { id: 'propio-' + Date.now(), fecha: f.fecha.value.trim(), tema: f.tema.value.trim(), enunciado: en };
+    var datos = { fecha: f.fecha.value.trim(), tema: f.tema.value.trim(), enunciado: en, t: Date.now() };
+    if (editando) {
+      var id = editando, k = S.propios.findIndex(function (p) { return p.id === id; });
+      if (k >= 0) S.propios[k] = Object.assign({}, S.propios[k], datos); else { S.editados = S.editados || {}; S.editados[id] = datos; }
+      editando = null; guardar(); abrir(id, true); toast('Cambios guardados'); return;
+    }
+    var p = Object.assign({ id: 'propio-' + Date.now() }, datos);
     S.propios.push(p); guardar(); abrir(p.id, true); toast('Ejercicio creado');
   });
+  $('#restaurarEj').onclick = function () {
+    if (!actual.editado || !confirm('¿Volver al enunciado original de este ejercicio? Tu asiento escrito se conserva.')) return;
+    var id = actual.id; delete S.editados[id]; guardar(); abrir(id, true); toast('Enunciado original restaurado');
+  };
   $('#borrarPropio').onclick = function () {
     if (!actual.propio || !confirm('¿Eliminar este ejercicio propio y su asiento?')) return;
     S.propios = S.propios.filter(function (p) { return p.id !== actual.id; }); delete S.trabajo[actual.id]; guardar(); abrir(todos()[0].id);
@@ -385,7 +408,7 @@
   $('#respaldo').onclick = function () { var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' })); a.download = 'practica-contabilidad.json'; a.click(); };
   $('#importar').onchange = function (e) {
     var f = e.target.files[0]; if (!f) return;
-    f.text().then(function (t) { var d = JSON.parse(t); if (!d.trabajo) throw 0; S = d; S.propios = S.propios || []; S.estado = S.estado || {}; guardar(); usarVersion(S.version || '2019'); abrir(S.ultimo || todos()[0].id); pintarDiario(); toast('Copia recuperada'); })
+    f.text().then(function (t) { var d = JSON.parse(t); if (!d.trabajo) throw 0; S = d; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; guardar(); usarVersion(S.version || '2019'); abrir(S.ultimo || todos()[0].id); pintarDiario(); toast('Copia recuperada'); })
       .catch(function () { alert('Ese archivo no es una copia válida.'); });
   };
 
@@ -394,7 +417,7 @@
     estado: function () { return S; },
     escribiendo: function () { var a = document.activeElement; return !!(a && a.closest && a.closest('#filas, #glosa')); },
     aplicar: function (nuevo) {
-      S = nuevo; S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {};
+      S = nuevo; S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {};
       try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
       usarVersion(S.version || ver);
       var id = actual && todos().some(function (e) { return e.id === actual.id; }) ? actual.id : (S.ultimo || todos()[0].id);

@@ -68,7 +68,7 @@
             <button class="nav-b noprint" id="nextEj" title="Ejercicio siguiente" aria-label="Ejercicio siguiente"><i data-icon="FaChevronRight"></i></button>
           </div>
           <p class="e-text" id="eTexto"></p>
-          <button class="lnk e-del noprint" id="borrarPropio" hidden>Eliminar este ejercicio propio</button>
+          <div class="e-acts noprint"><button class="lnk e-ed" id="editarEj">✏️ Editar enunciado</button><button class="lnk e-del" id="restaurarEj" hidden>↺ Restaurar el original</button><button class="lnk e-del" id="borrarPropio" hidden>Eliminar este ejercicio propio</button></div>
         </article>
 
         <ol class="pasos noprint">
@@ -139,12 +139,12 @@
 </main>
 
 <dialog id="dlgNuevo"><form method="dialog" class="box-d" id="fNuevo">
-  <h2>Nuevo ejercicio propio</h2>
-  <p class="tiny">Escribe un caso de tu clase. Revisaré que el asiento cuadre y que las cuentas existan.</p>
+  <h2 id="dlgTitulo">Nuevo ejercicio propio</h2>
+  <p class="tiny" id="dlgAyuda">Escribe un caso de tu clase. Revisaré que el asiento cuadre y que las cuentas existan.</p>
   <label class="f">Fecha</label><input class="in" name="fecha" placeholder="Ej. 12/10/26">
   <label class="f">Tema <small>(opcional)</small></label><input class="in" name="tema" placeholder="Ej. Cobranzas">
   <label class="f">Enunciado *</label><textarea class="in" name="enunciado" required rows="4" placeholder="Ej. Se cobra la factura E001-123 a la empresa Gamma SAC por S/ 3,000 mediante transferencia."></textarea>
-  <div class="d-acts"><button class="btn line" value="cancel" formnovalidate>Cancelar</button><button class="btn navy" value="ok">Crear</button></div>
+  <div class="d-acts"><button class="btn line" value="cancel" formnovalidate>Cancelar</button><button class="btn navy" value="ok" id="dlgOk">Crear</button></div>
 </form></dialog>
 
 <div id="ac" class="ac" role="listbox" hidden></div>
