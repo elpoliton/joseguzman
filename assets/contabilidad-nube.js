@@ -31,6 +31,8 @@
     out.propios = orden.map(function (id) { return pm[id]; });
     out.editados = {}; var eb = b.editados || {}, ea = a.editados || {};
     Object.keys(Object.assign({}, eb, ea)).forEach(function (id) { var x = ea[id], y = eb[id]; out.editados[id] = !x ? y : !y ? x : ((x.t || 0) >= (y.t || 0) ? x : y); });
+    out.notas = {}; var nb = b.notas || {}, na = a.notas || {};
+    Object.keys(Object.assign({}, nb, na)).forEach(function (id) { var x = na[id], y = nb[id]; out.notas[id] = !x ? y : !y ? x : ((x.t || 0) >= (y.t || 0) ? x : y); });
     out.estado = Object.assign({}, b.estado, a.estado);
     Object.keys(out.estado).forEach(function (id) { var x = (a.trabajo || {})[id], y = (b.trabajo || {})[id]; if (x && y && (y.t || 0) > (x.t || 0) && !(b.estado || {})[id]) delete out.estado[id]; });
     return out;

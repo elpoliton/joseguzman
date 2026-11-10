@@ -7,7 +7,7 @@
   var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
   var KEY = 'jg-contabilidad-v1';
   var S = cargar();
-  S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {};
+  S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; S.notas = S.notas || {};
   var ver = S.version || '2019', MAP = {}, LIST = [], actual = null;
   var norm = function (s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
@@ -62,18 +62,27 @@
   // ---------- ejercicios
   function todos() { S.editados = S.editados || {}; return (window.EJERCICIOS || []).map(function (e) { var x = S.editados[e.id]; return x ? Object.assign({}, e, x, { editado: true }) : e; }).concat(S.propios.map(function (p) { return Object.assign({ propio: true }, p); })); }
   function estadoDe(e) { return S.estado[e.id] || (S.trabajo[e.id] && S.trabajo[e.id].lineas.some(function (l) { return l.cuenta || l.debe || l.haber; }) ? 'wip' : ''); }
+  var filtroTema = '';
+  function temasUsados(E) { var m = {}; E.forEach(function (e) { if (e.tema) m[e.tema] = 1; }); return Object.keys(m).sort(function (a, b) { return a.localeCompare(b, 'es', { numeric: true }); }); }
   function pintarLista() {
-    var E = todos();
+    var E = todos(), T = temasUsados(E);
+    if (filtroTema && T.indexOf(filtroTema) < 0) filtroTema = '';
+    var sel = $('#filtroTema');
+    sel.innerHTML = '<option value="">Todas las categorías (' + E.length + ')</option>' + T.map(function (t) { return '<option value="' + esc(t) + '">' + esc(t) + ' (' + E.filter(function (e) { return e.tema === t; }).length + ')</option>'; }).join('');
+    sel.value = filtroTema;
+    $('#listaTemas').innerHTML = T.map(function (t) { return '<option value="' + esc(t) + '">'; }).join('');
     $('#lista').innerHTML = E.map(function (e, i) {
-      var st = estadoDe(e);
+      if (filtroTema && e.tema !== filtroTema) return '';
+      var st = estadoDe(e), nota = (S.notas[e.id] || {}).texto;
       return '<button class="ex" data-id="' + esc(e.id) + '" aria-current="' + (actual && actual.id === e.id) + '"><span class="st ' + st + '">' + (st === 'ok' ? '✓' : i + 1) + '</span>' +
-        '<span class="t"><b>' + esc(e.fecha || '') + '</b> ' + esc(e.enunciado.length > 84 ? e.enunciado.slice(0, 82) + '…' : e.enunciado) + '<small>' + esc(e.tema || '') + (e.propio ? ' · propio' : '') + '</small></span></button>';
-    }).join('');
+        '<span class="t"><b>' + esc(e.fecha || '') + '</b> ' + esc(e.enunciado.length > 84 ? e.enunciado.slice(0, 82) + '…' : e.enunciado) + '<small>' + esc(e.tema || 'Sin categoría') + (e.propio ? ' · propio' : '') + (nota ? ' · 📝' : '') + '</small></span></button>';
+    }).join('') || '<p class="tiny" style="padding:8px">No hay ejercicios en esta categoría.</p>';
     var base = (window.EJERCICIOS || []), ok = base.filter(function (e) { return S.estado[e.id] === 'ok'; }).length;
     $('#progTxt').textContent = ok + ' de ' + base.length + ' ejercicios resueltos';
     $('#progBar').style.width = (base.length ? 100 * ok / base.length : 0) + '%';
     var cur = $('#lista .ex[aria-current="true"]'); if (cur && window.innerWidth < 900) cur.scrollIntoView({ inline: 'center', block: 'nearest' });
   }
+  $('#filtroTema').onchange = function () { filtroTema = this.value; pintarLista(); };
   $('#lista').addEventListener('click', function (e) { var b = e.target.closest('.ex'); if (b) abrir(b.getAttribute('data-id'), true); });
 
   function abrir(id, scroll) {
@@ -81,7 +90,7 @@
     actual = E[k]; S.ultimo = actual.id; guardar();
     $('#eNum').textContent = 'Ejercicio ' + (k + 1) + ' de ' + E.length;
     $('#eFecha').textContent = actual.fecha || 'Sin fecha'; $('#eFecha').hidden = !actual.fecha;
-    $('#eTema').textContent = actual.tema || '';
+    pintarTema(); cargarNota();
     $('#eTexto').textContent = actual.enunciado;
     $('#borrarPropio').hidden = !actual.propio; $('#restaurarEj').hidden = !actual.editado;
     $('#prevEj').disabled = k === 0; $('#nextEj').disabled = k === E.length - 1;
@@ -107,7 +116,7 @@
       '<td><input class="in det-in" placeholder="Se completa al elegir la cuenta" aria-label="Detalle" value="' + esc(l.detalle || '') + '"><div class="path"></div></td>' +
       '<td class="c-num"><input class="in debe-in" inputmode="decimal" aria-label="Debe" value="' + (l.debe ? fmt(l.debe) : '') + '"></td>' +
       '<td class="c-num"><input class="in haber-in" inputmode="decimal" aria-label="Haber" value="' + (l.haber ? fmt(l.haber) : '') + '"></td>' +
-      '<td class="noprint"><button class="del" title="Quitar línea" aria-label="Quitar línea">×</button></td>';
+      '<td class="noprint"><div class="ctl"><button class="grip" title="Arrastra para mover la línea (o usa ↑ ↓ con el teclado)" aria-label="Mover línea">⠿</button><span class="ud"><button class="mv up" title="Subir línea" aria-label="Subir línea">▲</button><button class="mv dn" title="Bajar línea" aria-label="Bajar línea">▼</button></span><button class="del" title="Quitar línea" aria-label="Quitar línea">×</button></div></td>';
     tr.dataset.auto = !l.detalle || l.detalle === cap(MAP[l.cuenta] || '') ? '1' : '';
     $('#filas').appendChild(tr); meta(tr);
     return tr;
@@ -167,6 +176,41 @@
     }, 160);
   });
   filas.addEventListener('focusin', function (e) { if (e.target.classList.contains('cta-in') && e.target.value) abrirAC(e.target); });
+  // mover líneas: botones ▲ ▼, teclado en el asa y arrastre con el dedo o el mouse
+  function moverFila(tr, d, foco) {
+    var o = d < 0 ? tr.previousElementSibling : tr.nextElementSibling; if (!o) return;
+    if (d < 0) filas.insertBefore(tr, o); else filas.insertBefore(o, tr);
+    persistir(); if (foco) { var b = tr.querySelector(foco); if (b && !b.disabled) b.focus(); }
+  }
+  filas.addEventListener('click', function (e) {
+    var b = e.target.closest('.mv'); if (!b) return;
+    moverFila(b.closest('tr'), b.classList.contains('up') ? -1 : 1, b.classList.contains('up') ? '.up' : '.dn');
+  });
+  filas.addEventListener('keydown', function (e) {
+    if (!e.target.classList.contains('grip') || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
+    e.preventDefault(); moverFila(e.target.closest('tr'), e.key === 'ArrowUp' ? -1 : 1, '.grip');
+  });
+  filas.addEventListener('pointerdown', function (e) {
+    var g = e.target.closest('.grip'); if (!g) return; e.preventDefault();
+    var tr = g.closest('tr'), mov = false;
+    tr.classList.add('arrastrando');
+    function mueve(ev) {
+      var primera = filas.firstElementChild, ultima = filas.lastElementChild;
+      if (ev.clientY > ultima.getBoundingClientRect().bottom && ultima !== tr) { filas.appendChild(tr); mov = true; return; }
+      if (ev.clientY < primera.getBoundingClientRect().top && primera !== tr) { filas.insertBefore(tr, primera); mov = true; return; }
+      var el = document.elementFromPoint(ev.clientX, ev.clientY), o = el && el.closest && el.closest('#filas tr');
+      if (!o || o === tr) return;
+      var r = o.getBoundingClientRect(), abajo = ev.clientY > r.top + r.height / 2;
+      if (abajo) { if (o.nextElementSibling !== tr) { filas.insertBefore(tr, o.nextElementSibling); mov = true; } }
+      else if (o.previousElementSibling !== tr) { filas.insertBefore(tr, o); mov = true; }
+    }
+    function fin() {
+      document.removeEventListener('pointermove', mueve); document.removeEventListener('pointerup', fin); document.removeEventListener('pointercancel', fin);
+      tr.classList.remove('arrastrando'); if (mov) persistir();
+    }
+    // en document: al mover la fila en el DOM el navegador suelta la captura del puntero
+    document.addEventListener('pointermove', mueve); document.addEventListener('pointerup', fin); document.addEventListener('pointercancel', fin);
+  });
   filas.addEventListener('click', function (e) { if (e.target.closest('.del')) { e.target.closest('tr').remove(); if (!filas.children.length) fila(); persistir(); } });
   filas.addEventListener('keydown', function (e) {
     var t = e.target;
@@ -358,6 +402,44 @@
   }
 
   // ---------- ejercicios propios
+  // guarda fecha / tema / enunciado de un ejercicio (propio: en su ficha; de clase: como edición sobre el original)
+  function guardarCampos(id, datos) {
+    datos = Object.assign({}, datos, { t: Date.now() });
+    var k = S.propios.findIndex(function (p) { return p.id === id; });
+    if (k >= 0) S.propios[k] = Object.assign({}, S.propios[k], datos);
+    else { S.editados = S.editados || {}; S.editados[id] = Object.assign({}, S.editados[id], datos); }
+    guardar();
+  }
+
+  // ---------- categoría (tema) editable al instante
+  function pintarTema() {
+    var b = $('#eTema'); b.textContent = actual.tema ? actual.tema : '＋ Categoría'; b.classList.toggle('vacio', !actual.tema);
+    b.hidden = false; $('#eTemaIn').hidden = true;
+  }
+  $('#eTema').onclick = function () { var i = $('#eTemaIn'); i.value = actual.tema || ''; this.hidden = true; i.hidden = false; i.focus(); i.select(); };
+  (function () {
+    var i = $('#eTemaIn'), cancelado = false;
+    function cerrar(guarda) {
+      if (i.hidden) return; var v = i.value.trim().slice(0, 40); i.hidden = true; $('#eTema').hidden = false;
+      if (guarda && v !== (actual.tema || '')) { var id = actual.id; guardarCampos(id, { tema: v }); abrir(id); toast(v ? 'Categoría: ' + v : 'Categoría quitada'); }
+    }
+    i.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); cerrar(true); } if (e.key === 'Escape') { cancelado = true; cerrar(false); } });
+    i.addEventListener('blur', function () { if (cancelado) { cancelado = false; return; } cerrar(true); });
+  })();
+
+  // ---------- notas por ejercicio
+  var tNota;
+  function cargarNota() {
+    var n = (S.notas[actual.id] || {}).texto || '';
+    $('#notaTxt').value = n; $('#notasBox').open = !!n; $('#notasMarca').textContent = n ? '●' : '';
+  }
+  $('#notaTxt').addEventListener('input', function () {
+    var id = actual.id, v = this.value;
+    S.notas[id] = { texto: v, t: Date.now() }; $('#notasMarca').textContent = v.trim() ? '●' : '';
+    clearTimeout(tNota); tNota = setTimeout(function () { guardar(); pintarLista(); }, 500);
+  });
+  $('#notaTxt').addEventListener('blur', function () { clearTimeout(tNota); guardar(); pintarLista(); });
+
   var editando = null;   // id del ejercicio que se está editando (null = creando uno nuevo)
   $('#nuevo').onclick = function () {
     editando = null; $('#fNuevo').reset();
@@ -375,13 +457,9 @@
   $('#dlgNuevo').addEventListener('close', function () {
     if ($('#dlgNuevo').returnValue !== 'ok') return;
     var f = $('#fNuevo').elements, en = f.enunciado.value.trim(); if (!en) return;
-    var datos = { fecha: f.fecha.value.trim(), tema: f.tema.value.trim(), enunciado: en, t: Date.now() };
-    if (editando) {
-      var id = editando, k = S.propios.findIndex(function (p) { return p.id === id; });
-      if (k >= 0) S.propios[k] = Object.assign({}, S.propios[k], datos); else { S.editados = S.editados || {}; S.editados[id] = datos; }
-      editando = null; guardar(); abrir(id, true); toast('Cambios guardados'); return;
-    }
-    var p = Object.assign({ id: 'propio-' + Date.now() }, datos);
+    var datos = { fecha: f.fecha.value.trim(), tema: f.tema.value.trim(), enunciado: en };
+    if (editando) { var id = editando; editando = null; guardarCampos(id, datos); abrir(id, true); toast('Cambios guardados'); return; }
+    var p = Object.assign({ id: 'propio-' + Date.now(), t: Date.now() }, datos);
     S.propios.push(p); guardar(); abrir(p.id, true); toast('Ejercicio creado');
   });
   $('#restaurarEj').onclick = function () {
@@ -408,16 +486,16 @@
   $('#respaldo').onclick = function () { var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' })); a.download = 'practica-contabilidad.json'; a.click(); };
   $('#importar').onchange = function (e) {
     var f = e.target.files[0]; if (!f) return;
-    f.text().then(function (t) { var d = JSON.parse(t); if (!d.trabajo) throw 0; S = d; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; guardar(); usarVersion(S.version || '2019'); abrir(S.ultimo || todos()[0].id); pintarDiario(); toast('Copia recuperada'); })
+    f.text().then(function (t) { var d = JSON.parse(t); if (!d.trabajo) throw 0; S = d; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; S.notas = S.notas || {}; guardar(); usarVersion(S.version || '2019'); abrir(S.ultimo || todos()[0].id); pintarDiario(); toast('Copia recuperada'); })
       .catch(function () { alert('Ese archivo no es una copia válida.'); });
   };
 
   // ---------- puente con la nube (contabilidad-nube.js)
   window.CX = {
     estado: function () { return S; },
-    escribiendo: function () { var a = document.activeElement; return !!(a && a.closest && a.closest('#filas, #glosa')); },
+    escribiendo: function () { var a = document.activeElement; return !!(a && a.closest && a.closest('#filas, #glosa, #notaTxt, #eTemaIn')); },
     aplicar: function (nuevo) {
-      S = nuevo; S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {};
+      S = nuevo; S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; S.notas = S.notas || {};
       try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
       usarVersion(S.version || ver);
       var id = actual && todos().some(function (e) { return e.id === actual.id; }) ? actual.id : (S.ultimo || todos()[0].id);
