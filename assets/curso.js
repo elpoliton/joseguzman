@@ -335,6 +335,11 @@
 
   // ---------------------------------------------------------------- inicio
   var h = decodeURIComponent((location.hash || '').slice(1)), m = /^([a-z]+)(?:-(.+))?$/.exec(h) || [];
-  vista(m[1] || 'ruta', m[1] === 'cuestionarios' ? m[2] : null);
+  var ver = /^ver=(.+)$/.exec(h);
+  if (ver) {
+    var arch = ver[1], tit = arch;
+    C.materiales.forEach(function (g) { g.items.forEach(function (it) { (it[2] || []).forEach(function (f) { if (f[1] === arch) tit = it[0]; }); }); });
+    vista('materiales'); abrirDoc(arch, tit);
+  } else vista(m[1] || 'ruta', m[1] === 'cuestionarios' ? m[2] : null);
   if (window.pintarIconos) pintarIconos();
 })();
