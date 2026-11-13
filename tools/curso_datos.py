@@ -393,6 +393,9 @@ MATERIALES = [
    ['Formatos de contabilidad', 'Libro diario (formato 5.1), registro de ventas, registro de compras, caja y bancos (efectivo y cuenta corriente). Hay dos versiones que dio el profesor.', [['Versión 2', 'formatos-contabilidad-v2.xlsx'], ['Versión 1', 'formatos-contabilidad-v1.xlsx']]],
    ['Tablas de la SUNAT', 'Tablas de códigos de los libros electrónicos: medios de pago, tipos de comprobante, documentos de identidad, monedas, entre otras.', [['Excel', 'tablas-sunat.xlsx']]],
    ['Caso: Estado de Situación Financiera (resuelto)', 'Comercial Mendoza: clasificación de partidas, estado de situación financiera y asiento de apertura. Capital S/ 155,300. Resuelto con fórmulas sobre tu hoja TAREA.', [['Excel', 'caso-estado-situacion-financiera-resuelto-v1.xlsx']]]]},
+ {'grupo': 'Mis entregas', 'items': [
+   ['AA1 · POLITON E.I.R.L. · Informe', 'Informe de la AA1: apertura, cobranzas, pagos, compras, ingresos al almacén y compra de activos, con cada asiento explicado. Entregado el 12/11/2026.', [['PDF', 'aa1-politon-informe-v1.pdf']]],
+   ['AA1 · POLITON E.I.R.L. · Libro diario', 'Asiento de apertura y 17 operaciones de octubre 2026 en el formato 5.1, con registro de compras, caja y bancos y un balance de comprobación con fórmulas.', [['Excel', 'aa1-politon-libro-diario-v1.xlsx']]]]},
 ]
 ENLACES = [
   ['PCGE 2019 (PDF oficial, MEF)', 'https://www.mef.gob.pe/contenidos/conta_publ/documentac/PCGE_2019.pdf'],

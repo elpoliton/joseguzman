@@ -50,5 +50,30 @@ window.PONENCIAS = [
     "portada": "jurisprudencia-civil/casacion-3470-2015/diapos/01.jpg",
     "oculto": false,
     "origen": "pdf"
+  },
+  {
+    "id": "dpc-aa1-politon",
+    "titulo": "AA1: POLITON E.I.R.L.",
+    "subtitulo": "Apertura, cobranzas, pagos, almacén y compra de activos",
+    "categoria": "Contabilidad",
+    "subcategoria": "Dinámica de Plan Contable",
+    "fecha": "2026-11-12",
+    "fechaTexto": "Noviembre 2026",
+    "lugar": "CERTUS",
+    "resumen": "Exposición de la Actividad de Aprendizaje 1: la empresa POLITON E.I.R.L., su asiento de apertura (capital S/ 90,140) y 17 operaciones de octubre 2026 con las cuentas de los elementos 1, 2, 3 y 4 del PCGE. Incluye enlaces al informe y al libro diario.",
+    "etiquetas": [
+      "PCGE",
+      "Asiento de apertura",
+      "Libro diario",
+      "AA1",
+      "Elementos 1 al 4"
+    ],
+    "diapositivas": 14,
+    "videos": 0,
+    "ruta": "dinamica-de-plan-contable/dpc-aa1-politon/",
+    "pdf": "dinamica-de-plan-contable/dpc-aa1-politon/media/dpc-aa1-politon.pdf",
+    "portada": "dinamica-de-plan-contable/dpc-aa1-politon/diapos/01.jpg",
+    "oculto": false,
+    "origen": "pptx"
   }
 ];

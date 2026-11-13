@@ -59,6 +59,26 @@ def videos_de(slide, SW, SH):
     return out
 
 
+def enlaces_de(slide, SW, SH):
+    """Enlaces externos de la diapositiva (clic en una forma o en un texto): se vuelven zonas clicables sobre la imagen."""
+    out = []
+    for shp in slide.shapes:
+        for h in shp._element.iter(qn('a:hlinkClick')):
+            rid = h.get(RNS + 'id')
+            if not rid or h.get('action'):
+                continue
+            try:
+                rel = slide.part.rels[rid]
+            except KeyError:
+                continue
+            if not rel.is_external or not rel.target_ref.startswith(('http://', 'https://', 'mailto:')):
+                continue
+            txt = shp.text_frame.text.strip().replace('\n', ' ') if shp.has_text_frame else ''
+            out.append({'url': rel.target_ref, 'txt': txt, 'x': shp.left / SW, 'y': shp.top / SH, 'w': shp.width / SW, 'h': shp.height / SH})
+            break
+    return out
+
+
 def main(meta_path):
     meta = json.load(open(meta_path, encoding='utf-8'))
     pptx = os.path.join(R, meta['pptx'])
@@ -91,10 +111,10 @@ def main(meta_path):
             continue  # LibreOffice no exporta las diapositivas ocultas
         textos = [t.text_frame.text.strip() for t in s.shapes if t.has_text_frame and t.text_frame.text.strip()]
         notas = s.notes_slide.notes_text_frame.text.strip() if s.has_notes_slide and s.notes_slide.notes_text_frame else ''
-        info.append({'textos': textos, 'notas': notas, 'videos': videos_de(s, SW, SH)})
+        info.append({'textos': textos, 'notas': notas, 'videos': videos_de(s, SW, SH), 'links': enlaces_de(s, SW, SH)})
     if len(info) != N:
         print(f'  ! {len(info)} diapositivas en el PowerPoint y {N} en el PDF; las notas y videos podrían no coincidir')
-        info = (info + [{'textos': [], 'notas': '', 'videos': []}] * N)[:N]
+        info = (info + [{'textos': [], 'notas': '', 'videos': [], 'links': []}] * N)[:N]
 
     # posición de la imagen dentro del lienzo 1600 × 900 (object-fit: contain)
     asp = SW / SH
@@ -119,6 +139,9 @@ def main(meta_path):
             offline += ['media/' + vname, 'media/' + pname]
             st = f'left:{ox + v["x"] * iw:.0f}px;top:{oy + v["y"] * ih:.0f}px;width:{v["w"] * iw:.0f}px;height:{v["h"] * ih:.0f}px'
             partes.append(f'<div class="vbox" style="{st}"><video src="media/{vname}" poster="media/{pname}" preload="metadata" playsinline></video><div class="hint"><span><i data-icon="FaPlay"></i></span></div></div>')
+        for l in d['links']:
+            st = f'left:{ox + l["x"] * iw:.0f}px;top:{oy + l["y"] * ih:.0f}px;width:{l["w"] * iw:.0f}px;height:{l["h"] * ih:.0f}px'
+            partes.append(f'<a class="hl" href="{E(l["url"])}" target="_blank" rel="noopener" aria-label="{E(l["txt"] or l["url"])}" style="{st}"></a>')
         if d['notas']:
             partes.append('<aside class="notes">' + ''.join(f'<p>{E(p)}</p>' for p in d['notas'].split('\n') if p.strip()) + '</aside>')
         secciones.append('<section class="slide img">\n  ' + '\n  '.join(partes) + '\n</section>')
