@@ -4,6 +4,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s3-arrozal-1",
   "fecha": "14/02",
   "tema": "Clase S3",
+  "subido": "09/11/26",
   "enunciado": "El Arrozal SAC (abarrotes): 14/02 cobro de boleta B001-00005 por S/ 100 con transferencia · 16/02 cobro de factura F001-00021 por S/ 5,200 con transferencia · 20/02 canje de la factura F001-00022 de S/ 4,000 por una letra · 25/02 apertura de caja chica por S/ 2,000. → Paso 1 de 4: registra el asiento «Por el cobro de la B001-00005, op. 44549».",
   "glosa": "Por el cobro de la B001-00005, op. 44549",
   "solucion": [
@@ -30,6 +31,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s3-arrozal-2",
   "fecha": "16/02",
   "tema": "Clase S3",
+  "subido": "09/11/26",
   "enunciado": "El Arrozal SAC (abarrotes): 14/02 cobro de boleta B001-00005 por S/ 100 con transferencia · 16/02 cobro de factura F001-00021 por S/ 5,200 con transferencia · 20/02 canje de la factura F001-00022 de S/ 4,000 por una letra · 25/02 apertura de caja chica por S/ 2,000. → Paso 2 de 4: registra el asiento «Por el cobro de la F001-00021, op. 67831».",
   "glosa": "Por el cobro de la F001-00021, op. 67831",
   "solucion": [
@@ -56,6 +58,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s3-arrozal-3",
   "fecha": "20/02",
   "tema": "Clase S3",
+  "subido": "09/11/26",
   "enunciado": "El Arrozal SAC (abarrotes): 14/02 cobro de boleta B001-00005 por S/ 100 con transferencia · 16/02 cobro de factura F001-00021 por S/ 5,200 con transferencia · 20/02 canje de la factura F001-00022 de S/ 4,000 por una letra · 25/02 apertura de caja chica por S/ 2,000. → Paso 3 de 4: registra el asiento «Por el canje de la F001-00022 por la letra L0001».",
   "glosa": "Por el canje de la F001-00022 por la letra L0001",
   "solucion": [
@@ -82,6 +85,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s3-arrozal-4",
   "fecha": "25/02",
   "tema": "Clase S3",
+  "subido": "09/11/26",
   "enunciado": "El Arrozal SAC (abarrotes): 14/02 cobro de boleta B001-00005 por S/ 100 con transferencia · 16/02 cobro de factura F001-00021 por S/ 5,200 con transferencia · 20/02 canje de la factura F001-00022 de S/ 4,000 por una letra · 25/02 apertura de caja chica por S/ 2,000. → Paso 4 de 4: registra el asiento «Por la apertura de caja chica, doc. 20260225».",
   "glosa": "Por la apertura de caja chica, doc. 20260225",
   "solucion": [
@@ -108,6 +112,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s3-patron",
   "fecha": "10/01",
   "tema": "Clase S3",
+  "subido": "09/11/26",
   "enunciado": "El Patrón SAC (abarrotes): El 10/01/26 se constituye con: socio A S/ 30,000 depositados en banco y 50 sacos de arroz por S/ 6,750; socio B S/ 40,000 depositados en banco y una laptop HP seminueva por S/ 4,000. Capital S/ 80,750.",
   "glosa": "Por los aportes de los socios según partida registral N.° 4567574",
   "solucion": [
@@ -150,6 +155,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s4-victor-1-1",
   "fecha": "02/03",
   "tema": "Clase S4",
+  "subido": "09/11/26",
   "enunciado": "Don Victor EIRL (abarrotes): 02/03 se paga la factura de Grupo Vega Distribución por S/ 8,000 · 05/03 se paga la factura de Alicorp por S/ 15,000 · 10/03 se paga un préstamo bancario sin intereses de S/ 3,000. Todo con transferencia. → Paso 1 de 3: registra el asiento «Por el pago de la F080-0034345, op. 6947».",
   "glosa": "Por el pago de la F080-0034345, op. 6947",
   "solucion": [
@@ -176,6 +182,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s4-victor-1-2",
   "fecha": "05/03",
   "tema": "Clase S4",
+  "subido": "09/11/26",
   "enunciado": "Don Victor EIRL (abarrotes): 02/03 se paga la factura de Grupo Vega Distribución por S/ 8,000 · 05/03 se paga la factura de Alicorp por S/ 15,000 · 10/03 se paga un préstamo bancario sin intereses de S/ 3,000. Todo con transferencia. → Paso 2 de 3: registra el asiento «Por el pago de la F045-0098531, op. 354».",
   "glosa": "Por el pago de la F045-0098531, op. 354",
   "solucion": [
@@ -202,6 +209,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s4-victor-1-3",
   "fecha": "10/03",
   "tema": "Clase S4",
+  "subido": "09/11/26",
   "enunciado": "Don Victor EIRL (abarrotes): 02/03 se paga la factura de Grupo Vega Distribución por S/ 8,000 · 05/03 se paga la factura de Alicorp por S/ 15,000 · 10/03 se paga un préstamo bancario sin intereses de S/ 3,000. Todo con transferencia. → Paso 3 de 3: registra el asiento «Por el pago del préstamo bancario, op. 721».",
   "glosa": "Por el pago del préstamo bancario, op. 721",
   "solucion": [
@@ -228,6 +236,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s4-victor-2-1",
   "fecha": "03/04",
   "tema": "Clase S4",
+  "subido": "09/11/26",
   "enunciado": "Don Victor EIRL (abarrotes): 03/04 se paga la factura de Importaciones Hiraoka por S/ 5,000 por una PC Lenovo · 17/04 se paga el IGV de marzo por S/ 3,000 · 30/04 se paga la planilla neta: S/ 4,500 + S/ 3,500 + S/ 1,500. → Paso 1 de 3: registra el asiento «Por el pago de la F005-0047643 (PC Lenovo), op. 7974».",
   "glosa": "Por el pago de la F005-0047643 (PC Lenovo), op. 7974",
   "solucion": [
@@ -254,6 +263,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s4-victor-2-2",
   "fecha": "17/04",
   "tema": "Clase S4",
+  "subido": "09/11/26",
   "enunciado": "Don Victor EIRL (abarrotes): 03/04 se paga la factura de Importaciones Hiraoka por S/ 5,000 por una PC Lenovo · 17/04 se paga el IGV de marzo por S/ 3,000 · 30/04 se paga la planilla neta: S/ 4,500 + S/ 3,500 + S/ 1,500. → Paso 2 de 3: registra el asiento «Por el pago del IGV de marzo, op. 14424».",
   "glosa": "Por el pago del IGV de marzo, op. 14424",
   "solucion": [
@@ -280,6 +290,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s4-victor-2-3",
   "fecha": "30/04",
   "tema": "Clase S4",
+  "subido": "09/11/26",
   "enunciado": "Don Victor EIRL (abarrotes): 03/04 se paga la factura de Importaciones Hiraoka por S/ 5,000 por una PC Lenovo · 17/04 se paga el IGV de marzo por S/ 3,000 · 30/04 se paga la planilla neta: S/ 4,500 + S/ 3,500 + S/ 1,500. → Paso 3 de 3: registra el asiento «Por el pago de la planilla de abril, op. 721».",
   "glosa": "Por el pago de la planilla de abril, op. 721",
   "solucion": [
@@ -306,6 +317,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s5-grelsa-1-1",
   "fecha": "20/05",
   "tema": "Clase S5",
+  "subido": "09/11/26",
   "enunciado": "Comercial Grelsa SAC (ferretería): El 20/05/26 se constituye con socio A S/ 80,000 y socio B S/ 20,000 depositados en banco (acciones de S/ 1). Registra la suscripción, el pago de los aportes y la formalización. → Paso 1 de 3: registra el asiento «Por la suscripción de 100,000 acciones».",
   "glosa": "Por la suscripción de 100,000 acciones",
   "solucion": [
@@ -332,6 +344,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s5-grelsa-1-2",
   "fecha": "20/05",
   "tema": "Clase S5",
+  "subido": "09/11/26",
   "enunciado": "Comercial Grelsa SAC (ferretería): El 20/05/26 se constituye con socio A S/ 80,000 y socio B S/ 20,000 depositados en banco (acciones de S/ 1). Registra la suscripción, el pago de los aportes y la formalización. → Paso 2 de 3: registra el asiento «Por el depósito de los aportes».",
   "glosa": "Por el depósito de los aportes",
   "solucion": [
@@ -358,6 +371,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s5-grelsa-1-3",
   "fecha": "20/05",
   "tema": "Clase S5",
+  "subido": "09/11/26",
   "enunciado": "Comercial Grelsa SAC (ferretería): El 20/05/26 se constituye con socio A S/ 80,000 y socio B S/ 20,000 depositados en banco (acciones de S/ 1). Registra la suscripción, el pago de los aportes y la formalización. → Paso 3 de 3: registra el asiento «Por la inscripción en registros públicos, partida N.° 74342443».",
   "glosa": "Por la inscripción en registros públicos, partida N.° 74342443",
   "solucion": [
@@ -384,6 +398,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s5-grelsa-2",
   "fecha": "31/01",
   "tema": "Clase S5",
+  "subido": "09/11/26",
   "enunciado": "Comercial Grelsa SAC: El 31/01/26 se constituye la reserva legal con la utilidad 2025 de S/ 50,000. Capital social S/ 100,000.",
   "glosa": "Por la reserva legal del ejercicio 2025",
   "solucion": [
@@ -410,6 +425,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s6-estrella-compra-1",
   "fecha": "10/04",
   "tema": "Clase S6",
+  "subido": "09/11/26",
   "enunciado": "Boticas Estrella EIRL (farmacia): El 10/04/26 compra 20 bolsas de pañales a S/ 40 cada una más IGV (factura F040-434784 de Inretail Pharma SAC) y paga con transferencia. → Paso 1 de 3: registra el asiento «Por la compra según F040-434784».",
   "glosa": "Por la compra según F040-434784",
   "solucion": [
@@ -444,6 +460,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s6-estrella-compra-2",
   "fecha": "10/04",
   "tema": "Clase S6",
+  "subido": "09/11/26",
   "enunciado": "Boticas Estrella EIRL (farmacia): El 10/04/26 compra 20 bolsas de pañales a S/ 40 cada una más IGV (factura F040-434784 de Inretail Pharma SAC) y paga con transferencia. → Paso 2 de 3: registra el asiento «Por el ingreso al almacén».",
   "glosa": "Por el ingreso al almacén",
   "solucion": [
@@ -470,6 +487,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s6-estrella-compra-3",
   "fecha": "10/04",
   "tema": "Clase S6",
+  "subido": "09/11/26",
   "enunciado": "Boticas Estrella EIRL (farmacia): El 10/04/26 compra 20 bolsas de pañales a S/ 40 cada una más IGV (factura F040-434784 de Inretail Pharma SAC) y paga con transferencia. → Paso 3 de 3: registra el asiento «Por el pago de la F040-434784, op. 3484843».",
   "glosa": "Por el pago de la F040-434784, op. 3484843",
   "solucion": [
@@ -496,6 +514,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s6-estrella-venta-1",
   "fecha": "20/04",
   "tema": "Clase S6",
+  "subido": "09/11/26",
   "enunciado": "Boticas Estrella EIRL (farmacia): El 20/04/26 vende las 20 bolsas a S/ 45 cada una más IGV (F001-00001 a Negocios Waymaku EIRL) y cobra con transferencia. → Paso 1 de 3: registra el asiento «Por la venta según F001-00001».",
   "glosa": "Por la venta según F001-00001",
   "solucion": [
@@ -530,6 +549,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s6-estrella-venta-2",
   "fecha": "20/04",
   "tema": "Clase S6",
+  "subido": "09/11/26",
   "enunciado": "Boticas Estrella EIRL (farmacia): El 20/04/26 vende las 20 bolsas a S/ 45 cada una más IGV (F001-00001 a Negocios Waymaku EIRL) y cobra con transferencia. → Paso 2 de 3: registra el asiento «Por el costo de la mercadería vendida».",
   "glosa": "Por el costo de la mercadería vendida",
   "solucion": [
@@ -556,6 +576,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s6-estrella-venta-3",
   "fecha": "20/04",
   "tema": "Clase S6",
+  "subido": "09/11/26",
   "enunciado": "Boticas Estrella EIRL (farmacia): El 20/04/26 vende las 20 bolsas a S/ 45 cada una más IGV (F001-00001 a Negocios Waymaku EIRL) y cobra con transferencia. → Paso 3 de 3: registra el asiento «Por el cobro de la F001-00001, op. 3484843».",
   "glosa": "Por el cobro de la F001-00001, op. 3484843",
   "solucion": [
@@ -582,6 +603,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s7-triunfo-1",
   "fecha": "31/12",
   "tema": "Clase S7",
+  "subido": "09/11/26",
   "enunciado": "Comercial El Triunfo SAC: Al 31/12/2025: ventas S/ 86,000, compras S/ 38,500 y variación de existencias S/ 4,800 (saldo deudor). Cierra 70, 60 y 61 con la 80 y pasa el margen a la 82. → Paso 1 de 4: registra el asiento «Por el cierre de las ventas».",
   "glosa": "Por el cierre de las ventas",
   "solucion": [
@@ -608,6 +630,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s7-triunfo-2",
   "fecha": "31/12",
   "tema": "Clase S7",
+  "subido": "09/11/26",
   "enunciado": "Comercial El Triunfo SAC: Al 31/12/2025: ventas S/ 86,000, compras S/ 38,500 y variación de existencias S/ 4,800 (saldo deudor). Cierra 70, 60 y 61 con la 80 y pasa el margen a la 82. → Paso 2 de 4: registra el asiento «Por el cierre de las compras».",
   "glosa": "Por el cierre de las compras",
   "solucion": [
@@ -634,6 +657,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s7-triunfo-3",
   "fecha": "31/12",
   "tema": "Clase S7",
+  "subido": "09/11/26",
   "enunciado": "Comercial El Triunfo SAC: Al 31/12/2025: ventas S/ 86,000, compras S/ 38,500 y variación de existencias S/ 4,800 (saldo deudor). Cierra 70, 60 y 61 con la 80 y pasa el margen a la 82. → Paso 3 de 4: registra el asiento «Por el cierre de la variación de existencias».",
   "glosa": "Por el cierre de la variación de existencias",
   "solucion": [
@@ -660,6 +684,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s7-triunfo-4",
   "fecha": "31/12",
   "tema": "Clase S7",
+  "subido": "09/11/26",
   "enunciado": "Comercial El Triunfo SAC: Al 31/12/2025: ventas S/ 86,000, compras S/ 38,500 y variación de existencias S/ 4,800 (saldo deudor). Cierra 70, 60 y 61 con la 80 y pasa el margen a la 82. → Paso 4 de 4: registra el asiento «Por el traslado del margen comercial».",
   "glosa": "Por el traslado del margen comercial",
   "solucion": [
@@ -686,6 +711,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s7-norte-1",
   "fecha": "31/12",
   "tema": "Clase S7",
+  "subido": "09/11/26",
   "enunciado": "Comercial El Norte SAC: Utilidad antes de impuestos S/ 450,000 y tasa del impuesto a la renta 29.5 %. Calcula el impuesto y regístralo con las cuentas 88 y 89. → Paso 1 de 3: registra el asiento «Por el impuesto a la renta del ejercicio».",
   "glosa": "Por el impuesto a la renta del ejercicio",
   "solucion": [
@@ -712,6 +738,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s7-norte-2",
   "fecha": "31/12",
   "tema": "Clase S7",
+  "subido": "09/11/26",
   "enunciado": "Comercial El Norte SAC: Utilidad antes de impuestos S/ 450,000 y tasa del impuesto a la renta 29.5 %. Calcula el impuesto y regístralo con las cuentas 88 y 89. → Paso 2 de 3: registra el asiento «Por el traslado del impuesto a la determinación del resultado».",
   "glosa": "Por el traslado del impuesto a la determinación del resultado",
   "solucion": [
@@ -738,6 +765,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s7-norte-3",
   "fecha": "31/12",
   "tema": "Clase S7",
+  "subido": "09/11/26",
   "enunciado": "Comercial El Norte SAC: Utilidad antes de impuestos S/ 450,000 y tasa del impuesto a la renta 29.5 %. Calcula el impuesto y regístralo con las cuentas 88 y 89. → Paso 3 de 3: registra el asiento «Por el traslado de la utilidad neta».",
   "glosa": "Por el traslado de la utilidad neta",
   "solucion": [
@@ -764,6 +792,7 @@ window.EJERCICIOS = (window.EJERCICIOS || []).concat([
   "id": "curso-s8-logistica-1",
   "fecha": "—",
   "tema": "Clase S8",
+  "subido": "09/11/26",
   "enunciado": "Logística Integral SAC: Recibo de luz S/ 200 + IGV y de teléfono S/ 100 + IGV; distribución 60 % administración y 40 % ventas. Además, recibe mercadería en consignación por S/ 15,000. → Paso 1 de 3: registra el asiento «Por los recibos de luz y teléfono».",
   "glosa": "Por los recibos de luz y teléfono",
   "solucion": [

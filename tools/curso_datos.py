@@ -475,6 +475,7 @@ for c in CASOS:
             sol.append({'lado': 'debe' if d else 'haber', 'cuentas': [cta], 'monto': d or h, 'nota': ''})
         ej.append({'id': 'curso-' + c['id'] + ('-%d' % (i + 1) if len(A_) > 1 else ''), 'fecha': a['fecha'],
                    'tema': 'Clase S%d' % c['sem'],
+                   'subido': '09/11/26',
                    'enunciado': c['empresa'] + ': ' + c['enunciado'] + (' → Paso %d de %d: registra el asiento «%s».' % (i + 1, len(A_), a['glosa']) if len(A_) > 1 else ''),
                    'glosa': a['glosa'], 'solucion': sol,
                    'explicacion': (a['nota'] + ' ' if a['nota'] else '') + (c['explicacion'] if i == len(A_) - 1 else '')})

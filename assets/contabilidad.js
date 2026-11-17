@@ -62,7 +62,21 @@
   $('.vtabs').addEventListener('click', function (e) { var b = e.target.closest('[data-v]'); if (b) vista(b.getAttribute('data-v')); });
 
   // ---------- ejercicios
-  function todos() { S.editados = S.editados || {}; return (window.EJERCICIOS || []).map(function (e) { var x = S.editados[e.id]; return x ? Object.assign({}, e, x, { editado: true }) : e; }).concat(S.propios.map(function (p) { return Object.assign({ propio: true }, p); })); }
+  // fecha en que se subió cada ejercicio («subido» en los datos; en los propios, la de su creación)
+  function d2(n) { return ('0' + n).slice(-2); }
+  function subidoDe(e) {
+    if (e.subido) return e.subido;
+    var m = e.propio && /^propio-(\d{12,})$/.exec(e.id); if (!m) return '';
+    var d = new Date(+m[1]); return d2(d.getDate()) + '/' + d2(d.getMonth() + 1) + '/' + String(d.getFullYear()).slice(2);
+  }
+  function claveFecha(f) { var m = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(f || ''); if (!m) return 0; var y = +m[3]; if (y < 100) y += 2000; return y * 10000 + +m[2] * 100 + +m[1]; }
+  function todos() {
+    S.editados = S.editados || {};
+    var E = (window.EJERCICIOS || []).map(function (e) { var x = S.editados[e.id]; return x ? Object.assign({}, e, x, { editado: true }) : e; }).concat(S.propios.map(function (p) { return Object.assign({ propio: true }, p); }));
+    E.forEach(function (e, i) { e._i = i; });
+    return E.sort(function (a, b) { return claveFecha(subidoDe(b)) - claveFecha(subidoDe(a)) || a._i - b._i; });
+  }
+  function fechasSubida(E) { var m = {}; E.forEach(function (e) { var f = subidoDe(e); if (f) m[f] = (m[f] || 0) + 1; }); return Object.keys(m).sort(function (a, b) { return claveFecha(b) - claveFecha(a); }).map(function (f) { return [f, m[f]]; }); }
   // un ejercicio puede tener varios asientos: cada uno se guarda en su propia clave (id, id~2, id~3…)
   function pasos(e) {
     if (e.asientos && e.asientos.length) return e.asientos;
@@ -90,18 +104,24 @@
     return G;
   }
   var filtroTema = '';
+  function pasaFiltro(e) { return !filtroTema || (filtroTema.indexOf('sub:') === 0 ? subidoDe(e) === filtroTema.slice(4) : e.tema === filtroTema); }
   function temasUsados(E) { var m = {}; E.forEach(function (e) { if (e.tema) m[e.tema] = 1; }); return Object.keys(m).sort(function (a, b) { return a.localeCompare(b, 'es', { numeric: true }); }); }
   function pintarLista() {
-    var E = todos(), T = temasUsados(E);
-    if (filtroTema && T.indexOf(filtroTema) < 0) filtroTema = '';
+    var E = todos(), T = temasUsados(E), F = fechasSubida(E);
+    if (filtroTema && !E.some(pasaFiltro)) filtroTema = '';
     var sel = $('#filtroTema');
-    sel.innerHTML = '<option value="">Todas las categorías (' + E.length + ')</option>' + T.map(function (t) { return '<option value="' + esc(t) + '">' + esc(t) + ' (' + E.filter(function (e) { return e.tema === t; }).length + ')</option>'; }).join('');
+    sel.innerHTML = '<option value="">Todos los ejercicios (' + E.length + ')</option>' +
+      '<optgroup label="Por fecha de subida">' + F.map(function (f) { return '<option value="sub:' + esc(f[0]) + '">Subidos el ' + esc(f[0]) + ' (' + f[1] + ')</option>'; }).join('') + '</optgroup>' +
+      '<optgroup label="Por categoría">' + T.map(function (t) { return '<option value="' + esc(t) + '">' + esc(t) + ' (' + E.filter(function (e) { return e.tema === t; }).length + ')</option>'; }).join('') + '</optgroup>';
     sel.value = filtroTema;
     $('#listaTemas').innerHTML = T.map(function (t) { return '<option value="' + esc(t) + '">'; }).join('');
+    var grupo = null;
     $('#lista').innerHTML = E.map(function (e, i) {
-      if (filtroTema && e.tema !== filtroTema) return '';
+      if (!pasaFiltro(e)) return '';
+      var sb = subidoDe(e), cab = '';
+      if (sb !== grupo && filtroTema.indexOf('sub:') !== 0) { grupo = sb; cab = '<div class="grp">' + (sb ? 'Subidos el ' + esc(sb) : 'Sin fecha de subida') + '</div>'; }
       var st = estadoDe(e), nota = (S.notas[e.id] || {}).texto, np = pasos(e).length;
-      return '<button class="ex" data-id="' + esc(e.id) + '" aria-current="' + (actual && actual.id === e.id) + '"><span class="st ' + st + '">' + (st === 'ok' ? '✓' : i + 1) + '</span>' +
+      return cab + '<button class="ex" data-id="' + esc(e.id) + '" aria-current="' + (actual && actual.id === e.id) + '"><span class="st ' + st + '">' + (st === 'ok' ? '✓' : i + 1) + '</span>' +
         '<span class="t"><b>' + esc(e.fecha || '') + '</b> ' + esc(e.enunciado.length > 84 ? e.enunciado.slice(0, 82) + '…' : e.enunciado) + '<small>' + esc(e.tema || 'Sin categoría') + (np > 1 ? ' · ' + np + ' asientos' : '') + (e.propio ? ' · propio' : '') + (nota ? ' · 📝' : '') + '</small></span></button>';
     }).join('') || '<p class="tiny" style="padding:8px">No hay ejercicios en esta categoría.</p>';
     var base = (window.EJERCICIOS || []), ok = base.filter(okEj).length;
@@ -448,18 +468,33 @@
   // ---------- libro diario: uno por ejercicio (Formato 5.1), con selección para el PDF
   var SELK = 'jg-contabilidad-sel', noSel = (function () { try { return JSON.parse(localStorage.getItem(SELK)) || {}; } catch (e) { return {}; } })();
   function guardarSel() { try { localStorage.setItem(SELK, JSON.stringify(noSel)); } catch (e) { } }
+  var DIK = 'jg-contabilidad-diario', DI = (function () { try { return JSON.parse(localStorage.getItem(DIK)) || {}; } catch (e) { return {}; } })();
+  function guardarDI() { try { localStorage.setItem(DIK, JSON.stringify(DI)); } catch (e) { } }
   function libros() {
     var out = [];
     todos().forEach(function (e, i) {
+      if (DI.sub && subidoDe(e) !== DI.sub) return;
       var A = [];
       pasos(e).forEach(function (p, k) {
-        var w = S.trabajo[wk(e.id, k)], L = conLineas(w);
-        if (L.length) A.push({ k: k, p: p, w: w, ok: S.estado[wk(e.id, k)] === 'ok', L: L.slice().sort(function (a, b) { return (b.debe ? 1 : 0) - (a.debe ? 1 : 0); }) });
+        var w = S.trabajo[wk(e.id, k)], L = conLineas(w), sol = false;
+        if (!L.length && DI.sol && p.solucion) {
+          sol = true; w = { glosa: p.glosa || '' };
+          L = p.solucion.map(function (x) { var c = x.cuentas[0]; return { cuenta: c, detalle: x.detalle || nomDet(c), debe: x.lado === 'debe' ? x.monto : 0, haber: x.lado === 'haber' ? x.monto : 0 }; });
+        }
+        if (L.length) A.push({ k: k, p: p, w: w, sol: sol, ok: S.estado[wk(e.id, k)] === 'ok', L: L.slice().sort(function (a, b) { return (b.debe ? 1 : 0) - (a.debe ? 1 : 0); }) });
       });
       if (A.length) out.push({ e: e, n: i + 1, A: A });
     });
     return out;
   }
+  function pintarFiltrosDiario() {
+    var F = fechasSubida(todos());
+    if (DI.sub && !F.some(function (f) { return f[0] === DI.sub; })) DI.sub = '';
+    $('#diSub').innerHTML = '<option value="">Todas las fechas de subida</option>' + F.map(function (f) { return '<option value="' + esc(f[0]) + '">Subidos el ' + esc(f[0]) + ' (' + f[1] + ')</option>'; }).join('');
+    $('#diSub').value = DI.sub || ''; $('#diSol').checked = !!DI.sol;
+  }
+  $('#diSub').onchange = function () { DI.sub = this.value; guardarDI(); pintarDiario(); };
+  $('#diSol').onchange = function () { DI.sol = this.checked; guardarDI(); pintarDiario(); };
   function libroHTML(b) {
     var e = b.e, D = 0, H = 0, rows = '';
     b.A.forEach(function (a, j) {
@@ -476,7 +511,7 @@
     var cuadra = Math.abs(D - H) < 0.005, tot = pasos(e).length;
     return '<section class="libro' + (noSel[e.id] ? ' off' : '') + '" data-id="' + esc(e.id) + '">' +
       '<div class="lb-top noprint"><label class="lb-sel"><input type="checkbox" data-sel="' + esc(e.id) + '"' + (noSel[e.id] ? '' : ' checked') + '> <b>Ejercicio ' + b.n + '</b></label>' +
-      '<span class="lb-meta">' + esc(e.tema || 'Sin categoría') + ' · ' + b.A.length + (tot > b.A.length ? ' de ' + tot : '') + (b.A.length === 1 && tot === 1 ? ' asiento' : ' asientos') + '</span><span class="grow"></span>' +
+      '<span class="lb-meta">' + (subidoDe(e) ? 'Subido el ' + esc(subidoDe(e)) + ' · ' : '') + esc(e.tema || 'Sin categoría') + ' · ' + b.A.length + (tot > b.A.length ? ' de ' + tot : '') + (b.A.length === 1 && tot === 1 ? ' asiento' : ' asientos') + (b.A.some(function (a) { return a.sol; }) ? ' · <span class="lb-sol">' + (b.A.every(function (a) { return a.sol; }) ? 'solución del ejercicio' : 'completado con la solución') + '</span>' : '') + '</span><span class="grow"></span>' +
       '<button class="lnk" data-ir="' + esc(e.id) + '">Abrir en Practicar</button><button class="lnk" data-pdf="' + esc(e.id) + '">PDF de este</button></div>' +
       '<div class="lb-cab"><h3>Libro diario <small>Formato 5.1</small></h3>' + (cab.length ? '<dl>' + cab.map(function (x) { return '<div><dt>' + x[0] + '</dt><dd>' + esc(x[1]) + '</dd></div>'; }).join('') + '</dl>' : '') + '</div>' +
       '<p class="lb-enun">' + esc(e.enunciado) + '</p>' +
@@ -484,8 +519,9 @@
       '<tfoot><tr class="tt"><td colspan="5" class="r">Totales' + (cuadra ? '' : ' <span class="cuadre no">no cuadra</span>') + '</td><td class="n">' + fmt(D) + '</td><td class="n">' + fmt(H) + '</td></tr></tfoot></table></div></section>';
   }
   function pintarDiario() {
+    pintarFiltrosDiario();
     var LB = libros(), box = $('#diario');
-    box.innerHTML = LB.length ? LB.map(libroHTML).join('') : '<div class="empty">Aún no tienes asientos. Ve a <b>Practicar</b> y resuelve tu primer ejercicio.</div>';
+    box.innerHTML = LB.length ? LB.map(libroHTML).join('') : '<div class="empty">' + (DI.sub ? 'Aún no resuelves los ejercicios subidos el ' + esc(DI.sub) + '. Marca <b>«Completar con la solución»</b> para verlos resueltos.' : 'Aún no tienes asientos. Ve a <b>Practicar</b> y resuelve tu primer ejercicio, o marca <b>«Completar con la solución»</b>.') + '</div>';
     pintarSel(LB); infoCopia();
   }
   function marcados(LB) { return (LB || libros()).filter(function (b) { return !noSel[b.e.id]; }); }
@@ -592,22 +628,18 @@
     S.propios = S.propios.filter(function (p) { return p.id !== id; }); guardar(); abrir(todos()[0].id);
   };
 
-  // ---------- Excel de los libros marcados
+  // ---------- Excel de los libros marcados: Formato 5.1 (.xlsx), una hoja por ejercicio
   $('#exportar').onclick = function () {
-    var LB = marcados(); if (!LB.length) return;
-    var rows = [];
-    LB.forEach(function (b) {
-      var e = b.e, D = 0, H = 0;
-      rows.push(['LIBRO DIARIO - FORMATO 5.1 · Ejercicio ' + b.n + (e.empresa ? ' · ' + e.empresa : '') + (e.ruc ? ' · RUC ' + e.ruc : '')]);
-      rows.push([e.enunciado]);
-      rows.push(['N.°', 'Fecha', 'Glosa', 'Cuenta', 'Denominación', 'Debe', 'Haber']);
-      b.A.forEach(function (a, j) {
-        a.L.forEach(function (l, i) { D += l.debe; H += l.haber; rows.push([i ? '' : j + 1, i ? '' : a.p.fecha || e.fecha || '', i ? '' : a.w.glosa || '', l.cuenta, l.detalle, l.debe ? l.debe.toFixed(2) : '', l.haber ? l.haber.toFixed(2) : '']); });
-      });
-      rows.push(['', '', '', '', 'Totales', D.toFixed(2), H.toFixed(2)]); rows.push([]);
-    });
-    var csv = 'sep=;\r\n' + rows.map(function (r) { return r.map(function (c) { c = String(c == null ? '' : c); return /[;"\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(';'); }).join('\r\n');
-    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' })); a.download = 'libro-diario-' + hoy() + '.csv'; a.click();
+    var LB = marcados(); if (!LB.length || !window.LibroXLSX) return;
+    window.LibroXLSX(LB.map(function (b) {
+      var e = b.e;
+      return {
+        hoja: e.empresa ? e.empresa.replace(/^(Comercial|Distribuidora)\s+/i, '').replace(/\s+S\.?A\.?C\.?$/i, '') : 'Ejercicio ' + b.n,
+        empresa: e.empresa || '', ruc: e.ruc || '', periodo: e.periodo || '', enunciado: e.enunciado,
+        asientos: b.A.map(function (a) { return { fecha: a.p.fecha || e.fecha || '', glosa: a.w.glosa || '', doc: a.p.doc || '', lineas: a.L }; })
+      };
+    }), 'libro-diario-formato-5.1-' + (DI.sub ? 'subidos-' + DI.sub.replace(/\//g, '-') : hoy()) + '.xlsx');
+    toast('Excel descargado: una hoja por ejercicio');
   };
 
   // ---------- copia de seguridad: descarga con fecha y restauración que combina (no borra lo que ya tienes)

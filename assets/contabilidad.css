@@ -149,6 +149,17 @@ tr.ok-line td { background: #eef9f3; } tr.bad-line td { background: #fdf0f0; }
 .btn[disabled] { opacity: .45; pointer-events: none; }
 #diario .empty { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 30px; text-align: center; color: var(--muted); }
 
+/* grupos por fecha de subida */
+.grp { font-size: 11.5px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: var(--mag); padding: 12px 10px 4px; }
+.grp:first-child { padding-top: 2px; }
+@media (max-width: 900px) { .grp { display: none; } }
+.di-fil { display: grid; gap: 10px; flex: 1 1 420px; }
+.di-opts { display: flex; gap: 10px 18px; flex-wrap: wrap; align-items: center; }
+.di-sub { width: auto; min-width: 230px; font-weight: 700; color: var(--navy); }
+.di-sol { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; font-weight: 700; color: var(--navy); cursor: pointer; }
+.di-sol input { width: 18px; height: 18px; accent-color: var(--navy); }
+.lb-sol { color: var(--mag); font-weight: 700; }
+
 /* un libro por ejercicio */
 .libro { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px 18px; margin-bottom: 18px; transition: opacity .2s; }
 .libro.off { opacity: .55; }

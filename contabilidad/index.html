@@ -57,7 +57,7 @@
     <div class="cx-grid">
       <aside class="cx-list noprint">
         <div class="cx-list-h"><b>Ejercicios</b><button class="lnk" id="nuevo">+ Propio</button></div>
-        <select class="in filtro-tema" id="filtroTema" aria-label="Filtrar por categoría"></select>
+        <select class="in filtro-tema" id="filtroTema" aria-label="Filtrar por fecha de subida o categoría"></select>
         <div id="lista"></div>
       </aside>
 
@@ -135,7 +135,13 @@
   <!-- ===================== LIBRO DIARIO ===================== -->
   <section id="v-diario" class="view" hidden>
     <div class="diario-head noprint">
-      <p class="intro">Un libro diario por ejercicio. Marca los que necesites y descárgalos juntos en un solo PDF.</p>
+      <div class="di-fil">
+        <p class="intro">Un libro diario por ejercicio. Marca los que necesites y descárgalos juntos en PDF o Excel (Formato 5.1).</p>
+        <div class="di-opts">
+          <select class="in di-sub" id="diSub" aria-label="Filtrar por fecha de subida"></select>
+          <label class="di-sol"><input type="checkbox" id="diSol"> Completar con la solución lo que no resolví</label>
+        </div>
+      </div>
       <div class="cx-tools">
         <span class="sel-info" id="selInfo"></span>
         <button class="lnk" id="selTodos">Marcar todos</button>
@@ -178,6 +184,7 @@
 <script src="../assets/pcge-2026.js"></script>
 <script src="../assets/ejercicios.js"></script>
 <script src="../assets/ejercicios-curso.js"></script>
+<script src="../assets/libro-xlsx.js"></script>
 <script src="../assets/contabilidad.js"></script>
 <script src="../assets/calculadora.js"></script>
 <script src="../assets/nube.js"></script>
