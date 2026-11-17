@@ -1,5 +1,5 @@
 /* ejercicios.js — ejercicios de asientos contables para /contabilidad (PCGE 2019, vigente hasta 2027).
-   Cada solución lista las líneas esperadas: «cuentas» acepta varias opciones (la primera es la recomendada). */
+   Un ejercicio tiene «solucion» (un asiento) o «asientos» (varios, cada uno con su solución). Cada solución lista las líneas esperadas: «cuentas» acepta varias opciones (la primera es la recomendada). */
 window.EJERCICIOS = [
   {
     id: 'cobro-beta', fecha: '5/10/26', tema: 'Cobranzas',
@@ -83,5 +83,77 @@ window.EJERCICIOS = [
       { lado: 'haber', cuentas: ['1041', '104'], monto: 2360, nota: 'Sale dinero del banco: el activo disminuye, va al haber.' }
     ],
     explicacion: 'Regla práctica: el activo aumenta por el debe y disminuye por el haber; el pasivo, al revés.'
+  },
+
+  /* ---- Ejercicios de varios asientos: cada uno es un libro diario propio (Formato 5.1) ---- */
+  {
+    id: 'constitucion-gretsa', fecha: '20/05/26', tema: 'Patrimonio: constitución',
+    empresa: 'Comercial Gretsa SAC', ruc: '20406489095', periodo: 'Mayo 2026',
+    enunciado: 'El 20/05/26 Comercial Gretsa SAC (RUC 20406489095) se constituye con los siguientes aportes, según partida registral N.° 74342443: Socio A, S/ 80,000 depositados en banco (80,000 acciones de S/ 1.00); Socio B, S/ 20,000 depositados en banco (20,000 acciones de S/ 1.00). Capital: S/ 100,000. Elabora en el Libro Diario (Formato 5.1) los asientos de la suscripción de capital, la cancelación de aportes y la formalización en Registros Públicos.',
+    explicacion: 'Constitución en tres pasos: suscripción (14 / 52), cancelación del aporte (10 / 14) y formalización (52 / 50). Al final, la 1421 y la 5221 quedan en cero: solo quedan S/ 100,000 en el banco y S/ 100,000 de capital social.',
+    asientos: [
+      {
+        titulo: 'Suscripción', glosa: 'Por la suscripción de 100,000 acciones de S/ 1.00 c/u',
+        solucion: [
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 80000, detalle: 'Suscripciones por cobrar – Socio A', nota: 'Los socios se comprometen a aportar: nace una cuenta por cobrar a cargo de ellos (activo, al debe). Puedes poner una línea por socio o una sola por S/ 100,000.' },
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 20000, detalle: 'Suscripciones por cobrar – Socio B', nota: '' },
+          { lado: 'haber', cuentas: ['5221', '522'], monto: 100000, nota: 'El capital aún no está inscrito: va a 5221 Aportes (capitalizaciones en trámite), que es transitoria.' }
+        ],
+        explicacion: 'Suscribir es comprometerse a aportar. Todavía no entra dinero: la empresa registra lo que los socios le deben (1421) y el capital en trámite (5221).'
+      },
+      {
+        titulo: 'Cancelación de aportes', glosa: 'Por el depósito en banco de los aportes suscritos',
+        solucion: [
+          { lado: 'debe', cuentas: ['1041', '104'], monto: 100000, nota: 'Los socios depositan el dinero en la cuenta corriente de la empresa.' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 80000, detalle: 'Suscripciones por cobrar – Socio A', nota: 'Se cancela lo que debían los socios: la cuenta por cobrar disminuye (haber).' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 20000, detalle: 'Suscripciones por cobrar – Socio B', nota: '' }
+        ],
+        explicacion: 'Un activo se cambia por otro: sale la cuenta por cobrar a los socios (14) y entra el dinero al banco (10).'
+      },
+      {
+        titulo: 'Formalización en Registros Públicos', glosa: 'Por la inscripción del capital social, partida registral N.° 74342443',
+        solucion: [
+          { lado: 'debe', cuentas: ['5221', '522'], monto: 100000, nota: 'Se cierra la cuenta transitoria de capital en trámite.' },
+          { lado: 'haber', cuentas: ['5011', '501'], monto: 100000, nota: 'Con la inscripción, el aporte ya es capital social definitivo: 5011 Acciones, porque es una SAC.' }
+        ],
+        explicacion: 'Inscrita la sociedad, el aporte pasa de «en trámite» (52) a capital social (50).'
+      }
+    ]
+  },
+  {
+    id: 'constitucion-ferremax', fecha: '25/05/26', tema: 'Patrimonio: constitución',
+    empresa: 'Comercial Ferremax SAC', ruc: '20607894531', periodo: 'Mayo 2026',
+    enunciado: 'Rubro: venta al por menor de materiales de construcción y artículos de ferretería. El 25/05/2026 se constituye Comercial Ferremax SAC (RUC 20607894531). Según la minuta de constitución, los socios aportan, depositados en la cuenta bancaria de la empresa: Socio A, S/ 60,000 (60,000 acciones de S/ 1.00); Socio B, S/ 30,000 (30,000 acciones); Socio C, S/ 10,000 (10,000 acciones). Capital social: S/ 100,000. La constitución queda formalizada e inscrita en los Registros Públicos, según partida registral N.° 75483921. Registra los asientos en el Libro Diario.',
+    explicacion: 'Mismo esquema de tres asientos (14 / 52 → 10 / 14 → 52 / 50), ahora con tres socios. Si detallas por socio, la suma de las líneas de la 1421 debe dar S/ 100,000.',
+    asientos: [
+      {
+        titulo: 'Suscripción', glosa: 'Por la suscripción de 100,000 acciones de S/ 1.00 c/u, según minuta de constitución',
+        solucion: [
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 60000, detalle: 'Suscripciones por cobrar – Socio A', nota: 'Lo que cada socio se compromete a aportar es una cuenta por cobrar (activo, al debe). Una línea por socio o una sola por S/ 100,000.' },
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 30000, detalle: 'Suscripciones por cobrar – Socio B', nota: '' },
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 10000, detalle: 'Suscripciones por cobrar – Socio C', nota: '' },
+          { lado: 'haber', cuentas: ['5221', '522'], monto: 100000, nota: 'Capital aún no inscrito: 5221 Aportes (capitalizaciones en trámite).' }
+        ],
+        explicacion: 'La minuta formaliza el compromiso de los tres socios. Todavía no hay capital inscrito, por eso se usa la 52.'
+      },
+      {
+        titulo: 'Cancelación de aportes', glosa: 'Por el depósito en la cuenta bancaria de los aportes de los socios',
+        solucion: [
+          { lado: 'debe', cuentas: ['1041', '104'], monto: 100000, nota: 'El dinero entra a la cuenta corriente de la empresa.' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 60000, detalle: 'Suscripciones por cobrar – Socio A', nota: 'Los socios cumplen su aporte: se cancela la cuenta por cobrar (haber).' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 30000, detalle: 'Suscripciones por cobrar – Socio B', nota: '' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 10000, detalle: 'Suscripciones por cobrar – Socio C', nota: '' }
+        ],
+        explicacion: 'Sale la cuenta por cobrar a los socios (14) y entra el dinero al banco (10). El activo total no cambia.'
+      },
+      {
+        titulo: 'Formalización en Registros Públicos', glosa: 'Por la inscripción del capital social, partida registral N.° 75483921',
+        solucion: [
+          { lado: 'debe', cuentas: ['5221', '522'], monto: 100000, nota: 'Se cierra la cuenta transitoria.' },
+          { lado: 'haber', cuentas: ['5011', '501'], monto: 100000, nota: 'Inscrita la SAC, el aporte es capital social: 5011 Acciones.' }
+        ],
+        explicacion: 'Con la partida registral, la 52 se traslada a la 50 Capital.'
+      }
+    ]
   }
 ];

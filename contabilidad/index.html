@@ -79,6 +79,8 @@
           <p class="tiny">Se guardan solas, junto con tu avance.</p>
         </details>
 
+        <div class="as-tabs noprint" id="asTabs" hidden></div>
+
         <ol class="pasos noprint">
           <li><b>1</b> Busca la cuenta por código o palabra</li>
           <li><b>2</b> Revisa el detalle</li>
@@ -133,16 +135,28 @@
   <!-- ===================== LIBRO DIARIO ===================== -->
   <section id="v-diario" class="view" hidden>
     <div class="diario-head noprint">
-      <p class="intro">Todos tus asientos en un solo libro, como en tu Excel.</p>
+      <p class="intro">Un libro diario por ejercicio. Marca los que necesites y descárgalos juntos en un solo PDF.</p>
       <div class="cx-tools">
-        <button class="btn line sm" id="exportar"><i data-icon="FaDownload"></i> Descargar en Excel</button>
-        <button class="btn line sm" id="imprimir"><i data-icon="FaFilePdf"></i> Imprimir / PDF</button>
-        <button class="btn line sm" id="respaldo">Guardar copia</button>
-        <label class="btn line sm">Recuperar copia<input type="file" id="importar" accept=".json" hidden></label>
+        <span class="sel-info" id="selInfo"></span>
+        <button class="lnk" id="selTodos">Marcar todos</button>
+        <button class="lnk" id="selNinguno">Ninguno</button>
+        <button class="btn navy sm" id="imprimir"><i data-icon="FaFilePdf"></i> PDF de los marcados</button>
+        <button class="btn line sm" id="exportar"><i data-icon="FaDownload"></i> Excel de los marcados</button>
       </div>
     </div>
-    <div class="tbl-wrap"><table class="diario" id="diario"></table></div>
-    <p class="tiny noprint">Tu avance se guarda en este navegador. Para usarlo en otra computadora: «Guardar copia» aquí y «Recuperar copia» allá.</p>
+    <div id="diario"></div>
+
+    <section class="copia noprint" aria-labelledby="copiaT">
+      <div>
+        <h2 id="copiaT">Copia de seguridad</h2>
+        <p class="tiny" id="copiaInfo"></p>
+        <p class="tiny">Lo más cómodo es <b>☁️ Guardar en la nube</b> (arriba): se guarda solo y lo ves en cualquier equipo. La copia es un respaldo extra en un archivo; al recuperarla <b>se combina</b> con lo que ya tienes, no lo reemplaza.</p>
+      </div>
+      <div class="cx-tools">
+        <button class="btn line sm" id="respaldo"><i data-icon="FaDownload"></i> Descargar copia</button>
+        <label class="btn line sm">Recuperar una copia<input type="file" id="importar" accept=".json,application/json" hidden></label>
+      </div>
+    </section>
   </section>
 </main>
 

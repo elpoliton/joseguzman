@@ -8,6 +8,7 @@ Página personal de José Manuel Guzmán Valverde y biblioteca de ponencias. Sit
 - `ponencias/<subcategoria>/<ponencia>/index.html` — cada ponencia, con sus videos y su PDF en `media/`.
 - `cuentas-claras/` — prototipo «Cuentas Claras FDCP» (propuesta derivada de la tesis de licenciatura): `index.html`, `app.css`, `app.js` y fuentes locales. Datos de ejemplo; lleva `noindex` y no entra al mapa del sitio.
 - `assets/ponencias.js` — catálogo: agrega aquí cada ponencia nueva.
+- `contabilidad/` — práctica de asientos con el PCGE. Ejercicios en `assets/ejercicios.js`: uno simple lleva `solucion`; uno de varios asientos lleva `asientos: [{ titulo, glosa, solucion, explicacion }]` (y opcional `empresa`, `ruc`, `periodo` para la cabecera del Formato 5.1). «Mi libro diario» muestra un libro por ejercicio; se marcan los que van al PDF o al Excel. El trabajo de cada asiento se guarda en `trabajo[id]`, `trabajo[id~2]`, `trabajo[id~3]`…
 - `assets/deck.js` y `assets/deck.css` — motor de diapositivas (lienzo 1600 × 900).
 - `assets/site.js` y `assets/site.css` — página personal y biblioteca.
 - `assets/icons.js` — íconos; se regeneran con `node tools/iconos.cjs` (requiere react, react-dom y react-icons).
