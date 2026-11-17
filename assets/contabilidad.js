@@ -38,6 +38,8 @@
     $('#version').value = v; $('#planInfo').textContent = P.cuentas.length + ' cuentas · ' + P.titulo + ' (' + P.resolucion + ')';
     planHecho = false;
   }
+  // detalle para el asiento: en las subdivisionarias genéricas («Costo», «Revaluación»…) antepone la cuenta madre
+  function nomDet(c) { var n = cap(MAP[c] || ''), p = c.length === 5 && MAP[c.slice(0, 4)]; return p && n.length < 30 ? cap(p) + ' – ' + n : n; }
   function padre(c) { for (var i = c.length - 1; i > 0; i--) if (MAP[c.slice(0, i)]) return c.slice(0, i); return null; }
   function ruta(c) { var out = [], p = padre(c); while (p) { out.unshift(p); p = padre(p); } return out; }
   function rutaTxt(c, corto) { return ruta(c).map(function (p) { var n = cap(MAP[p]); return p + ' ' + (corto && n.length > 40 ? n.slice(0, 38) + '…' : n); }).join(' › '); }
@@ -165,7 +167,7 @@
       '<td class="c-num"><input class="in debe-in" inputmode="decimal" aria-label="Debe" value="' + (l.debe ? fmt(l.debe) : '') + '"></td>' +
       '<td class="c-num"><input class="in haber-in" inputmode="decimal" aria-label="Haber" value="' + (l.haber ? fmt(l.haber) : '') + '"></td>' +
       '<td class="noprint"><div class="ctl"><button class="grip" title="Arrastra para mover la línea (o usa ↑ ↓ con el teclado)" aria-label="Mover línea">⠿</button><span class="ud"><button class="mv up" title="Subir línea" aria-label="Subir línea">▲</button><button class="mv dn" title="Bajar línea" aria-label="Bajar línea">▼</button></span><button class="del" title="Quitar línea" aria-label="Quitar línea">×</button></div></td>';
-    tr.dataset.auto = !l.detalle || l.detalle === cap(MAP[l.cuenta] || '') ? '1' : '';
+    tr.dataset.auto = !l.detalle || (l.detalle === nomDet(l.cuenta) || l.detalle === cap(MAP[l.cuenta] || '')) ? '1' : '';
     $('#filas').appendChild(tr); meta(tr);
     return tr;
   }
@@ -179,7 +181,7 @@
   function elegirCuenta(tr, c) {
     tr.querySelector('.cta-in').value = c;
     var det = tr.querySelector('.det-in');
-    if (tr.dataset.auto === '1' || !det.value) { det.value = cap(MAP[c]); tr.dataset.auto = '1'; }
+    if (tr.dataset.auto === '1' || !det.value) { det.value = nomDet(c); tr.dataset.auto = '1'; }
     meta(tr); cerrarAC(); persistir();
     var d = tr.querySelector('.debe-in'), h = tr.querySelector('.haber-in');
     if (!num(d.value) && !num(h.value)) d.focus(); // tú decides si va al debe o al haber (Tab pasa al haber)
@@ -222,7 +224,7 @@
       if (document.activeElement === t) return; cerrarAC();
       var c = t.value.trim();
       if (c && !/^\d+$/.test(c)) { var R = buscar(c, 1); if (R.length) { elegirCuenta(tr, R[0].c); return; } }
-      if (MAP[c] && (tr.dataset.auto === '1' || !tr.querySelector('.det-in').value)) { tr.querySelector('.det-in').value = cap(MAP[c]); tr.dataset.auto = '1'; persistir(); }
+      if (MAP[c] && (tr.dataset.auto === '1' || !tr.querySelector('.det-in').value)) { tr.querySelector('.det-in').value = nomDet(c); tr.dataset.auto = '1'; persistir(); }
     }, 160);
   });
   filas.addEventListener('focusin', function (e) { if (e.target.classList.contains('cta-in') && e.target.value) abrirAC(e.target); });
@@ -372,7 +374,7 @@
       '<tr><td></td><td><i>' + esc(P.glosa || '') + '</i></td><td></td><td></td></tr></table>' + (P.explicacion ? '<p class="why">' + esc(P.explicacion) + '</p>' : '') +
       '<div class="next"><button class="btn line sm" id="copiarSol">Copiar la solución a mi asiento</button></div>';
     $('#copiarSol').onclick = function () {
-      S.trabajo[clave()] = { lineas: P.solucion.map(function (s) { var c = s.cuentas[0]; return { cuenta: c, detalle: s.detalle || cap(MAP[c] || ''), debe: s.lado === 'debe' ? s.monto : 0, haber: s.lado === 'haber' ? s.monto : 0 }; }), glosa: P.glosa || '', t: Date.now() };
+      S.trabajo[clave()] = { lineas: P.solucion.map(function (s) { var c = s.cuentas[0]; return { cuenta: c, detalle: s.detalle || nomDet(c), debe: s.lado === 'debe' ? s.monto : 0, haber: s.lado === 'haber' ? s.monto : 0 }; }), glosa: P.glosa || '', t: Date.now() };
       guardar(); abrir(actual.id); toast('Solución copiada: compárala con la tuya');
     };
   };
