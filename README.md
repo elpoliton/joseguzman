@@ -6,6 +6,7 @@ Página personal de José Manuel Guzmán Valverde y biblioteca de ponencias. Sit
 - `index.html` — página de presentación.
 - `ponencias/index.html` — biblioteca con buscador y filtros por categoría y subcategoría.
 - `ponencias/<subcategoria>/<ponencia>/index.html` — cada ponencia, con sus videos y su PDF en `media/`.
+- `cuentas-claras/` — prototipo «Cuentas Claras FDCP» (propuesta derivada de la tesis de licenciatura): `index.html`, `app.css`, `app.js` y fuentes locales. Datos de ejemplo; lleva `noindex` y no entra al mapa del sitio.
 - `assets/ponencias.js` — catálogo: agrega aquí cada ponencia nueva.
 - `assets/deck.js` y `assets/deck.css` — motor de diapositivas (lienzo 1600 × 900).
 - `assets/site.js` y `assets/site.css` — página personal y biblioteca.

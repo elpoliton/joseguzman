@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es-PE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cuentas Claras FDCP · Prototipo de rendición de cuentas</title>
+<meta name="description" content="Prototipo académico de un portal de rendición de cuentas para la Facultad de Derecho y Ciencia Política de la UNMSM, derivado de la tesis de José Manuel Guzmán Valverde. Datos de ejemplo.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="José Manuel Guzmán Valverde">
+<meta property="og:title" content="Cuentas Claras FDCP · Prototipo">
+<meta property="og:description" content="Qué se prometió, qué se hizo y qué falta. Prototipo académico con datos de ejemplo.">
+<meta property="og:type" content="website">
+<link rel="icon" href="../favicon.ico" sizes="48x48">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#1E2761">
+<link rel="preload" as="font" type="font/woff2" href="fonts/mulish-latin-wght-normal.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/bricolage-grotesque-latin-wght-normal.woff2" crossorigin>
+<link rel="stylesheet" href="app.css">
+<script>
+/* Aplica tema y tamaño de texto antes de pintar, para evitar parpadeo. */
+(function(){try{var s=JSON.parse(localStorage.getItem('cc-fdcp-v2')||'{}');var r=document.documentElement;
+if(s.theme==='light'||s.theme==='dark')r.setAttribute('data-theme',s.theme);if(s.size)r.setAttribute('data-size',s.size);}catch(e){}})();
+</script>
+</head>
+<body>
+<a class="skip" href="#app">Saltar al contenido</a>
+
+<div class="notice"><div class="wrap"><span class="chip plain">Prototipo</span><span>Propuesta derivada de la tesis <b>«Percepción de los estudiantes sobre la rendición de cuentas…» (FDCP-UNMSM)</b>. Todos los datos son de ejemplo. No es un sitio oficial de la universidad.</span></div></div>
+
+<header class="top">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brandmark" href="#inicio"><span class="seal" aria-hidden="true">CC</span><span class="name">Cuentas Claras<small>Facultad de Derecho y Ciencia Política</small></span></a>
+      <button type="button" class="searchbtn" id="open-search" data-act="search" aria-label="Buscar en todo el portal"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"/></svg><span>Buscar compromisos, actas, demandas…</span><kbd>Ctrl K</kbd></button>
+      <div class="role"><span class="rolelabel">Ver como</span><div class="seg" role="group" aria-label="Rol de demostración"><button type="button" id="role-est" data-act="role" data-role="estudiante" aria-pressed="true">Estudiante</button><button type="button" id="role-aut" data-act="role" data-role="autoridad" aria-pressed="false">Autoridad</button></div></div>
+      <button type="button" class="iconbtn" id="theme-btn" data-act="theme" aria-label="Cambiar tema"></button>
+      <button type="button" class="iconbtn" id="size-btn" data-act="size" aria-label="Cambiar tamaño del texto"><span aria-hidden="true" class="aa">Aa</span></button>
+    </div>
+    <nav class="tabs" aria-label="Secciones"><ul id="tabs"></ul></nav>
+  </div>
+</header>
+
+<main class="wrap" id="app" tabindex="-1"></main>
+
+<footer><div class="wrap">
+  <p>Prototipo académico de <a href="../">José Manuel Guzmán Valverde</a> · Escuela Profesional de Ciencia Política, UNMSM. Basado en la Ley Universitaria N.° 30220 (art. 11) y el TUO de la Ley N.° 27806 de Transparencia.</p>
+  <p>Lo que hagas aquí (demandas, apoyos, solicitudes) se guarda solo en este navegador. <button type="button" class="linklike" data-act="reset-ask" id="reset-foot">Restablecer la demostración</button></p>
+</div></footer>
+
+<nav class="bottomnav" aria-label="Navegación principal" id="bottomnav"></nav>
+
+<dialog id="palette" aria-label="Buscar">
+  <div class="pal-head"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"/></svg><input type="search" id="pal-input" placeholder="Busca un compromiso, un acta, una demanda…" autocomplete="off" aria-controls="pal-list" aria-label="Buscar en el portal"><button type="button" class="btn ghost small" data-act="pal-close" id="pal-close">Cerrar</button></div>
+  <div id="pal-list" role="listbox" aria-label="Resultados"></div>
+  <div class="pal-foot"><span><kbd>↑</kbd><kbd>↓</kbd> moverse</span><span><kbd>Enter</kbd> abrir</span><span><kbd>Esc</kbd> cerrar</span></div>
+</dialog>
+
+<div id="tour" class="tour" hidden role="dialog" aria-label="Recorrido guiado" aria-live="polite"></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
