@@ -119,7 +119,7 @@
     ak = Math.min(Math.max(0, kAs), P.length - 1);
     pintarTabs();
     $('#eNum').textContent = 'Ejercicio ' + (k + 1) + ' de ' + E.length;
-    $('#eFecha').textContent = actual.fecha || 'Sin fecha'; $('#eFecha').hidden = !actual.fecha;
+    var fe = paso().fecha || actual.fecha; $('#eFecha').textContent = fe || 'Sin fecha'; $('#eFecha').hidden = !fe;
     pintarTema(); cargarNota();
     $('#eTexto').textContent = actual.enunciado;
     $('#borrarPropio').hidden = !actual.propio; $('#restaurarEj').hidden = !actual.editado;

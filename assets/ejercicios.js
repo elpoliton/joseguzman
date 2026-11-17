@@ -155,5 +155,56 @@ window.EJERCICIOS = [
         explicacion: 'Con la partida registral, la 52 se traslada a la 50 Capital.'
       }
     ]
+  },
+  {
+    id: 'constitucion-el-constructor', fecha: '02/06/26', tema: 'Patrimonio: constitución',
+    empresa: 'Distribuidora El Constructor SAC', ruc: '20608975321', periodo: 'Junio 2026',
+    enunciado: 'El 02/06/2026 se constituye Distribuidora El Constructor SAC (RUC 20608975321). Capital social: S/ 180,000, en acciones de S/ 1.00. Socio A suscribe 80,000 acciones y aportará S/ 80,000 en efectivo por depósito bancario; Socio B suscribe 60,000 acciones y entregará equipos de cómputo y mobiliario por S/ 60,000; Socio C suscribe 40,000 acciones y aportará S/ 40,000 en efectivo por depósito bancario. Operaciones: (1) 02/06 se registra la suscripción del capital, según la minuta; (2) 03/06 el socio A deposita S/ 80,000 en la cuenta corriente; (3) 04/06 el socio B entrega equipos de cómputo por S/ 35,000 y muebles y enseres por S/ 25,000; (4) 05/06 el socio C deposita solo S/ 25,000 y queda pendiente el saldo de su aporte; (5) 10/06 se formaliza la constitución en Registros Públicos, partida registral N.° 76543219.',
+    explicacion: 'Lo nuevo aquí: un aporte en bienes (los bienes entran a la 33, no a la 10) y un aporte incompleto. El socio C todavía debe S/ 15,000: ese saldo queda en la 1421 como cuenta por cobrar. Se inscribe el capital suscrito completo, S/ 180,000.',
+    asientos: [
+      {
+        titulo: 'Suscripción', fecha: '02/06/26', glosa: 'Por la suscripción de 180,000 acciones de S/ 1.00 c/u, según minuta de constitución',
+        solucion: [
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 80000, detalle: 'Suscripciones por cobrar – Socio A', nota: 'Lo que cada socio se compromete a aportar es una cuenta por cobrar, sea en dinero o en bienes. Una línea por socio o una sola por S/ 180,000.' },
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 60000, detalle: 'Suscripciones por cobrar – Socio B', nota: '' },
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 40000, detalle: 'Suscripciones por cobrar – Socio C', nota: '' },
+          { lado: 'haber', cuentas: ['5221', '522'], monto: 180000, nota: 'Capital aún no inscrito: 5221 Aportes (capitalizaciones en trámite).' }
+        ],
+        explicacion: 'Se suscribe todo el capital (S/ 180,000), aunque luego no todo se pague el mismo día.'
+      },
+      {
+        titulo: 'Aporte del socio A', fecha: '03/06/26', glosa: 'Por el depósito del aporte del socio A',
+        solucion: [
+          { lado: 'debe', cuentas: ['1041', '104'], monto: 80000, nota: 'El dinero entra a la cuenta corriente de la empresa.' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 80000, detalle: 'Suscripciones por cobrar – Socio A', nota: 'El socio A cancela todo lo que suscribió.' }
+        ],
+        explicacion: 'Igual que en los ejercicios anteriores: sale la 14 y entra la 10.'
+      },
+      {
+        titulo: 'Aporte en bienes del socio B', fecha: '04/06/26', glosa: 'Por la entrega de equipos de cómputo y muebles como aporte del socio B',
+        solucion: [
+          { lado: 'debe', cuentas: ['33611', '3361', '336'], monto: 35000, nota: 'Los equipos de cómputo son activo fijo: 3361 Equipo para procesamiento de información (33611 Costo).' },
+          { lado: 'debe', cuentas: ['33511', '3351', '335'], monto: 25000, nota: 'Los muebles y enseres: 3351 Muebles (33511 Costo).' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 60000, detalle: 'Suscripciones por cobrar – Socio B', nota: 'El socio B cancela su aporte con bienes en lugar de dinero.' }
+        ],
+        explicacion: 'Un aporte no dinerario: en vez de la 10, entran a la 33 los bienes que entrega el socio, por el valor acordado (35,000 + 25,000 = 60,000).'
+      },
+      {
+        titulo: 'Aporte parcial del socio C', fecha: '05/06/26', glosa: 'Por el depósito parcial del aporte del socio C',
+        solucion: [
+          { lado: 'debe', cuentas: ['1041', '104'], monto: 25000, nota: 'Solo entran S/ 25,000 al banco.' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 25000, detalle: 'Suscripciones por cobrar – Socio C', nota: 'Se cancela solo lo que pagó. Los S/ 15,000 que faltan siguen en la 1421.' }
+        ],
+        explicacion: 'Ojo: el asiento es por lo que realmente se deposita (25,000), no por los 40,000 suscritos. El saldo pendiente (15,000) queda como cuenta por cobrar al socio C.'
+      },
+      {
+        titulo: 'Formalización en Registros Públicos', fecha: '10/06/26', glosa: 'Por la inscripción del capital social, partida registral N.° 76543219',
+        solucion: [
+          { lado: 'debe', cuentas: ['5221', '522'], monto: 180000, nota: 'Se cierra toda la cuenta transitoria.' },
+          { lado: 'haber', cuentas: ['5011', '501'], monto: 180000, nota: 'Se inscribe el capital suscrito completo: 5011 Acciones.' }
+        ],
+        explicacion: 'Se inscribe el capital suscrito (180,000), aunque el socio C aún deba 15,000: esa deuda sigue en la 1421 hasta que pague.'
+      }
+    ]
   }
 ];
