@@ -9,7 +9,7 @@ window.PONENCIAS = [
     "fecha": "2026-11-19",
     "fechaTexto": "Noviembre 2026",
     "lugar": "UNMSM",
-    "resumen": "Sustentación de la tesis de licenciatura en Ciencia Política (UNMSM): estudio cualitativo con 10 representantes estudiantiles y 5 documentos institucionales. La percepción es crítica y moderadamente insatisfactoria: los estudiantes son escuchados, pero no siempre tomados en cuenta. Incluye la red de códigos interactiva (34 códigos en 6 redes) y el prototipo Cuentas Claras.",
+    "resumen": "Sustentación de la tesis de licenciatura en Ciencia Política (UNMSM): estudio cualitativo con 10 representantes estudiantiles y 5 documentos institucionales. La percepción es crítica y moderadamente insatisfactoria: los estudiantes son escuchados, pero no siempre tomados en cuenta. Incluye la red de códigos interactiva (34 códigos en 6 redes, con la pregunta de la entrevista y el instrumento), el prototipo Cuentas Claras y pantallas sincronizadas.",
     "etiquetas": [
       "Rendición de cuentas",
       "Transparencia",
@@ -18,10 +18,10 @@ window.PONENCIAS = [
       "ATLAS.ti",
       "Gobernanza universitaria"
     ],
-    "diapositivas": 18,
+    "diapositivas": 19,
     "videos": 0,
     "ruta": "ciencia-politica/sustentacion-tesis-fdcp/",
-    "pdf": "ciencia-politica/sustentacion-tesis-fdcp/media/sustentacion-tesis-fdcp-v4.pdf",
+    "pdf": "ciencia-politica/sustentacion-tesis-fdcp/media/sustentacion-tesis-fdcp-v5.pdf",
     "portada": "ciencia-politica/sustentacion-tesis-fdcp/diapos/01.jpg",
     "oculto": false,
     "origen": "pptx"

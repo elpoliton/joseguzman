@@ -225,6 +225,7 @@ def main(meta_path):
 <script src="{base}assets/deck.js"></script>
 <script src="{base}assets/nube.js"></script>
 <script src="{base}assets/remoto.js"></script>
+<script src="{base}assets/espejo.js"></script>
 </body>
 </html>
 '''

@@ -23,6 +23,7 @@
 | `/joseguzman/ponencias/` | `ponencias/`, `assets/ponencias.js` (catálogo), `assets/deck.js` | Biblioteca de ponencias y motor de diapositivas |
 | `/joseguzman/admin/` | `admin/`, `assets/admin.js`, `assets/admin-diapos.js` | Panel (llave de GitHub de grano fino del propio José) |
 | `/joseguzman/control/` | `control/`, `assets/remoto.js`, `assets/nube.js` | Control de ponencias desde el celular (Firestore `salas-ponencias/{código}`) |
+| `…/ponencias/<ruta>/?espejo=<código>` | `assets/espejo.js` | **Pantallas espejo**: otras laptops/tablets siguen a la laptop principal (Firestore `salas-ponencias/esp-<código>` y `esp-<código>-laser`); solo miran, no controlan |
 | `/joseguzman/contabilidad/` | `contabilidad/`, `assets/contabilidad*.js`, `assets/ejercicios.js`, `assets/libro-xlsx.js` | Práctica de asientos y «Mi libro diario» |
 | `/joseguzman/contabilidad/curso/` | `contabilidad/curso/`, `assets/curso*.js`, `tools/curso_*.py` | Curso Dinámica del Plan Contable (CERTUS) y sus materiales |
 | `/joseguzman/cuentas-claras/` | `cuentas-claras/` | Prototipo Cuentas Claras FDCP (`noindex`) |
@@ -50,6 +51,7 @@ Más detalle de cada sección en `README.md`.
 - Las reglas se editan en la consola de Firebase, no en este repo. La regla de `salas-ponencias` tiene que estar **en el nivel de `documents`**, no dentro de otro `match`.
 
 ## Registro de cambios
+- 19/11/2026: pantallas espejo (`assets/espejo.js`, botón «🖥️ Pantallas» en todas las ponencias y en el conversor). La laptop principal publica diapositiva, pantalla negra, zoom, láser y el estado de las diapositivas interactivas (`window.REDSYNC` + evento `red:cambio`). `remoto.js` no corre en modo espejo. Sustentación FDCP en v5 (19 diapositivas): la red interactiva muestra la pregunta de la entrevista y una pestaña «Instrumento».
 - 19/11/2026: ponencia «Sustentación de tesis FDCP» (`ponencias/ciencia-politica/sustentacion-tesis-fdcp/`), hecha a mano desde el PPTX v4: diapositivas en imagen + la 7 es HTML interactivo (`red.js`, `red.css`, `red-datos.js`), que intercepta «siguiente/anterior» para recorrer las 6 redes de códigos antes de avanzar.
 - 19/11/2026: se crea esta guía y la página «Mis páginas» (`/paginas/`, catálogo en `assets/paginas.js`).
 - 17/11/2026: contabilidad con ejercicios de varios asientos, libro diario por ejercicio y Excel en Formato 5.1.

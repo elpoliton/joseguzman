@@ -6,6 +6,7 @@
 (function () {
   'use strict';
   if (!window.DECK || window.DECK.presentador || window.DECK.vista || !window.Nube) return;
+  if (/[?&]espejo=/.test(location.search)) return; // pantalla espejo: solo mira (espejo.js)
   var CONTROL = 'https://politon.pe/joseguzman/control/';
   var KSALA = 'jg-sala';
   var ref = null, quitar = null, vistos = null, tPub = null, celularVisto = 0, sala = null;

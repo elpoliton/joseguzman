@@ -183,3 +183,13 @@ body.vista .capa .ex:hover, body.vista .capa .ex.arr { outline-color: #BF0085; }
 .fullaviso b { display: block; font-size: 20px; color: #C9A227; }
 .fullaviso.on { display: block; }
 .rm-err:empty { display: none; }
+
+/* pantallas espejo (espejo.js) */
+.hud .esp-btn .esp-n { font-weight: 700; color: #2fd08a; }
+.esp-url { width: 100%; box-sizing: border-box; font: 400 12px/1.4 ui-monospace, monospace; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); background: #f7f9fc; }
+body.espejo .hud, body.espejo .progress, body.espejo .help, body.espejo .rm-btn, body.espejo .rm-modal { display: none !important; }
+body.espejo { cursor: none; }
+.esp-aviso { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 95; background: rgba(10,16,32,.92); color: #fff; border-radius: 14px; padding: 12px 18px; font: 400 14px/1.4 'Lato', sans-serif; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.4); transition: opacity .4s, transform .4s; pointer-events: none; }
+.esp-aviso b { font-size: 15px; } .esp-aviso small { color: #aab4c8; font-size: 12px; }
+.esp-aviso .esp-st { color: #2fd08a; font-weight: 700; }
+.esp-aviso.min { opacity: 0; transform: translateX(-50%) translateY(20px); }

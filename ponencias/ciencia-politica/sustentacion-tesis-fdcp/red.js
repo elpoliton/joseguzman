@@ -15,7 +15,8 @@
   function wrap(t, max) { var w = t.split(' '), lines = [''], i; for (i = 0; i < w.length; i++) { var cand = (lines[lines.length - 1] + ' ' + w[i]).trim(); if (cand.length > max && lines[lines.length - 1]) lines.push(w[i]); else lines[lines.length - 1] = cand; } return lines; }
 
   function mount(root) {
-    var step = 0, selCode = -1, tourT = null;
+    var step = 0, selCode = -1, tourT = null, tab = 'codigos';
+    function avisar() { try { document.dispatchEvent(new CustomEvent('red:cambio')); } catch (e) { } }
     var stage = root.querySelector('svg.net'), panel = root.querySelector('.panel .in');
     var navBtns = root.querySelectorAll('.nav button');
     var chainLis = root.querySelectorAll('.chain li');
@@ -63,7 +64,10 @@
     }
 
     function setPanel(html) { panel.classList.add('out'); setTimeout(function () { panel.innerHTML = html; panel.classList.remove('out'); bindPanel(); }, 160); }
-    function bindPanel() { Array.prototype.forEach.call(panel.querySelectorAll('[data-k]'), function (li) { li.addEventListener('click', function () { stopTour(); pick(+li.getAttribute('data-k')); }); }); }
+    function bindPanel() {
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-k]'), function (li) { li.addEventListener('click', function () { stopTour(); pick(+li.getAttribute('data-k')); }); });
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-tab]'), function (b) { b.addEventListener('click', function () { tab = b.getAttribute('data-tab'); pick(-1); }); });
+    }
 
     function pick(k, quiet) {
       var s = sub(ORDER[step]); selCode = k;
@@ -73,21 +77,34 @@
       Array.prototype.forEach.call(chainLis, function (li, j) { li.classList.toggle('hit', k >= 0 ? true : j >= 2); });
       var html;
       if (k < 0) {
-        html = '<div class="lab">Cómo leer esta red</div><h3 class="serif">' + esc(s.codigos.length) + ' códigos alrededor de «' + esc(s.nombre) + '»</h3>' +
-          '<p class="what">Cada recuadro es un <b>código</b>: agrupa fragmentos de entrevista que dicen algo parecido. Haz clic en uno para ver qué significa y un fragmento real.</p>' +
-          '<ul class="codes">' + s.codigos.map(function (c, j) { return '<li data-k="' + j + '">' + esc(c.n) + '<span>ver →</span></li>'; }).join('') + '</ul>';
+        var tabs = '<div class="tabs2"><button type="button" data-tab="codigos"' + (tab === 'codigos' ? ' class="on"' : '') + '>Códigos</button><button type="button" data-tab="instrumento"' + (tab === 'instrumento' ? ' class="on"' : '') + '>Instrumento</button></div>';
+        if (tab === 'instrumento') {
+          var I = s.instrumento || { preguntas: [], ficha: [] };
+          html = tabs + '<div class="lab">Cómo se recogió · ' + esc(s.nombre) + '</div><h3 class="serif">Guía de entrevista semiestructurada</h3>' +
+            '<p class="ind">Indicador: <b>' + esc(I.indicador || '') + '</b></p>' +
+            '<ol class="preg">' + I.preguntas.map(function (q) { return '<li>' + esc(q) + '</li>'; }).join('') + '</ol>' +
+            (I.ficha && I.ficha.length ? '<div class="lab l2">Ficha de análisis documental</div><table class="ficha"><tr><th>Observable</th><th>Documento revisado</th></tr>' +
+              I.ficha.map(function (f) { return '<tr><td>' + esc(f[0]) + '</td><td>' + esc(f[1]) + '</td></tr>'; }).join('') + '</table>'
+              : '<p class="none">Esta subcategoría de la percepción se analizó con las entrevistas.</p>');
+        } else {
+          html = tabs + '<div class="lab">Cómo leer esta red</div><h3 class="serif">' + esc(s.codigos.length) + ' códigos alrededor de «' + esc(s.nombre) + '»</h3>' +
+            '<p class="what">Cada recuadro es un <b>código</b>: agrupa respuestas que dicen algo parecido. Haz clic en uno para ver la pregunta, la respuesta y lo que muestra.</p>' +
+            '<ul class="codes">' + s.codigos.map(function (c, j) { return '<li data-k="' + j + '">' + esc(c.n) + '<span>ver →</span></li>'; }).join('') + '</ul>';
+        }
       } else {
         var c = s.codigos[k];
         html = '<div class="lab">Código ' + (k + 1) + ' de ' + s.codigos.length + ' · ' + esc(s.nombre) + '</div><h3 class="serif">' + esc(c.n) + '</h3>' +
           '<p class="what">' + esc(c.q) + '</p>' +
-          '<p class="read"><b>Qué muestra: </b>' + esc(c.l) + '</p>' +
-          (c.c ? '<blockquote>«' + esc(c.c) + '»<cite>Estudiante entrevistado · cita ' + esc(c.r) + ' en ATLAS.ti</cite></blockquote>'
-               : '<p class="none">Código construido con varias citas (' + esc(c.r) + ' en ATLAS.ti); ver la figura ' + s.figura + ' de la tesis.</p>');
+          (c.p ? '<div class="pq"><small>Pregunta de la entrevista</small>' + esc(c.p) + '</div>' : '') +
+          (c.c ? '<blockquote><small>Respuesta</small>«' + esc(c.c) + '»<cite>Estudiante entrevistado · cita ' + esc(c.r) + ' en ATLAS.ti</cite></blockquote>'
+               : '<p class="none">Código construido con varias citas (' + esc(c.r) + ' en ATLAS.ti); ver la figura ' + s.figura + ' de la tesis.</p>') +
+          '<p class="read"><b>Qué muestra: </b>' + esc(c.l) + '</p>';
       }
       if (quiet) { panel.innerHTML = html; bindPanel(); } else setPanel(html);
+      if (!quiet) avisar();
     }
 
-    function go(n, animate) { step = (n + 6) % 6; stopTour(); draw(animate !== false); }
+    function go(n, animate, quiet) { step = (n + 6) % 6; stopTour(); draw(animate !== false); if (!quiet) avisar(); }
     function stopTour() { if (tourT) { clearInterval(tourT); tourT = null; } var b = root.querySelector('.tour'); if (b) { b.classList.remove('on'); b.textContent = '▶ Recorrido'; } }
     function startTour() {
       var b = root.querySelector('.tour'), s = sub(ORDER[step]), k = selCode;
@@ -103,11 +120,12 @@
     var NEXT = { ArrowRight: 1, ArrowDown: 1, PageDown: 1, ' ': 1, Spacebar: 1, n: 1, N: 1 }, PREV = { ArrowLeft: 1, ArrowUp: 1, PageUp: 1, Backspace: 1, p: 1, P: 1 };
     var wasOn = false, lastDir = 1;
     window.addEventListener('keydown', function (e) {
-      if (!root.classList.contains('on') || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (!root.classList.contains('on') || e.altKey || e.ctrlKey || e.metaKey || document.body.classList.contains('espejo')) return;
       if (document.querySelector('.help.on')) return;
       if (NEXT[e.key] && step < 5) { e.preventDefault(); e.stopImmediatePropagation(); go(step + 1); lastDir = 1; }
       else if (PREV[e.key] && step > 0) { e.preventDefault(); e.stopImmediatePropagation(); go(step - 1); lastDir = -1; }
       else if (e.key === 'r' || e.key === 'R') { e.preventDefault(); e.stopImmediatePropagation(); if (tourT) stopTour(); else startTour(); }
+      else if (e.key === 'i' || e.key === 'I') { e.preventDefault(); e.stopImmediatePropagation(); stopTour(); tab = tab === 'instrumento' ? 'codigos' : 'instrumento'; pick(-1); }
     }, true);
     // al entrar a la diapositiva: desde la anterior empieza en la red 1; desde la siguiente, en la 6
     new MutationObserver(function () {
@@ -118,6 +136,23 @@
     }).observe(root, { attributes: true, attributeFilter: ['class'] });
     window.addEventListener('keydown', function (e) { if (root.classList.contains('on')) return; window.__redDesde = PREV[e.key] ? 'prev' : 'next'; }, true);
 
+    // estado para las pantallas espejo (espejo.js)
+    window.REDSYNC = {
+      get: function () { return { step: step, code: selCode, tab: tab }; },
+      set: function (o) { if (!o) return; if (o.tab) tab = o.tab; if (o.step !== step) go(o.step, true, true); pick(typeof o.code === 'number' ? o.code : -1, true); }
+    };
+    // el celular (remoto.js) manda «siguiente/anterior» por DECK.cmd: aquí también recorren las redes
+    document.addEventListener('deck:listo', function () {
+      if (!window.DECK || document.body.classList.contains('espejo')) return;
+      var c0 = window.DECK.cmd;
+      window.DECK.cmd = function (c, n) {
+        if (!root.classList.contains('on')) { if (c === 'prev') window.__redDesde = 'prev'; else if (c === 'next') window.__redDesde = 'next'; return c0(c, n); }
+        if (c === 'next' && step < 5) return go(step + 1);
+        if (c === 'prev' && step > 0) return go(step - 1);
+        if (c === 'prev') window.__redDesde = 'prev';
+        return c0(c, n);
+      };
+    });
     draw(false);
   }
   Array.prototype.forEach.call(document.querySelectorAll('.slide.red'), mount);
