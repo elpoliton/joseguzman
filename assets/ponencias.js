@@ -1,6 +1,32 @@
 /* ponencias.js — catálogo de politon.pe/joseguzman. Lo edita el panel /admin (o a mano). Debe seguir siendo JSON válido entre los corchetes. */
 window.PONENCIAS = [
   {
+    "id": "sustentacion-tesis-fdcp",
+    "titulo": "Sustentación de tesis: rendición de cuentas en la FDCP-UNMSM",
+    "subtitulo": "Percepción de los estudiantes sobre la rendición de cuentas de sus autoridades (2024)",
+    "categoria": "Ciencia Política",
+    "subcategoria": "Tesis de licenciatura",
+    "fecha": "2026-11-19",
+    "fechaTexto": "Noviembre 2026",
+    "lugar": "UNMSM",
+    "resumen": "Sustentación de la tesis de licenciatura en Ciencia Política (UNMSM): estudio cualitativo con 10 representantes estudiantiles y 5 documentos institucionales. La percepción es crítica y moderadamente insatisfactoria: los estudiantes son escuchados, pero no siempre tomados en cuenta. Incluye la red de códigos interactiva (34 códigos en 6 redes) y el prototipo Cuentas Claras.",
+    "etiquetas": [
+      "Rendición de cuentas",
+      "Transparencia",
+      "Ley 30220",
+      "Investigación cualitativa",
+      "ATLAS.ti",
+      "Gobernanza universitaria"
+    ],
+    "diapositivas": 18,
+    "videos": 0,
+    "ruta": "ciencia-politica/sustentacion-tesis-fdcp/",
+    "pdf": "ciencia-politica/sustentacion-tesis-fdcp/media/sustentacion-tesis-fdcp-v4.pdf",
+    "portada": "ciencia-politica/sustentacion-tesis-fdcp/diapos/01.jpg",
+    "oculto": false,
+    "origen": "pptx"
+  },
+  {
     "id": "dpc-clases-3-y-4",
     "titulo": "Activo no corriente y pasivo corriente",
     "subtitulo": "Clases 3 y 4, con dos casos en video",

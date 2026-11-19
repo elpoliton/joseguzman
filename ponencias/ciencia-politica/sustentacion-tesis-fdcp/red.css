@@ -1,0 +1,80 @@
+/* red.css — diapositiva interactiva «Red de códigos» (lienzo 1600 × 900) */
+.slide.red { --paper:#F7F5F0; --ink2:#1C2230; --acc:#C8553D; --teal:#2A6F77; --mut:#6B7280; --ln:#E3DED3; --soft:#EFEAE0; --accs:#F6E3DD; --teals:#DDEBEC;
+  background: var(--paper); color: var(--ink2); font-family: 'Lato', Calibri, Carlito, sans-serif; }
+.red .serif { font-family: Cambria, Caladea, Georgia, serif; }
+.red .route { position:absolute; left:72px; top:34px; width:1456px; display:flex; gap:7px; }
+.red .route div { height:11px; background:var(--ln); position:relative; }
+.red .route div.past { background:#C9C2B4; } .red .route div.on { background:var(--acc); }
+.red .route span { position:absolute; top:15px; left:0; font-size:11px; color:var(--mut); white-space:nowrap; }
+.red .route div.on span { color:var(--acc); font-weight:700; }
+.red .kick { position:absolute; left:72px; top:100px; font-size:13px; font-weight:700; letter-spacing:2.2px; color:var(--teal); text-transform:uppercase; }
+.red .ttl { position:absolute; left:72px; top:126px; right:72px; height:52px; display:flex; align-items:center; gap:18px; }
+.red .ttl h2 { margin:0; font-size:36px; line-height:1; font-weight:700; }
+.red .ttl .obj { font-size:14px; font-weight:700; color:#fff; background:var(--acc); padding:6px 14px; border-radius:20px; white-space:nowrap; }
+.red .ttl .obj.rc { background:var(--teal); }
+.red .ttl .q { font-size:17px; color:var(--mut); font-style:italic; }
+
+/* navegación de redes */
+.red .nav { position:absolute; left:72px; top:204px; width:246px; }
+.red .nav h4 { margin:0 0 8px; font-size:11.5px; letter-spacing:1.8px; text-transform:uppercase; color:var(--mut); }
+.red .nav h4.g2 { margin-top:22px; }
+.red .nav button { all:unset; box-sizing:border-box; display:flex; align-items:center; gap:12px; width:100%; height:50px; padding:0 14px; margin-bottom:8px; border-radius:10px;
+  background:#fff; border:1px solid var(--ln); cursor:pointer; font-size:17px; font-weight:700; color:var(--ink2); transition:all .25s; }
+.red .nav button i { font-style:normal; display:grid; place-items:center; width:26px; height:26px; border-radius:50%; background:var(--soft); color:var(--mut); font-size:13px; flex:none; transition:all .25s; }
+.red .nav button small { margin-left:auto; font-size:12px; font-weight:400; color:var(--mut); }
+.red .nav button.rc.on { background:var(--teal); border-color:var(--teal); color:#fff; } .red .nav button.pe.on { background:var(--acc); border-color:var(--acc); color:#fff; }
+.red .nav button.on i { background:rgba(255,255,255,.22); color:#fff; } .red .nav button.on small { color:rgba(255,255,255,.8); }
+.red .nav button:hover:not(.on) { border-color:#C9C2B4; transform:translateX(3px); }
+.red .chain { position:absolute; left:72px; top:690px; width:246px; font-size:12.5px; color:var(--mut); line-height:1.5; }
+.red .chain b { display:block; font-size:11.5px; letter-spacing:1.6px; text-transform:uppercase; margin-bottom:6px; color:var(--ink2); }
+.red .chain ol { margin:0; padding:0; list-style:none; counter-reset:c; }
+.red .chain li { counter-increment:c; display:flex; gap:8px; align-items:center; margin:3px 0; transition:color .25s; }
+.red .chain li::before { content:counter(c); display:grid; place-items:center; width:18px; height:18px; border-radius:50%; background:var(--soft); font-size:10.5px; font-weight:700; flex:none; transition:all .25s; }
+.red .chain li.hit { color:var(--ink2); font-weight:700; } .red .chain li.hit::before { background:var(--ink2); color:#fff; }
+
+/* red */
+.red svg.net { position:absolute; left:338px; top:196px; width:712px; height:520px; overflow:visible; }
+.red .net .edge { fill:none; stroke:#C9C2B4; stroke-width:2; transition:stroke .3s, stroke-width .3s, opacity .3s; }
+.red .net .edge.hot { stroke:var(--c); stroke-width:3.5; }
+.red .net .node { cursor:pointer; transition:opacity .3s; }
+.red .net .node rect { fill:#fff; stroke:var(--ln); stroke-width:1.5; transition:all .3s; }
+.red .net .node text { font-size:14.5px; font-weight:700; fill:var(--ink2); pointer-events:none; }
+.red .net .node .dia { fill:#9CC88F; }
+.red .net .node:hover rect { stroke:var(--c); }
+.red .net .node.sel rect { fill:var(--c); stroke:var(--c); } .red .net .node.sel text { fill:#fff; } .red .net .node.sel .dia { fill:#fff; }
+.red .net.focus .node:not(.sel) { opacity:.42; } .red .net.focus .edge:not(.hot) { opacity:.35; }
+.red .net .hub circle.core { fill:var(--c); } .red .net .hub circle.halo { fill:var(--c); opacity:.14; }
+.red .net .hub text { fill:#fff; font-weight:700; text-anchor:middle; pointer-events:none; }
+.red .net .hub { cursor:pointer; }
+.red .net .pulse { fill:none; stroke:var(--c); stroke-width:2; opacity:0; }
+.red .net .node.sel .pulse { animation:redpulse 1.6s ease-out infinite; }
+@keyframes redpulse { 0% { opacity:.7; transform:scale(1); } 100% { opacity:0; transform:scale(1.25); } }
+.red .net .node .pulse { transform-box:fill-box; transform-origin:center; }
+.red .net .dot { fill:var(--c); }
+
+.red .hall { position:absolute; left:338px; top:736px; width:712px; min-height:84px; box-sizing:border-box; padding:14px 20px 14px 24px; border-radius:4px; background:var(--soft); border-left:6px solid var(--c); display:flex; flex-direction:column; justify-content:center; }
+.red .hall small { font-size:11.5px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; color:var(--c); }
+.red .hall p { margin:4px 0 0; font-size:19px; line-height:1.3; font-weight:700; }
+
+/* panel */
+.red .panel { position:absolute; left:1078px; top:196px; width:450px; height:624px; box-sizing:border-box; background:#fff; border:1px solid var(--ln); border-top:6px solid var(--c); padding:24px 28px; overflow:hidden; }
+.red .panel .in { transition:opacity .25s, transform .25s; } .red .panel .in.out { opacity:0; transform:translateY(8px); }
+.red .panel .lab { font-size:11.5px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; color:var(--c); }
+.red .panel h3 { margin:6px 0 12px; font-size:27px; line-height:1.12; }
+.red .panel .what { font-size:16.5px; line-height:1.42; margin:0 0 14px; }
+.red .panel .read { font-size:15.5px; line-height:1.4; margin:0 0 16px; padding:10px 14px; background:var(--soft); border-radius:6px; }
+.red .panel .read b { color:var(--c); }
+.red .panel blockquote { margin:0; padding:14px 18px 12px; background:var(--accs); border-left:5px solid var(--acc); font-family:Cambria, Caladea, Georgia, serif; font-style:italic; font-size:18px; line-height:1.38; }
+.red .panel blockquote cite { display:block; margin-top:8px; font-family:'Lato', sans-serif; font-style:normal; font-size:12.5px; color:var(--mut); }
+.red .panel .none { font-size:14px; color:var(--mut); font-style:italic; }
+.red .panel ul.codes { list-style:none; margin:0; padding:0; display:grid; gap:7px; }
+.red .panel ul.codes li { font-size:15.5px; padding:7px 12px; border-radius:6px; background:var(--soft); cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+.red .panel ul.codes li:hover { background:var(--c); color:#fff; }
+.red .panel ul.codes li span { font-size:12px; opacity:.7; }
+.red .foot2 { position:absolute; left:338px; right:72px; top:838px; display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--mut); }
+.red .foot2 kbd { font-family:inherit; font-size:11.5px; padding:1px 6px; border:1px solid #C9C2B4; border-radius:4px; background:#fff; }
+.red .tour { all:unset; cursor:pointer; font-size:13px; font-weight:700; color:var(--ink2); padding:7px 14px; border-radius:18px; border:1px solid #C9C2B4; background:#fff; }
+.red .tour.on { background:var(--ink2); color:#fff; border-color:var(--ink2); }
+.red .src { position:absolute; left:72px; bottom:22px; font-size:11px; color:var(--mut); }
+.slide.red aside.notes { display:none; }
+.red .net .node:focus { outline:none; } .red .net .node:focus-visible rect:not(.pulse) { stroke:var(--c); stroke-width:3; }
