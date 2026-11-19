@@ -64,3 +64,4 @@ jobs:
             tools/**
             entrada/**
             README.md
+            CLAUDE.md

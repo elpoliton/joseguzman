@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es-PE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mis páginas · José Manuel Guzmán Valverde</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0F1E3D">
+<link rel="icon" href="../favicon.ico" sizes="48x48">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  body { background: var(--soft); color: var(--ink); }
+  .cabeza { background: var(--navy); color: #fff; }
+  .cabeza .in { max-width: 1120px; margin: 0 auto; padding: 34px 24px 30px; }
+  .cabeza a.volver { color: var(--gold2); text-decoration: none; font-weight: 700; font-size: 14px; }
+  .cabeza h1 { font-size: 34px; line-height: 1.15; margin: 10px 0 6px; font-weight: 900; }
+  .cabeza p { margin: 0; color: #C9D1E0; max-width: 680px; }
+  .buscar { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .buscar input { flex: 1 1 280px; max-width: 520px; font: 400 16px/1.4 'Lato', sans-serif; padding: 12px 14px; border-radius: 10px; border: 0; color: var(--ink); }
+  .buscar input:focus { outline: 3px solid var(--gold); }
+  .buscar .n { color: #C9D1E0; font-size: 14px; }
+  main { max-width: 1120px; margin: 0 auto; padding: 26px 24px 80px; }
+  h2.g { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 30px 0 12px; font-weight: 700; }
+  h2.g:first-child { margin-top: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px 16px 12px; display: flex; flex-direction: column; gap: 8px; position: relative; }
+  .card:hover { border-color: #b9c4d8; }
+  .card .cab { display: flex; gap: 12px; align-items: flex-start; }
+  .card .ini { flex: 0 0 40px; height: 40px; border-radius: 10px; background: var(--navy); color: var(--gold); font-weight: 900; display: grid; place-items: center; font-size: 17px; }
+  .card h3 { margin: 0; font-size: 17px; line-height: 1.25; }
+  .card h3 a { color: var(--navy); text-decoration: none; }
+  .card h3 a::after { content: ''; position: absolute; inset: 0; border-radius: 14px; }
+  .card h3 a:focus-visible { outline: none; }
+  .card:has(h3 a:focus-visible) { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .card .dom { font-size: 13px; color: var(--muted); word-break: break-all; }
+  .card p { margin: 0; font-size: 15px; color: var(--ink); line-height: 1.4; }
+  .card .pie { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: auto; padding-top: 4px; }
+  .card .pie button, .card .pie a.ed { position: relative; z-index: 1; all: unset; position: relative; z-index: 1; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--navy); padding: 5px 9px; border-radius: 8px; border: 1px solid var(--line); background: #fff; }
+  .card .pie button:hover, .card .pie a.ed:hover { border-color: var(--navy); }
+  .card .pie button:focus-visible, .card .pie a.ed:focus-visible { outline: 3px solid var(--gold); }
+  .card .pie .fav[aria-pressed="true"] { background: var(--gold2); border-color: var(--gold); }
+  .tag { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--muted); border: 1px solid var(--line); margin-left: auto; }
+  .vacio { color: var(--muted); padding: 30px 0; }
+  .nota { margin-top: 36px; font-size: 14px; color: var(--muted); }
+  @media (max-width: 600px) { .cabeza .in { padding: 26px 16px 24px; } main { padding: 20px 16px 60px; } .cabeza h1 { font-size: 28px; } .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="cabeza">
+  <div class="in">
+    <a class="volver" href="../">← politon.pe/joseguzman</a>
+    <h1>Mis páginas</h1>
+    <p>Todas tus webs en un solo lugar. Marca con ★ las que más usas para tenerlas arriba.</p>
+    <div class="buscar">
+      <label class="sr" for="q">Buscar una página</label>
+      <input id="q" type="search" placeholder="Buscar: contabilidad, marginalia, panel…" autocomplete="off">
+      <span class="n" id="n"></span>
+    </div>
+  </div>
+</header>
+<main id="lista" aria-live="polite"></main>
+<script src="../assets/paginas.js"></script>
+<script>
+(function () {
+  var G = window.PAGINAS || [], CLAVE = 'jg-paginas-fav', fav = [];
+  try { fav = JSON.parse(localStorage.getItem(CLAVE) || '[]'); } catch (e) { fav = []; }
+  function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(fav)); } catch (e) { } }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function norm(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function dom(u) { return u.replace(/^https?:\/\//, '').replace(/\/$/, ''); }
+  function inicial(n) { var m = n.replace(/^[^A-Za-zÁÉÍÓÚÑ]+/, ''); return (m[0] || '•').toUpperCase(); }
+  function tarjeta(it) {
+    var f = fav.indexOf(it.url) >= 0;
+    return '<article class="card"><div class="cab"><span class="ini" aria-hidden="true">' + esc(inicial(it.nombre)) + '</span><div>' +
+      '<h3><a href="' + esc(it.url) + '" target="_blank" rel="noopener">' + esc(it.nombre) + '</a></h3><div class="dom">' + esc(dom(it.url)) + '</div></div></div>' +
+      '<p>' + esc(it.desc) + '</p><div class="pie">' +
+      '<button type="button" class="fav" data-fav="' + esc(it.url) + '" aria-pressed="' + f + '" aria-label="' + (f ? 'Quitar de favoritas: ' : 'Fijar arriba: ') + esc(it.nombre) + '">' + (f ? '★ Fijada' : '☆ Fijar') + '</button>' +
+      '<button type="button" data-copiar="' + esc(it.url) + '">Copiar enlace</button>' +
+      (it.editar ? '<a class="ed" href="https://github.com/elpoliton/joseguzman/tree/main/' + esc(it.editar) + '" target="_blank" rel="noopener">Editar en GitHub</a>' : '') +
+      (it.privada ? '<span class="tag">privada</span>' : '') + '</div></article>';
+  }
+  function pintar() {
+    var q = norm(document.getElementById('q').value.trim()), total = 0, html = '';
+    var todos = []; G.forEach(function (g) { g.items.forEach(function (it) { todos.push(it); }); });
+    function pasa(it) { return !q || norm(it.nombre + ' ' + it.desc + ' ' + it.url).indexOf(q) >= 0; }
+    var fijadas = todos.filter(function (it) { return fav.indexOf(it.url) >= 0 && pasa(it); });
+    if (fijadas.length) { html += '<h2 class="g">★ Fijadas</h2><div class="grid">' + fijadas.map(tarjeta).join('') + '</div>'; }
+    G.forEach(function (g) {
+      var its = g.items.filter(function (it) { return pasa(it) && fav.indexOf(it.url) < 0; });
+      total += g.items.filter(pasa).length;
+      if (its.length) html += '<h2 class="g">' + esc(g.grupo) + '</h2><div class="grid">' + its.map(tarjeta).join('') + '</div>';
+    });
+    if (!total) html = '<p class="vacio">No hay ninguna página con «' + esc(document.getElementById('q').value) + '».</p>';
+    html += '<p class="nota">Para agregar una página, edita <code>assets/paginas.js</code> en el repositorio o pídeselo a Claude.</p>';
+    document.getElementById('lista').innerHTML = html;
+    document.getElementById('n').textContent = total + (total === 1 ? ' página' : ' páginas');
+  }
+  document.getElementById('q').addEventListener('input', pintar);
+  document.getElementById('lista').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-fav]');
+    if (b) { var u = b.getAttribute('data-fav'), i = fav.indexOf(u); if (i >= 0) fav.splice(i, 1); else fav.push(u); guardar(); pintar(); return; }
+    var c = e.target.closest('[data-copiar]');
+    if (c) {
+      var t = c.getAttribute('data-copiar');
+      var ok = function () { c.textContent = '✓ Copiado'; setTimeout(function () { c.textContent = 'Copiar enlace'; }, 1500); };
+      if (navigator.clipboard) navigator.clipboard.writeText(t).then(ok, function () { prompt('Copia el enlace:', t); });
+      else prompt('Copia el enlace:', t);
+    }
+  });
+  pintar();
+})();
+</script>
+</body>
+</html>

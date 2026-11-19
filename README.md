@@ -1,5 +1,7 @@
 # politon.pe/joseguzman
 
+> Si eres un chat de Claude: lee primero `CLAUDE.md`.
+
 Página personal de José Manuel Guzmán Valverde y biblioteca de ponencias. Sitio estático, sin dependencias ni paso de compilación.
 
 ## Estructura
@@ -28,7 +30,7 @@ En las diapositivas con video, «siguiente» primero reproduce el video y la sig
 ## Nube (Firebase · proyecto organizador-politon)
 `assets/nube.js` carga el SDK solo cuando hace falta. Cada web usa su propio documento, separado del organizador:
 - `apps/contabilidad/usuarios/{uid}`: práctica de /contabilidad sincronizada entre dispositivos (`assets/contabilidad-nube.js`).
-- `apps/ponencias/usuarios/{uid}`: control remoto. La laptop publica `sesion` (diapositiva, notas, siguiente) y ejecuta la `cola` de comandos que escribe el celular desde `/control/` (`assets/remoto.js`).
+- `salas-ponencias/{código}`: control remoto, sin iniciar sesión (emparejamiento por QR). La laptop publica `sesion` (diapositiva, notas, siguiente) y ejecuta la `cola` de comandos que escribe el celular desde `/control/` (`assets/remoto.js`).
 
 ## Publicación
 Cada cambio en la rama `main` se publica solo por FTP en politon.pe/joseguzman (`.github/workflows/publicar.yml`).
