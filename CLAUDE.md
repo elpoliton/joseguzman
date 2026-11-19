@@ -50,6 +50,7 @@ Más detalle de cada sección en `README.md`.
 - Las reglas se editan en la consola de Firebase, no en este repo. La regla de `salas-ponencias` tiene que estar **en el nivel de `documents`**, no dentro de otro `match`.
 
 ## Registro de cambios
+- 19/11/2026: ponencia «Sustentación de tesis FDCP» (`ponencias/ciencia-politica/sustentacion-tesis-fdcp/`), hecha a mano desde el PPTX v4: diapositivas en imagen + la 7 es HTML interactivo (`red.js`, `red.css`, `red-datos.js`), que intercepta «siguiente/anterior» para recorrer las 6 redes de códigos antes de avanzar.
 - 19/11/2026: se crea esta guía y la página «Mis páginas» (`/paginas/`, catálogo en `assets/paginas.js`).
 - 17/11/2026: contabilidad con ejercicios de varios asientos, libro diario por ejercicio y Excel en Formato 5.1.
 - 16/11/2026: prototipo Cuentas Claras FDCP.
