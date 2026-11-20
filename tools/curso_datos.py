@@ -393,11 +393,15 @@ MATERIALES = [
    ['Formatos de contabilidad', 'Libro diario (formato 5.1), registro de ventas, registro de compras, caja y bancos (efectivo y cuenta corriente). Hay dos versiones que dio el profesor.', [['Versión 2', 'formatos-contabilidad-v2.xlsx'], ['Versión 1', 'formatos-contabilidad-v1.xlsx']]],
    ['Tablas de la SUNAT', 'Tablas de códigos de los libros electrónicos: medios de pago, tipos de comprobante, documentos de identidad, monedas, entre otras.', [['Excel', 'tablas-sunat.xlsx']]],
    ['Caso: Estado de Situación Financiera (resuelto)', 'Comercial Mendoza: clasificación de partidas, estado de situación financiera y asiento de apertura. Capital S/ 155,300. Resuelto con fórmulas sobre tu hoja TAREA.', [['Excel', 'caso-estado-situacion-financiera-resuelto-v1.xlsx']]]]},
+ {'grupo': 'Ejercicios resueltos en Formato 5.1', 'items': [
+   ['Constitución de sociedades: Gretsa, Ferremax y El Constructor', 'Suscripción, cancelación de aportes (en dinero y en bienes, y un aporte parcial) y formalización en Registros Públicos. Un libro diario por empresa. Subido el 17/11/2026.', [['PDF', 'libro-diario-constitucion-v1.pdf'], ['Excel', 'libro-diario-constitucion-v1.xlsx']]],
+   ['Elemento 5 · Inversiones del Pacífico SAC', 'Patrimonio neto en 15 asientos: constitución, aumento de capital, prima de emisión, capitalización, reserva legal, dividendos y excedente de revaluación; saldo final de resultados acumulados (S/ 72,000). Subido el 20/11/2026.', [['PDF', 'libro-diario-elemento5-v1.pdf'], ['Excel', 'libro-diario-elemento5-v1.xlsx']]]]},
  {'grupo': 'Mis entregas', 'items': [
    ['AA1 · POLITON E.I.R.L. · Informe', 'Informe de la AA1: apertura, cobranzas, pagos, compras, ingresos al almacén y compra de activos, con cada asiento explicado. Entregado el 12/11/2026.', [['PDF', 'aa1-politon-informe-v1.pdf']]],
    ['AA1 · POLITON E.I.R.L. · Libro diario', 'Asiento de apertura y 17 operaciones de octubre 2026 en el formato 5.1, con registro de compras, caja y bancos y un balance de comprobación con fórmulas.', [['Excel', 'aa1-politon-libro-diario-v1.xlsx']]]]},
 ]
 ENLACES = [
+  ['📓 Cuaderno del curso en Marginalia (Documentos de la web → Dinámica del Plan Contable)', 'https://politon.pe/marginalia/'],
   ['PCGE 2019 (PDF oficial, MEF)', 'https://www.mef.gob.pe/contenidos/conta_publ/documentac/PCGE_2019.pdf'],
   ['Resolución N.° 002-2019-EF/30', 'https://www.gob.pe/institucion/mef/normas-legales/277088-002-2019-ef-30'],
   ['Registrar o constituir una empresa (gob.pe)', 'https://www.gob.pe/269-registrar-o-constituir-una-empresa'],

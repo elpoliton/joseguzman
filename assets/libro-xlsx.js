@@ -87,11 +87,11 @@
       var ini = r;
       a.lineas.forEach(function (l, i) {
         if (i === 0) {
-          s(r, 0, 4, String(j + 1));
+          s(r, 0, 4, a.num != null ? String(a.num) : String(j + 1));
           var sf = serial(a.fecha); if (sf != null) n(r, 1, 6, sf); else s(r, 1, 4, a.fecha || '');
-          s(r, 2, 5, a.glosa || ''); e(r, 3, 4); e(r, 4, 4); s(r, 5, 4, a.doc || '');
+          s(r, 2, 5, a.glosa || ''); s(r, 3, 4, a.libro || ''); s(r, 4, 4, a.corr || ''); s(r, 5, 4, a.doc || '');
         } else for (var c = 0; c < 6; c++) e(r, c, 4);
-        s(r, 6, 8, l.cuenta); s(r, 7, l.haber && !l.debe ? 10 : 9, l.detalle || '');
+        if (l.cuenta) s(r, 6, 8, l.cuenta); else e(r, 6, 8); s(r, 7, l.haber && !l.debe ? 10 : 9, l.detalle || '');
         if (l.debe) n(r, 8, 7, l.debe); else e(r, 8, 7);
         if (l.haber) n(r, 9, 7, l.haber); else e(r, 9, 7);
         D += l.debe || 0; H += l.haber || 0; alto[r] = (l.detalle || '').length > (l.haber && !l.debe ? 40 : 46) ? 28 : 20; r++;

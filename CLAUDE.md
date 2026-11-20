@@ -24,7 +24,7 @@
 | `/joseguzman/admin/` | `admin/`, `assets/admin.js`, `assets/admin-diapos.js` | Panel (llave de GitHub de grano fino del propio José) |
 | `/joseguzman/control/` | `control/`, `assets/remoto.js`, `assets/nube.js` | Control de ponencias desde el celular (Firestore `salas-ponencias/{código}`) |
 | `…/ponencias/<ruta>/?espejo=<código>` | `assets/espejo.js` | **Pantallas espejo**: otras laptops/tablets siguen a la laptop principal (Firestore `salas-ponencias/esp-<código>` y `esp-<código>-laser`); solo miran, no controlan |
-| `/joseguzman/contabilidad/` | `contabilidad/`, `assets/contabilidad*.js`, `assets/ejercicios.js`, `assets/libro-xlsx.js` | Práctica de asientos y «Mi libro diario» |
+| `/joseguzman/contabilidad/` | `contabilidad/`, `assets/contabilidad*.js`, `assets/ejercicios.js`, `assets/libro-xlsx.js`, `assets/formato51.js` | Práctica de asientos, «Mi libro diario» y «Mi Formato 5.1» (libro editable, `#formato`) |
 | `/joseguzman/contabilidad/curso/` | `contabilidad/curso/`, `assets/curso*.js`, `tools/curso_*.py` | Curso Dinámica del Plan Contable (CERTUS) y sus materiales |
 | `/joseguzman/cuentas-claras/` | `cuentas-claras/` | Prototipo Cuentas Claras FDCP (`noindex`) |
 
@@ -36,7 +36,8 @@ Más detalle de cada sección en `README.md`.
 - **Atajo politon.pe/paginas:** es un archivo de redirección que José sube a mano a la raíz de politon.pe (ver `tools/raiz-politon/LEEME.md`). No hay que tocarlo para sumar páginas.
 - **Subir una ponencia desde un PowerPoint:** copia el `.pptx` a `entrada/<id>.pptx` y crea `entrada/<id>.json` con `id`, `titulo`, `subtitulo`, `categoria`, `subcategoria`, `fecha`, `lugar`, `resumen`, `etiquetas`, `oculto` y `pptx` (ruta del archivo). Al publicar se convierte sola. Para verla antes, ejecuta `python3 tools/convertir_pptx.py entrada/<id>.json` y luego borra los dos archivos de `entrada/`. Los enlaces http del PowerPoint quedan clicables.
 - **Subir un documento al curso:** cópialo a `contabilidad/curso/materiales/` y agrégalo en `MATERIALES` de `tools/curso_datos.py`. Luego ejecuta `python3 tools/curso_datos.py`; si es un Excel, también `python3 tools/curso_vistas_excel.py`. Se abre en el visor de la web. Enlace directo: `…/contabilidad/curso/#ver=<archivo>`.
-- **Agregar un ejercicio de contabilidad:** en `assets/ejercicios.js`. Formato en `README.md`; cada ejercicio lleva `subido: 'dd/mm/aa'`.
+- **Agregar un ejercicio de contabilidad:** en `assets/ejercicios.js`. Formato en `README.md`; cada ejercicio lleva `subido: 'dd/mm/aa'`. Si José pide el libro resuelto, súbelo también (PDF + Excel, con versión) a `contabilidad/curso/materiales/` y al grupo «Ejercicios resueltos en Formato 5.1» de `MATERIALES` en `tools/curso_datos.py`.
+- **Marginalia** (politon.pe/marginalia, otro chat) lee sola la carpeta `contabilidad/curso/materiales/` de GitHub: lo que se sube ahí aparece en Marginalia → «Documentos de la web» → Dinámica del Plan Contable. El enlace «📓 Cuaderno del curso» de contabilidad y del curso apunta a Marginalia.
 - **No mover ni renombrar** los archivos de `contabilidad/curso/materiales/`: otro proyecto (Marginalia) y algunas presentaciones los enlazan.
 
 ## 4. Reglas de José
@@ -51,6 +52,7 @@ Más detalle de cada sección en `README.md`.
 - Las reglas se editan en la consola de Firebase, no en este repo. La regla de `salas-ponencias` tiene que estar **en el nivel de `documents`**, no dentro de otro `match`.
 
 ## Registro de cambios
+- 20/11/2026: pestaña «Mi Formato 5.1» (`assets/formato51.js`): libros diarios editables en `S.formatos` (borrados en `S.f51borrados`; se unen con la nube por `t`), copiar un ejercicio, descargar Excel/PDF y Formato 5.1 en blanco. `libro-xlsx.js` acepta `num`, `libro` y `corr` por asiento. Libros resueltos (constitución y Elemento 5) en Materiales del curso, visibles en Marginalia; enlace «📓 Cuaderno del curso».
 - 20/11/2026: ejercicio «Inversiones del Pacífico SAC · Elemento 5» (15 asientos: constitución, aumento, prima de emisión, capitalización, utilidad, reserva legal, dividendos y revaluación). `assets/libro-xlsx.js` da más alto a las filas con denominaciones largas.
 - 20/11/2026: Practicar de contabilidad: botón ⇄ por línea para pasarla a otro asiento (o a uno nuevo en los propios); «⚙ Nombre y fecha» por asiento en los propios (`propio.info[k] = {titulo, fecha}`); «▤ Ver todos los asientos y cuentas T»; panel «¿Qué pasó?» con el efecto en la ecuación contable; botón «Hoy» en las fechas; estudio: `S.intentos[clave] = {n, fallos, primero, vio, repasar, desdeCero, t}` (filtro «Para repasar», aciertos al primer intento; se une con la nube por `t`) y cuestionario «🎯 Ponte a prueba» en Plan de cuentas.
 - 19/11/2026: pantallas espejo (`assets/espejo.js`, botón «🖥️ Pantallas» en todas las ponencias y en el conversor). La laptop principal publica diapositiva, pantalla negra, zoom, láser y el estado de las diapositivas interactivas (`window.REDSYNC` + evento `red:cambio`). `remoto.js` no corre en modo espejo. Sustentación FDCP en v5 (19 diapositivas): la red interactiva muestra la pregunta de la entrevista y una pestaña «Instrumento».

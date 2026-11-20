@@ -54,9 +54,10 @@
   // ---------- vistas
   function vista(v, sinHash) {
     $$('.vtabs [data-v]').forEach(function (b) { b.setAttribute('aria-selected', String(b.getAttribute('data-v') === v)); });
-    ['practica', 'plan', 'diario'].forEach(function (x) { $('#v-' + x).hidden = x !== v; });
+    ['practica', 'plan', 'diario', 'formato'].forEach(function (x) { $('#v-' + x).hidden = x !== v; });
     if (v === 'plan') pintarPlan();
     if (v === 'diario') pintarDiario();
+    if (v === 'formato' && window.F51) window.F51.pintar();
     if (!sinHash) try { history.replaceState(null, '', '#' + (v === 'practica' && actual ? actual.id : v)); } catch (e) { }
   }
   $('.vtabs').addEventListener('click', function (e) { var b = e.target.closest('[data-v]'); if (b) vista(b.getAttribute('data-v')); });
@@ -758,6 +759,9 @@
     Object.keys(Object.assign({}, nb, na)).forEach(function (id) { var x = na[id], y = nb[id]; out.notas[id] = !x ? y : !y ? x : ((x.t || 0) >= (y.t || 0) ? x : y); });
     out.intentos = {}; var ib = b.intentos || {}, ia = a.intentos || {};
     Object.keys(Object.assign({}, ib, ia)).forEach(function (id) { var x = ia[id], y = ib[id]; out.intentos[id] = !x ? y : !y ? x : ((x.t || 0) >= (y.t || 0) ? x : y); });
+    out.f51borrados = Object.assign({}, b.f51borrados, a.f51borrados);
+    var fm = {}; (b.formatos || []).concat(a.formatos || []).forEach(function (f) { if (!fm[f.id] || (f.t || 0) >= (fm[f.id].t || 0)) fm[f.id] = f; });
+    out.formatos = Object.keys(fm).map(function (id) { return fm[id]; }).filter(function (f) { return !out.f51borrados[f.id]; }).sort(function (x, y) { return (x.creado || 0) - (y.creado || 0); });
     out.estado = Object.assign({}, b.estado, a.estado);
     Object.keys(out.estado).forEach(function (id) { var x = (a.trabajo || {})[id], y = (b.trabajo || {})[id]; if (x && y && (y.t || 0) > (x.t || 0) && !(b.estado || {})[id]) delete out.estado[id]; });
     return out;
@@ -767,15 +771,32 @@
   window.CX = {
     estado: function () { return S; },
     unir: unir,
-    escribiendo: function () { var a = document.activeElement; return !!(a && a.closest && a.closest('#filas, #glosa, #notaTxt, #eTemaIn')); },
+    escribiendo: function () { var a = document.activeElement; return !!(a && a.closest && a.closest('#filas, #glosa, #notaTxt, #eTemaIn, #f5, .f5-cab')); },
     aplicar: function (nuevo) {
       S = nuevo; S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; S.notas = S.notas || {}; S.intentos = S.intentos || {};
       try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
       usarVersion(S.version || ver);
       var id = actual && todos().some(function (e) { return e.id === actual.id; }) ? actual.id : (S.ultimo || todos()[0].id);
-      abrir(id); if (!$('#v-diario').hidden) pintarDiario(); if (!$('#v-plan').hidden) pintarPlan();
+      abrir(id); if (!$('#v-diario').hidden) pintarDiario(); if (!$('#v-formato').hidden && window.F51) window.F51.pintar(); if (!$('#v-plan').hidden) pintarPlan();
     },
-    toast: function (m) { toast(m); }
+    toast: function (m) { toast(m); },
+    // para el editor del Formato 5.1 (assets/formato51.js)
+    guardar: function () { guardar(); },
+    nombre: function (c) { return MAP[c] ? nomDet(c) : ''; },
+    existe: function (c) { return !!MAP[c]; },
+    cuentas: function () { return LIST; },
+    ejercicios: function () { return todos().map(function (e, i) { return { id: e.id, n: i + 1, titulo: e.empresa || (e.enunciado || '').slice(0, 70), subido: subidoDe(e), nAs: pasos(e).length }; }); },
+    // asientos de un ejercicio: lo que resolvió José y, donde falte, la solución
+    libroDe: function (id) {
+      var e = todos().find(function (x) { return x.id === id; }); if (!e) return null;
+      var A = [];
+      pasos(e).forEach(function (p, k) {
+        var w = S.trabajo[wk(e.id, k)], L = conLineas(w), gl = w && w.glosa;
+        if (!L.length && p.solucion) { gl = p.glosa; L = p.solucion.map(function (x) { var c = x.cuentas[0]; return { cuenta: c, detalle: x.detalle || nomDet(c), debe: x.lado === 'debe' ? x.monto : 0, haber: x.lado === 'haber' ? x.monto : 0 }; }); }
+        if (L.length) A.push({ fecha: p.fecha || e.fecha || '', glosa: gl || '', doc: p.doc || '', lineas: L.map(function (l) { return { cuenta: l.cuenta, detalle: l.detalle, debe: l.debe || 0, haber: l.haber || 0 }; }) });
+      });
+      return { nombre: e.empresa || 'Ejercicio ' + (todos().indexOf(e) + 1), empresa: e.empresa || '', ruc: e.ruc || '', periodo: e.periodo || '', enunciado: e.enunciado || '', asientos: A };
+    }
   };
 
   // ---------- vista completa: todos los asientos del ejercicio y sus cuentas T
@@ -886,5 +907,5 @@
   usarVersion(ver);
   var h = decodeURIComponent((location.hash || '').slice(1));
   abrir(todos().some(function (e) { return e.id === h; }) ? h : S.ultimo || todos()[0].id);
-  if (h === 'plan' || h === 'diario') vista(h); else vista('practica', true);
+  if (h === 'plan' || h === 'diario' || h === 'formato') vista(h); else vista('practica', true);
 })();

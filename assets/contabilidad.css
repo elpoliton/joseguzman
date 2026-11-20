@@ -149,11 +149,54 @@ tr.ok-line td { background: #eef9f3; } tr.bad-line td { background: #fdf0f0; }
 .btn[disabled] { opacity: .45; pointer-events: none; }
 #diario .empty { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 30px; text-align: center; color: var(--muted); }
 
+/* Mi Formato 5.1 (editable) */
+.vt-marg { background: #f3eefa; border-color: #d9cbee; color: #4b2a7a; }
+.f5-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-bottom: 14px; }
+.f5-libros { display: flex; gap: 8px 12px; flex-wrap: wrap; align-items: center; }
+.f5-libros select { width: auto; min-width: 220px; font-weight: 700; color: var(--navy); }
+.f5-libros .f5-ej { min-width: 0; width: 420px; max-width: 100%; font-weight: 400; color: var(--ink); }
+.f5-libros select { max-width: 100%; }
+.f5-del { color: #b3262d; }
+.f5-cab { display: grid; grid-template-columns: repeat(3, minmax(150px, 1fr)); gap: 10px 14px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.f5-cab label { display: grid; gap: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.f5-cab .wide { grid-column: 1 / -1; }
+@media (max-width: 700px) { .f5-cab { grid-template-columns: 1fr; } }
+#f5 .empty { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 30px; text-align: center; color: var(--muted); }
+#v-formato, #f5 { min-width: 0; max-width: 100%; }
+table.f5t { width: 100%; border-collapse: collapse; min-width: 1166px; table-layout: fixed; font-size: 13.5px; background: #fff; }
+.f5t th { background: var(--navy); color: #fff; padding: 7px 6px; font-size: 11.5px; text-align: center; border: 1px solid #2c3f6b; line-height: 1.2; }
+.f5t td { border: 1px solid #e3e8f0; padding: 3px; vertical-align: top; }
+.f5t tr.ini td { border-top: 2px solid var(--line); }
+.f5t td.c { text-align: center; vertical-align: middle; }
+.f5t .in { width: 100%; box-sizing: border-box; padding: 5px 6px; font-size: 13.5px; border-radius: 7px; min-height: 0; }
+.f5t textarea.in { resize: vertical; min-height: 54px; font-family: inherit; line-height: 1.35; }
+.f5t .in.c { text-align: center; } .f5t .in.n { text-align: right; font-variant-numeric: tabular-nums; }
+.f5t .in.cta { font-weight: 700; } .f5t .in.mal { border-color: #b3262d; background: #fff4f4; }
+.f5t .in.hab { padding-left: 24px; }
+.f5t td.acc { vertical-align: middle; text-align: center; padding: 0; }
+.f5-x { all: unset; cursor: pointer; color: var(--muted); font-size: 16px; line-height: 1; padding: 2px 5px; border-radius: 6px; display: inline-block; }
+.f5-x:hover, .f5-x:focus-visible { color: #b3262d; background: #fff0f0; }
+td.c .f5-x { display: block; margin: 4px auto 0; font-size: 13px; }
+.f5t tr.f5-pie td { border-top: 0; background: #fafbfd; padding: 2px 6px 6px; }
+.f5t .cuad { font-size: 12.5px; font-weight: 700; } .f5t .cuad.ok { color: #1f9a62; } .f5t .cuad.no { color: #b3262d; }
+.f5t tr.tt td { background: var(--soft); font-weight: 900; color: var(--navy); border-top: 2px solid var(--navy); padding: 8px 6px; }
+.f5t td.r { text-align: right; } .f5t td.n { text-align: right; font-variant-numeric: tabular-nums; }
+.cuadre.si { color: #1f9a62; }
+.f5-bot { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 10px 0 0; }
+.f5-desc { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.f5-print { display: none; }
+@media print {
+  body.imp-f5 #v-formato > :not(.f5-print) { display: none !important; }
+  body.imp-f5 .f5-print { display: block !important; }
+  body.imp-f5 .libro { border-bottom: 0; }
+  .f5p .c { width: 30px; }
+}
+
 /* grupos por fecha de subida */
 .grp { font-size: 11.5px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: var(--mag); padding: 12px 10px 4px; }
 .grp:first-child { padding-top: 2px; }
 @media (max-width: 900px) { .grp { display: none; } }
-.di-fil { display: grid; gap: 10px; flex: 1 1 420px; }
+.di-fil { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; flex: 1 1 420px; min-width: 0; }
 .di-opts { display: flex; gap: 10px 18px; flex-wrap: wrap; align-items: center; }
 .di-sub { width: auto; min-width: 230px; font-weight: 700; color: var(--navy); }
 .di-sol { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; font-weight: 700; color: var(--navy); cursor: pointer; }

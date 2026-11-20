@@ -49,7 +49,9 @@
     <button role="tab" data-v="practica" aria-selected="true"><i data-icon="FaPencilAlt"></i> Practicar</button>
     <button role="tab" data-v="plan" aria-selected="false"><i data-icon="FaBookOpen"></i> Plan de cuentas</button>
     <button role="tab" data-v="diario" aria-selected="false"><i data-icon="FaColumns"></i> Mi libro diario</button>
+    <button role="tab" data-v="formato" aria-selected="false"><i data-icon="FaFileInvoiceDollar"></i> Mi Formato 5.1</button>
     <a class="vt-curso" href="curso/"><i data-icon="FaGraduationCap"></i> Mi curso: casos, rúbricas y cuestionarios</a>
+    <a class="vt-curso vt-marg" href="https://politon.pe/marginalia/" target="_blank" rel="noopener" title="Abre Marginalia: «Documentos de la web» → Dinámica del Plan Contable">📓 Cuaderno del curso</a>
   </nav>
 
   <!-- ===================== PRACTICAR ===================== -->
@@ -173,6 +175,34 @@
       </div>
     </section>
   </section>
+  <!-- ===================== MI FORMATO 5.1 (editable) ===================== -->
+  <section id="v-formato" class="view" hidden>
+    <div class="f5-head noprint">
+      <p class="intro">Tu libro diario en <b>Formato 5.1</b>, editable: agrega asientos y líneas, y descárgalo en Excel o PDF. Puedes empezar en blanco o copiar un ejercicio de la práctica.</p>
+      <div class="f5-libros">
+        <select class="in" id="f5Sel" aria-label="Mis libros"></select>
+        <button class="btn navy sm" id="f5Nuevo">+ Nuevo libro</button>
+        <select class="in f5-ej" id="f5Ej" aria-label="Copiar un ejercicio de la práctica"></select>
+        <span class="grow"></span>
+        <button class="lnk" id="f5Ren">Renombrar</button>
+        <button class="lnk" id="f5Dup">Duplicar</button>
+        <button class="lnk f5-del" id="f5Del">Eliminar</button>
+      </div>
+      <div class="f5-cab">
+        <label>Nombre del libro<input class="in" id="f5nombre" placeholder="Ej.: Elemento 5 – clase 20/11"></label>
+        <label>Período<input class="in" id="f5periodo" placeholder="Ej.: Ejercicio 2026"></label>
+        <label>RUC<input class="in" id="f5ruc" inputmode="numeric" maxlength="11"></label>
+        <label class="wide">Apellidos y nombres, denominación o razón social<input class="in" id="f5empresa"></label>
+      </div>
+    </div>
+    <div id="f5"></div>
+    <div class="f5-desc noprint">
+      <button class="btn navy sm" id="f5Xls"><i data-icon="FaDownload"></i> Descargar Excel</button>
+      <button class="btn line sm" id="f5Pdf"><i data-icon="FaFilePdf"></i> Descargar PDF</button>
+      <button class="btn line sm" id="f5Blanco">Formato 5.1 en blanco (Excel)</button>
+    </div>
+    <div id="f5Print" class="f5-print"></div>
+  </section>
 </main>
 
 <dialog id="dlgNuevo"><form method="dialog" class="box-d" id="fNuevo">
@@ -204,6 +234,7 @@
 <script src="../assets/ejercicios-curso.js"></script>
 <script src="../assets/libro-xlsx.js"></script>
 <script src="../assets/contabilidad.js"></script>
+<script src="../assets/formato51.js"></script>
 <script src="../assets/calculadora.js"></script>
 <script src="../assets/nube.js"></script>
 <script src="../assets/contabilidad-nube.js"></script>
