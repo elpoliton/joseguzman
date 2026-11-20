@@ -7,7 +7,7 @@
   var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
   var KEY = 'jg-contabilidad-v1';
   var S = cargar();
-  S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; S.notas = S.notas || {};
+  S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; S.notas = S.notas || {}; S.intentos = S.intentos || {};
   var ver = S.version || '2019', MAP = {}, LIST = [], actual = null, ak = 0;
   var norm = function (s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
@@ -82,6 +82,7 @@
     if (e.asientos && e.asientos.length) return e.asientos;
     var out = [{ fecha: e.fecha, glosa: e.glosa, solucion: e.solucion, explicacion: e.explicacion }];
     for (var i = 1; i < (e.propio ? e.nAsientos || 1 : 1); i++) out.push({});
+    if (e.propio && e.info) out.forEach(function (p, k) { var x = e.info[k]; if (x) { if (x.titulo) p.titulo = x.titulo; if (x.fecha) p.fecha = x.fecha; } });
     return out;
   }
   function wk(id, k) { return k ? id + '~' + (k + 1) : id; }
@@ -103,14 +104,26 @@
     });
     return G;
   }
+  // ---------- estudio: intentos por asiento («Para repasar» y aciertos al primer intento)
+  function itn(k) { return S.intentos[k] || {}; }
+  function repasarEj(e) { return pasos(e).some(function (p, k) { return itn(wk(e.id, k)).repasar; }); }
+  function marcarIntento(k, datos) { S.intentos[k] = Object.assign({}, S.intentos[k], datos, { t: Date.now() }); }
   var filtroTema = '';
-  function pasaFiltro(e) { return !filtroTema || (filtroTema.indexOf('sub:') === 0 ? subidoDe(e) === filtroTema.slice(4) : e.tema === filtroTema); }
+  function pasaFiltro(e) {
+    if (!filtroTema) return true;
+    if (filtroTema === 'est:repasar') return repasarEj(e);
+    if (filtroTema === 'est:sin') return !estadoDe(e);
+    if (filtroTema === 'est:wip') return estadoDe(e) === 'wip';
+    return filtroTema.indexOf('sub:') === 0 ? subidoDe(e) === filtroTema.slice(4) : e.tema === filtroTema;
+  }
   function temasUsados(E) { var m = {}; E.forEach(function (e) { if (e.tema) m[e.tema] = 1; }); return Object.keys(m).sort(function (a, b) { return a.localeCompare(b, 'es', { numeric: true }); }); }
   function pintarLista() {
     var E = todos(), T = temasUsados(E), F = fechasSubida(E);
     if (filtroTema && !E.some(pasaFiltro)) filtroTema = '';
     var sel = $('#filtroTema');
+    var nRep = E.filter(repasarEj).length, nSin = E.filter(function (e) { return !estadoDe(e); }).length, nWip = E.filter(function (e) { return estadoDe(e) === 'wip'; }).length;
     sel.innerHTML = '<option value="">Todos los ejercicios (' + E.length + ')</option>' +
+      '<optgroup label="Para estudiar"><option value="est:repasar">↻ Para repasar (' + nRep + ')</option><option value="est:wip">En progreso (' + nWip + ')</option><option value="est:sin">Sin empezar (' + nSin + ')</option></optgroup>' +
       '<optgroup label="Por fecha de subida">' + F.map(function (f) { return '<option value="sub:' + esc(f[0]) + '">Subidos el ' + esc(f[0]) + ' (' + f[1] + ')</option>'; }).join('') + '</optgroup>' +
       '<optgroup label="Por categoría">' + T.map(function (t) { return '<option value="' + esc(t) + '">' + esc(t) + ' (' + E.filter(function (e) { return e.tema === t; }).length + ')</option>'; }).join('') + '</optgroup>';
     sel.value = filtroTema;
@@ -119,14 +132,17 @@
     $('#lista').innerHTML = E.map(function (e, i) {
       if (!pasaFiltro(e)) return '';
       var sb = subidoDe(e), cab = '';
-      if (sb !== grupo && filtroTema.indexOf('sub:') !== 0) { grupo = sb; cab = '<div class="grp">' + (sb ? 'Subidos el ' + esc(sb) : 'Sin fecha de subida') + '</div>'; }
+      if (sb !== grupo && filtroTema.indexOf('sub:') !== 0 && filtroTema.indexOf('est:') !== 0) { grupo = sb; cab = '<div class="grp">' + (sb ? 'Subidos el ' + esc(sb) : 'Sin fecha de subida') + '</div>'; }
       var st = estadoDe(e), nota = (S.notas[e.id] || {}).texto, np = pasos(e).length;
       return cab + '<button class="ex" data-id="' + esc(e.id) + '" aria-current="' + (actual && actual.id === e.id) + '"><span class="st ' + st + '">' + (st === 'ok' ? '✓' : i + 1) + '</span>' +
-        '<span class="t"><b>' + esc(e.fecha || '') + '</b> ' + esc(e.enunciado.length > 84 ? e.enunciado.slice(0, 82) + '…' : e.enunciado) + '<small>' + esc(e.tema || 'Sin categoría') + (np > 1 ? ' · ' + np + ' asientos' : '') + (e.propio ? ' · propio' : '') + (nota ? ' · 📝' : '') + '</small></span></button>';
+        '<span class="t"><b>' + esc(e.fecha || '') + '</b> ' + esc(e.enunciado.length > 84 ? e.enunciado.slice(0, 82) + '…' : e.enunciado) + '<small>' + esc(e.tema || 'Sin categoría') + (np > 1 ? ' · ' + np + ' asientos' : '') + (e.propio ? ' · propio' : '') + (nota ? ' · 📝' : '') + (repasarEj(e) ? ' · <span class="rep">↻ repasar</span>' : '') + '</small></span></button>';
     }).join('') || '<p class="tiny" style="padding:8px">No hay ejercicios en esta categoría.</p>';
     var base = (window.EJERCICIOS || []), ok = base.filter(okEj).length;
     $('#progTxt').textContent = ok + ' de ' + base.length + ' ejercicios resueltos';
     $('#progBar').style.width = (base.length ? 100 * ok / base.length : 0) + '%';
+    var I = Object.keys(S.intentos).map(function (k) { return S.intentos[k]; }).filter(function (x) { return x.n; }), pri = I.filter(function (x) { return x.primero; }).length;
+    $('#estTxt').innerHTML = I.length ? '🎯 Al primer intento: <b>' + pri + ' de ' + I.length + '</b> asientos' + (nRep ? ' · <button class="lnk" id="irRepasar">↻ ' + nRep + ' para repasar</button>' : '') : '';
+    if ($('#irRepasar')) $('#irRepasar').onclick = function () { filtroTema = 'est:repasar'; pintarLista(); var e1 = todos().find(repasarEj); if (e1) abrir(e1.id, true); };
     var cur = $('#lista .ex[aria-current="true"]'); if (cur && window.innerWidth < 900) cur.scrollIntoView({ inline: 'center', block: 'nearest' });
   }
   $('#filtroTema').onchange = function () { filtroTema = this.value; pintarLista(); };
@@ -152,7 +168,7 @@
     $('#filas').innerHTML = ''; w.lineas.forEach(function (l) { fila(l); });
     $('#glosa').value = w.glosa || '';
     $('#feedback').className = 'fb'; $('#feedback').innerHTML = '';
-    totales(); pintarLista();
+    totales(); pintarLista(); pintarTodo();
     try { history.replaceState(null, '', '#' + actual.id); } catch (e) { }
     if (scroll && window.innerWidth < 900) $('.card-e').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -163,12 +179,17 @@
     box.innerHTML = '<span class="as-lbl">Asientos de este ejercicio</span>' + P.map(function (p, j) {
       var st = S.estado[wk(actual.id, j)] === 'ok' ? 'ok' : conLineas(S.trabajo[wk(actual.id, j)]).length ? 'wip' : '';
       return '<button class="as-t" data-k="' + j + '" aria-pressed="' + (j === ak) + '"><span class="st ' + st + '">' + (st === 'ok' ? '✓' : j + 1) + '</span><span>Asiento ' + (j + 1) + (p.titulo ? '<small>' + esc(p.titulo) + '</small>' : '') + '</span></button>';
-    }).join('') + (actual.propio ? '<button class="lnk as-mas" data-mas="1">+ Agregar asiento</button>' + (P.length > 1 ? '<button class="lnk as-menos" data-menos="1">Quitar el último</button>' : '') : '');
+    }).join('') + (actual.propio ? '<button class="lnk as-mas" data-mas="1">+ Agregar asiento</button><button class="lnk as-cfg" data-cfg="1">⚙ Nombre y fecha del asiento ' + (ak + 1) + '</button>' + (P.length > 1 ? '<button class="lnk as-menos" data-menos="1">Quitar el último</button>' : '') : '');
+    $('#asiento').classList.toggle('con-mvas', P.length > 1 || !!actual.propio);
   }
   $('#asTabs').addEventListener('click', function (e) {
     var b = e.target.closest('[data-k]'), id = actual.id, n = pasos(actual).length;
     if (b) { abrir(id, false, +b.getAttribute('data-k')); return; }
     if (e.target.closest('[data-mas]')) { guardarCampos(id, { nAsientos: n + 1 }); abrir(id, false, n); toast('Asiento ' + (n + 1) + ' agregado'); return; }
+    if (e.target.closest('[data-cfg]')) {
+      var f = $('#fAs').elements, p = paso(); f.titulo.value = p.titulo || ''; f.fecha.value = p.fecha || '';
+      $('#dlgAsT').textContent = 'Configurar el asiento ' + (ak + 1); $('#dlgAs').showModal(); return;
+    }
     if (e.target.closest('[data-menos]')) {
       if (!confirm('¿Quitar el asiento ' + n + ' y lo que escribiste en él?')) return;
       delete S.trabajo[wk(id, n - 1)]; delete S.estado[wk(id, n - 1)]; guardarCampos(id, { nAsientos: n - 1 }); abrir(id, false, n - 2);
@@ -186,7 +207,7 @@
       '<td><input class="in det-in" placeholder="Se completa al elegir la cuenta" aria-label="Detalle" value="' + esc(l.detalle || '') + '"><div class="path"></div></td>' +
       '<td class="c-num"><input class="in debe-in" inputmode="decimal" aria-label="Debe" value="' + (l.debe ? fmt(l.debe) : '') + '"></td>' +
       '<td class="c-num"><input class="in haber-in" inputmode="decimal" aria-label="Haber" value="' + (l.haber ? fmt(l.haber) : '') + '"></td>' +
-      '<td class="noprint"><div class="ctl"><button class="grip" title="Arrastra para mover la línea (o usa ↑ ↓ con el teclado)" aria-label="Mover línea">⠿</button><span class="ud"><button class="mv up" title="Subir línea" aria-label="Subir línea">▲</button><button class="mv dn" title="Bajar línea" aria-label="Bajar línea">▼</button></span><button class="del" title="Quitar línea" aria-label="Quitar línea">×</button></div></td>';
+      '<td class="noprint"><div class="ctl"><button class="grip" title="Arrastra para mover la línea (o usa ↑ ↓ con el teclado)" aria-label="Mover línea">⠿</button><span class="ud"><button class="mv up" title="Subir línea" aria-label="Subir línea">▲</button><button class="mv dn" title="Bajar línea" aria-label="Bajar línea">▼</button></span><button class="mvas" title="Pasar esta línea a otro asiento" aria-label="Pasar esta línea a otro asiento">⇄</button><button class="del" title="Quitar línea" aria-label="Quitar línea">×</button></div></td>';
     tr.dataset.auto = !l.detalle || (l.detalle === nomDet(l.cuenta) || l.detalle === cap(MAP[l.cuenta] || '')) ? '1' : '';
     $('#filas').appendChild(tr); meta(tr);
     return tr;
@@ -218,7 +239,7 @@
     S.trabajo[clave()] = { lineas: L, glosa: $('#glosa').value, t: Date.now() };
     // solo pierde el ✓ si de verdad cambiaron las líneas
     if (S.estado[clave()] === 'ok' && (!antes || JSON.stringify(antes.lineas) !== JSON.stringify(L))) { delete S.estado[clave()]; pintarLista(); pintarTabs(); }
-    guardar(); totales();
+    guardar(); totales(); if (todoOn) pintarTodo();
   }
   function totales() {
     var d = 0, h = 0; leer().forEach(function (l) { d += l.debe; h += l.haber; });
@@ -227,6 +248,7 @@
     if (!d && !h) { c.className = 'cuadre'; c.textContent = ''; }
     else if (Math.abs(d - h) < 0.005) { c.className = 'cuadre ok'; c.textContent = '✓ Cuadra'; }
     else { c.className = 'cuadre no'; c.textContent = 'Falta S/ ' + fmt(Math.abs(d - h)) + ' en el ' + (d > h ? 'haber' : 'debe'); }
+    pintarEcu();
   }
   var filas = $('#filas');
   filas.addEventListener('input', function (e) {
@@ -283,6 +305,44 @@
     // en document: al mover la fila en el DOM el navegador suelta la captura del puntero
     document.addEventListener('pointermove', mueve); document.addEventListener('pointerup', fin); document.addEventListener('pointercancel', fin);
   });
+  // pasar una línea a otro asiento del mismo ejercicio (o a uno nuevo, en los propios)
+  var mvTr = null;
+  function cerrarMv() { $('#mvMenu').hidden = true; mvTr = null; }
+  function abrirMv(btn) {
+    var P = pasos(actual), m = $('#mvMenu'); mvTr = btn.closest('tr');
+    m.innerHTML = '<div class="mv-h">Pasar esta línea al…</div>' + P.map(function (p, j) {
+      return j === ak ? '' : '<button role="menuitem" data-dest="' + j + '">Asiento ' + (j + 1) + (p.titulo ? ' · ' + esc(p.titulo) : '') + '</button>';
+    }).join('') + (actual.propio ? '<button role="menuitem" data-dest="nuevo">＋ Asiento nuevo (' + (P.length + 1) + ')</button>' : '');
+    var b = btn.getBoundingClientRect();
+    m.hidden = false; m.style.top = (b.bottom + scrollY + 4) + 'px'; m.style.left = Math.max(12, Math.min(b.right + scrollX - m.offsetWidth, scrollX + innerWidth - m.offsetWidth - 12)) + 'px';
+    var f = m.querySelector('button'); if (f) f.focus();
+  }
+  function moverLinea(tr, dest) {
+    var id = actual.id, i = $$('#filas tr').indexOf(tr), l = leer()[i]; if (!l) return;
+    if (dest === 'nuevo') { dest = pasos(actual).length; guardarCampos(id, { nAsientos: dest + 1 }); actual = todos().find(function (e) { return e.id === id; }); }
+    var k = wk(id, dest), w = S.trabajo[k] || { glosa: '' };
+    S.trabajo[k] = { lineas: conLineas(w).concat([l]), glosa: w.glosa || '', t: Date.now() };
+    if (S.estado[k] === 'ok') delete S.estado[k];
+    tr.remove(); if (!filas.children.length) fila();
+    persistir(); pintarTabs(); pintarLista(); if (todoOn) pintarTodo();
+    toast('Línea' + (l.cuenta ? ' ' + l.cuenta : '') + ' pasada al asiento ' + (dest + 1));
+  }
+  filas.addEventListener('click', function (e) { var b = e.target.closest('.mvas'); if (b) { if (mvTr === b.closest('tr') && !$('#mvMenu').hidden) cerrarMv(); else abrirMv(b); } });
+  $('#mvMenu').addEventListener('click', function (e) { var b = e.target.closest('[data-dest]'); if (!b || !mvTr) return; var tr = mvTr, d = b.getAttribute('data-dest'); cerrarMv(); moverLinea(tr, d === 'nuevo' ? d : +d); });
+  $('#mvMenu').addEventListener('keydown', function (e) {
+    var bs = $$('#mvMenu button'), k = bs.indexOf(document.activeElement);
+    if (e.key === 'Escape') { var t = mvTr; cerrarMv(); if (t) t.querySelector('.mvas').focus(); }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); bs[(k + (e.key === 'ArrowDown' ? 1 : -1) + bs.length) % bs.length].focus(); }
+  });
+  document.addEventListener('click', function (e) { if (!$('#mvMenu').hidden && !e.target.closest('#mvMenu, .mvas')) cerrarMv(); });
+  window.addEventListener('resize', cerrarMv);
+  $('#dlgAs').addEventListener('close', function () {
+    if ($('#dlgAs').returnValue !== 'ok') return;
+    var f = $('#fAs').elements, id = actual.id, info = (actual.info || []).slice();
+    while (info.length < ak) info.push(null);
+    info[ak] = { titulo: f.titulo.value.trim(), fecha: f.fecha.value.trim() };
+    guardarCampos(id, { info: info }); abrir(id, false, ak); toast('Asiento ' + (ak + 1) + ' configurado');
+  });
   filas.addEventListener('click', function (e) { if (e.target.closest('.del')) { e.target.closest('tr').remove(); if (!filas.children.length) fila(); persistir(); } });
   filas.addEventListener('keydown', function (e) {
     var t = e.target;
@@ -299,7 +359,7 @@
   });
   $('#glosa').addEventListener('input', persistir);
   $('#agregar').onclick = function () { fila().querySelector('.cta-in').focus(); persistir(); };
-  $('#limpiar').onclick = function () { if (!confirm('¿Borrar lo que escribiste en este ejercicio?')) return; delete S.trabajo[clave()]; delete S.estado[clave()]; guardar(); abrir(actual.id); };
+  $('#limpiar').onclick = function () { if (!confirm('¿Borrar lo que escribiste en este ejercicio?')) return; delete S.trabajo[clave()]; delete S.estado[clave()]; if (S.intentos[clave()]) marcarIntento(clave(), { desdeCero: true }); guardar(); abrir(actual.id); };
 
   // ---------- autocompletar
   var acFor = null;
@@ -356,6 +416,16 @@
       idx.forEach(function (ti, vi) { trs[ti].classList.add(marca[vi] === 'ok' ? 'ok-line' : 'bad-line'); });
     }
     var bien = todo && items.every(function (x) { return x[0] === '✓'; });
+    var notaRep = '';
+    if (sol) {
+      var k0 = clave(), x0 = itn(k0), n0 = (x0.n || 0) + 1, dat = { n: n0 };
+      if (n0 === 1 && !x0.vio) dat.primero = bien;
+      if (!bien) { dat.fallos = (x0.fallos || 0) + 1; dat.repasar = true; dat.desdeCero = false; }
+      else if (x0.repasar && x0.desdeCero) { dat.repasar = false; notaRep = '<p class="why rep-ok">↻ Lo resolviste desde cero: este asiento sale de <b>«Para repasar»</b>.</p>'; }
+      else if (x0.repasar) notaRep = '<p class="why">↻ Este asiento sigue en <b>«Para repasar»</b>. Para sacarlo, pulsa <b>Limpiar</b> y resuélvelo otra vez sin ayuda.</p>';
+      else if (dat.primero) notaRep = '<p class="why">🎯 ¡Al primer intento!</p>';
+      marcarIntento(k0, dat); guardar(); pintarLista();
+    }
     if (bien && sol) { S.estado[clave()] = 'ok'; guardar(); pintarLista(); pintarTabs(); }
     var PP = pasos(actual), sigK = -1;
     for (var j = 1; j < PP.length; j++) { var kk = (ak + j) % PP.length; if (PP[kk].solucion && S.estado[wk(actual.id, kk)] !== 'ok') { sigK = kk; break; } }
@@ -366,6 +436,7 @@
       items.map(function (x) { return '<li><span style="color:' + (x[0] === '✓' ? '#1f9a62' : x[0] === '~' ? '#C99A12' : '#b3262d') + ';font-weight:900">' + x[0] + '</span><span>' + x[1] + '</span></li>'; }).join('') + '</ul>' +
       (sol && bien && P.explicacion ? '<p class="why">' + esc(P.explicacion) + '</p>' : '') +
       (fin && PP.length > 1 && actual.explicacion ? '<p class="why"><b>Todo el ejercicio:</b> ' + esc(actual.explicacion) + ' Míralo completo en <b>Mi libro diario</b>.</p>' : '') +
+      notaRep +
       (!sol ? '<p class="why">' + (actual.propio ? 'Ejercicio propio: reviso' : 'Este asiento no tiene solución guardada: reviso') + ' que cuadre y que las cuentas existan.</p>' : '') +
       (bien && sigK >= 0 ? '<div class="next"><button class="btn navy" id="irSigAs">Asiento ' + (sigK + 1) + (PP[sigK].titulo ? ': ' + esc(PP[sigK].titulo) : '') + ' →</button></div>' :
         bien && sig ? '<div class="next"><button class="btn navy" id="irSig">Siguiente ejercicio →</button></div>' : '') +
@@ -388,6 +459,7 @@
   };
   $('#solucion').onclick = function () {
     var P = paso(); if (!P.solucion) return;
+    marcarIntento(clave(), { vio: true, repasar: true, desdeCero: false }); guardar(); pintarLista();
     var fb = $('#feedback'); fb.className = 'fb on';
     fb.innerHTML = '<h3>Solución</h3><table><tr><th>Cuenta</th><th>Detalle</th><th class="n">Debe</th><th class="n">Haber</th></tr>' +
       P.solucion.map(function (s) { var c = s.cuentas[0]; return '<tr><td><b>' + c + '</b></td><td' + (s.lado === 'haber' ? ' style="padding-left:28px"' : '') + '>' + esc(s.detalle || cap(MAP[c] || '')) + (s.nota ? '<br><small style="color:var(--muted)">' + esc(s.nota) + '</small>' : '') + '</td><td class="n">' + (s.lado === 'debe' ? fmt(s.monto) : '') + '</td><td class="n">' + (s.lado === 'haber' ? fmt(s.monto) : '') + '</td></tr>'; }).join('') +
@@ -665,7 +737,7 @@
       var n = nAsientos(d), cuando = d.copia && d.copia.fecha ? ' del ' + fechaTxt(d.copia.fecha) : '';
       if (!confirm('Copia' + cuando + ' con ' + n + ' asiento' + (n === 1 ? '' : 's') + ((d.propios || []).length ? ' y ' + d.propios.length + ' ejercicio(s) propio(s)' : '') + '.\n\nSe combinará con lo que ya tienes: no se borra nada y, si un asiento está en los dos lados, se queda la versión más reciente.\n\n¿Continuar?')) return;
       delete d.copia; var m = unir(S, d);
-      S = m; S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; S.notas = S.notas || {};
+      S = m; S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; S.notas = S.notas || {}; S.intentos = S.intentos || {};
       guardar(); usarVersion(S.version || ver); abrir(actual && todos().some(function (x) { return x.id === actual.id; }) ? actual.id : todos()[0].id);
       pintarDiario(); toast('Copia recuperada: ahora tienes ' + nAsientos(S) + ' asientos');
     }).catch(function () { alert('Ese archivo no es una copia válida de esta página.'); }).then(function () { inp.value = ''; });
@@ -684,6 +756,8 @@
     Object.keys(Object.assign({}, eb, ea)).forEach(function (id) { var x = ea[id], y = eb[id]; out.editados[id] = !x ? y : !y ? x : ((x.t || 0) >= (y.t || 0) ? x : y); });
     out.notas = {}; var nb = b.notas || {}, na = a.notas || {};
     Object.keys(Object.assign({}, nb, na)).forEach(function (id) { var x = na[id], y = nb[id]; out.notas[id] = !x ? y : !y ? x : ((x.t || 0) >= (y.t || 0) ? x : y); });
+    out.intentos = {}; var ib = b.intentos || {}, ia = a.intentos || {};
+    Object.keys(Object.assign({}, ib, ia)).forEach(function (id) { var x = ia[id], y = ib[id]; out.intentos[id] = !x ? y : !y ? x : ((x.t || 0) >= (y.t || 0) ? x : y); });
     out.estado = Object.assign({}, b.estado, a.estado);
     Object.keys(out.estado).forEach(function (id) { var x = (a.trabajo || {})[id], y = (b.trabajo || {})[id]; if (x && y && (y.t || 0) > (x.t || 0) && !(b.estado || {})[id]) delete out.estado[id]; });
     return out;
@@ -695,7 +769,7 @@
     unir: unir,
     escribiendo: function () { var a = document.activeElement; return !!(a && a.closest && a.closest('#filas, #glosa, #notaTxt, #eTemaIn')); },
     aplicar: function (nuevo) {
-      S = nuevo; S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; S.notas = S.notas || {};
+      S = nuevo; S.trabajo = S.trabajo || {}; S.propios = S.propios || []; S.estado = S.estado || {}; S.editados = S.editados || {}; S.notas = S.notas || {}; S.intentos = S.intentos || {};
       try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
       usarVersion(S.version || ver);
       var id = actual && todos().some(function (e) { return e.id === actual.id; }) ? actual.id : (S.ultimo || todos()[0].id);
@@ -703,6 +777,109 @@
     },
     toast: function (m) { toast(m); }
   };
+
+  // ---------- vista completa: todos los asientos del ejercicio y sus cuentas T
+  var TODK = 'jg-cx-todo', todoOn = false; try { todoOn = localStorage.getItem(TODK) === '1'; } catch (e) { }
+  function lineasAs(j) { return j === ak ? leer().filter(function (l) { return l.cuenta || l.debe || l.haber; }) : conLineas(S.trabajo[wk(actual.id, j)]); }
+  function pintarTodo() {
+    var bt = $('#verTodo'), box = $('#todoBox');
+    bt.setAttribute('aria-pressed', String(todoOn)); bt.textContent = todoOn ? '✕ Cerrar la vista completa' : '▤ Ver todos los asientos y cuentas T';
+    box.hidden = !todoOn; if (!todoOn || !actual) return;
+    var P = pasos(actual), D = 0, H = 0, html = '';
+    P.forEach(function (p, j) {
+      var k = wk(actual.id, j), L = lineasAs(j), gl = j === ak ? $('#glosa').value : (S.trabajo[k] || {}).glosa, d = 0, h = 0, fe = p.fecha || actual.fecha;
+      L.forEach(function (l) { d += l.debe; h += l.haber; }); D += d; H += h;
+      var st = S.estado[k] === 'ok' ? 'ok' : L.length ? 'wip' : '';
+      var O = L.slice().sort(function (a, b) { return (b.debe ? 1 : 0) - (a.debe ? 1 : 0); });
+      html += '<article class="td-as' + (j === ak ? ' cur' : '') + '"><header><span class="st ' + st + '">' + (st === 'ok' ? '✓' : j + 1) + '</span><b>Asiento ' + (j + 1) + '</b>' + (p.titulo ? '<span class="td-tit">' + esc(p.titulo) + '</span>' : '') + (fe ? '<small>' + esc(fe) + '</small>' : '') + '<span class="grow"></span>' +
+        (j === ak ? '<span class="td-ed">✏️ Lo editas abajo</span>' : '<button class="lnk" data-edk="' + j + '">Editar</button>') + '</header>' +
+        (O.length ? '<div class="tbl-wrap"><table class="td-t"><tbody>' + O.map(function (l) { return '<tr><td class="cta"><b>' + esc(l.cuenta) + '</b></td><td' + (l.haber && !l.debe ? ' class="h"' : '') + '>' + esc(l.detalle) + '</td><td class="n">' + (l.debe ? fmt(l.debe) : '') + '</td><td class="n">' + (l.haber ? fmt(l.haber) : '') + '</td></tr>'; }).join('') +
+          '</tbody><tfoot><tr><td></td><td class="gl">' + (gl ? esc(gl) : '') + (Math.abs(d - h) < 0.005 ? '' : ' <span class="cuadre no">no cuadra</span>') + '</td><td class="n">' + fmt(d) + '</td><td class="n">' + fmt(h) + '</td></tr></tfoot></table></div>' : '<p class="tiny td-vacio">Sin líneas todavía.</p>') + '</article>';
+    });
+    box.innerHTML = '<div class="td-h"><h3>Todos los asientos del ejercicio</h3><span class="tiny">Debe S/ ' + fmt(D) + ' · Haber S/ ' + fmt(H) + (Math.abs(D - H) < 0.005 ? ' · ✓ cuadra' : '') + '</span></div>' + html + cuentasT();
+  }
+  function cuentasT() {
+    var M = {}, P = pasos(actual);
+    P.forEach(function (p, j) { lineasAs(j).forEach(function (l) { if (!l.cuenta) return; var m = M[l.cuenta] || (M[l.cuenta] = { d: [], h: [] }); if (l.debe) m.d.push([j + 1, l.debe]); if (l.haber) m.h.push([j + 1, l.haber]); }); });
+    var C = Object.keys(M).sort(); if (!C.length) return '';
+    var col = function (A) { return A.map(function (x) { return '<div><span class="tn">(' + x[0] + ')</span>' + fmt(x[1]) + '</div>'; }).join(''); };
+    var sum = function (A) { return A.reduce(function (s, x) { return s + x[1]; }, 0); };
+    return '<div class="td-h ct-h"><h3>Cuentas T · mayor de este ejercicio</h3><span class="tiny">El número entre paréntesis es el asiento. El saldo es la diferencia entre el debe y el haber.</span></div><div class="ctas">' + C.map(function (c) {
+      var m = M[c], d = sum(m.d), h = sum(m.h), sd = d - h, e = EL[c.charAt(0)] || [], nat = e[2], contra = nat && Math.abs(sd) >= 0.005 && ((nat === 'debe') !== (sd > 0)) && !/^(19|29|39|4011|59|61)/.test(c);
+      return '<div class="ct' + (contra ? ' raro' : '') + '"><div class="ct-n"><b>' + c + '</b> ' + esc(cap(MAP[c] || '')) + '</div><div class="ct-c"><div class="ct-d"><i>Debe</i>' + col(m.d) + '</div><div class="ct-hb"><i>Haber</i>' + col(m.h) + '</div></div>' +
+        '<div class="ct-s">' + (Math.abs(sd) < 0.005 ? 'Saldada (saldo 0)' : 'Saldo ' + (sd > 0 ? 'deudor' : 'acreedor') + ' <b>S/ ' + fmt(Math.abs(sd)) + '</b>') + (contra ? '<br><span class="ct-w">⚠ Su saldo va contra su naturaleza (' + esc(e[0].toLowerCase()) + ', aumenta por el ' + nat + '). ¿Es correcto?</span>' : '') + '</div></div>';
+    }).join('') + '</div>';
+  }
+  $('#verTodo').onclick = function () { todoOn = !todoOn; try { localStorage.setItem(TODK, todoOn ? '1' : '0'); } catch (e) { } pintarTodo(); if (todoOn) $('#todoBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); };
+  $('#todoBox').addEventListener('click', function (e) { var b = e.target.closest('[data-edk]'); if (!b) return; abrir(actual.id, false, +b.getAttribute('data-edk')); $('#asiento').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+
+  // ---------- ¿qué pasó? efecto del asiento en la ecuación contable
+  var GR = { '1': 'A', '2': 'A', '3': 'A', '4': 'P', '5': 'Pt', '6': 'G', '7': 'I' }, GRN = { A: 'activo', P: 'pasivo', Pt: 'patrimonio', G: 'gasto', I: 'ingreso' };
+  var ECK = 'jg-cx-ecu'; try { $('#ecuBox').open = localStorage.getItem(ECK) === '1'; } catch (e) { }
+  $('#ecuBox').addEventListener('toggle', function () { try { localStorage.setItem(ECK, this.open ? '1' : '0'); } catch (e) { } });
+  function pintarEcu() {
+    var box = $('#ecu'), L = leer().filter(function (l) { return l.cuenta && MAP[l.cuenta] && (l.debe || l.haber); });
+    if (!L.length) { box.innerHTML = '<p class="tiny">Escribe tu asiento y aquí verás qué aumenta, qué disminuye y si la ecuación contable se mantiene.</p>'; return; }
+    var T = { A: 0, P: 0, Pt: 0, G: 0, I: 0 }, fuera = [], li = [];
+    L.forEach(function (l) {
+      var g = /^79/.test(l.cuenta) ? null : GR[l.cuenta.charAt(0)];
+      if (!g) { fuera.push(l.cuenta); return; }
+      var v = l.debe - l.haber, dl = g === 'A' || g === 'G' ? v : -v; T[g] += dl;
+      var c2 = l.cuenta.slice(0, 2), nm = (l.cuenta.length > 3 && MAP[c2] ? cap(MAP[c2]) + ' – ' : '') + cap(MAP[l.cuenta]);
+      li.push('<li><span class="' + (dl >= 0 ? 'up' : 'dn') + '">' + (dl >= 0 ? '▲' : '▼') + '</span><span><b>' + esc(l.cuenta) + '</b> ' + esc(nm) + ' <small>(' + GRN[g] + ')</small>: ' + (dl >= 0 ? 'aumenta' : 'disminuye') + ' S/ ' + fmt(Math.abs(dl)) + ', por eso va al <b>' + (l.debe ? 'debe' : 'haber') + '</b>.' +
+        (/^4011/.test(l.cuenta) && l.debe ? ' <small>Es crédito fiscal: reduce el IGV que la empresa pagará.</small>' : '') + '</span></li>');
+    });
+    var res = T.I - T.G, ok = Math.abs(T.A - (T.P + T.Pt + res)) < 0.005;
+    var t = function (n, v) { return '<div class="ec-t"><span>' + n + '</span><b class="' + (v > 0.004 ? 'up' : v < -0.004 ? 'dn' : '') + '">' + (v > 0.004 ? '+' : v < -0.004 ? '−' : '') + fmt(Math.abs(v)) + '</b></div>'; };
+    box.innerHTML = '<div class="ec">' + t('Activo', T.A) + '<span class="ec-op">=</span>' + t('Pasivo', T.P) + '<span class="ec-op">+</span>' + t('Patrimonio', T.Pt) + '<span class="ec-op">+</span>' + t('Resultado <small>ingresos − gastos</small>', res) + '</div>' +
+      (fuera.length ? '<p class="tiny">' + esc(fuera.join(', ')) + ': cuentas de orden, de saldos, analíticas o de destino (79); no cambian la ecuación.</p>' : '<p class="ec-ok ' + (ok ? 'si' : 'no') + '">' + (ok ? '✓ La ecuación se mantiene: lo que cambia a la izquierda cambia igual a la derecha.' : '✗ La ecuación no se mantiene: tu asiento no cuadra.') + '</p>') +
+      '<ul class="ec-l">' + li.join('') + '</ul>';
+  }
+
+  // ---------- fecha «Hoy» en los formularios
+  function hoyCorto() { var d = new Date(); return d2(d.getDate()) + '/' + d2(d.getMonth() + 1) + '/' + String(d.getFullYear()).slice(2); }
+  document.addEventListener('click', function (e) { var b = e.target.closest('[data-hoy]'); if (!b) return; var i = b.parentNode.querySelector('input'); i.value = hoyCorto(); i.focus(); });
+
+  // ---------- 🎯 ponte a prueba: cuestionario rápido del plan de cuentas
+  var QZ = null, QBK = 'jg-cx-quiz-mejor';
+  function barajar(A) { A = A.slice(); for (var i = A.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = A[i]; A[i] = A[j]; A[j] = t; } return A; }
+  function quizNuevo() {
+    var B = LIST.filter(function (x) { return (x.c.length === 2 || x.c.length === 3) && /^[1-7]/.test(x.c); }), Q = [], usados = {}, vueltas = 0;
+    while (Q.length < 10 && vueltas++ < 500) {
+      var x = B[Math.floor(Math.random() * B.length)], tipo = Q.length % 3; if (usados[x.c]) continue;
+      if (tipo === 2 && /^(19|29|39|59|61|79)/.test(x.c)) continue;
+      usados[x.c] = 1;
+      var mis = B.filter(function (y) { return y.c.length === x.c.length && y.c !== x.c && y.c.charAt(0) === x.c.charAt(0) && norm(y.n) !== norm(x.n); });
+      if (mis.length < 3) mis = B.filter(function (y) { return y.c.length === x.c.length && y.c !== x.c; });
+      var ops = barajar([x].concat(barajar(mis).slice(0, 3))), ex = '<b>' + x.c + ' ' + esc(cap(x.n)) + '</b>' + (ruta(x.c).length ? ' · ' + esc(rutaTxt(x.c, true)) : '') + '.';
+      if (tipo === 0) Q.push({ q: '¿Qué cuenta es la <b>' + x.c + '</b>?', ops: ops.map(function (y) { return { t: cap(y.n), ok: y === x }; }), ex: ex });
+      else if (tipo === 1) Q.push({ q: '¿Cuál es el código de <b>' + esc(cap(x.n)) + '</b>?', ops: ops.map(function (y) { return { t: y.c, ok: y === x }; }), ex: ex });
+      else { var e = EL[x.c.charAt(0)]; Q.push({ q: 'La cuenta <b>' + x.c + ' ' + esc(cap(x.n)) + '</b>, ¿aumenta por el debe o por el haber?', ops: [{ t: 'Debe', ok: e[2] === 'debe' }, { t: 'Haber', ok: e[2] === 'haber' }], ex: 'Es una cuenta de <b>' + esc(e[0].toLowerCase()) + '</b> (elemento ' + x.c.charAt(0) + '): aumenta por el <b>' + e[2] + '</b>.' }); }
+    }
+    QZ = { Q: Q, i: 0, ok: 0, r: null };
+  }
+  function pintarQuiz() {
+    var b = $('#quiz'), mejor = 0; try { mejor = +localStorage.getItem(QBK) || 0; } catch (e) { }
+    if (QZ.i >= QZ.Q.length) {
+      var n = QZ.Q.length, rec = QZ.ok > mejor; if (rec) try { localStorage.setItem(QBK, String(QZ.ok)); } catch (e) { }
+      b.innerHTML = '<div class="qz-top"><b>🎯 Resultado</b><span class="grow"></span><button class="lnk" data-qz="cerrar">Cerrar</button></div><p class="qz-res"><b>' + QZ.ok + ' de ' + n + '</b> correctas' + (rec ? ' · ¡nuevo récord!' : mejor ? ' · tu mejor marca: ' + mejor : '') + '</p><p class="tiny">' + (QZ.ok === n ? 'Perfecto. Prueba otra ronda: las preguntas cambian cada vez.' : 'Repasa las que fallaste en el plan de cuentas (abajo) y prueba otra ronda.') + '</p><div class="next"><button class="btn navy sm" data-qz="otra">Otra ronda</button></div>';
+      return;
+    }
+    var p = QZ.Q[QZ.i], r = QZ.r;
+    b.innerHTML = '<div class="qz-top"><b>🎯 Ponte a prueba</b><span class="tiny">Pregunta ' + (QZ.i + 1) + ' de ' + QZ.Q.length + ' · ' + QZ.ok + ' correctas</span><span class="grow"></span><button class="lnk" data-qz="cerrar">Cerrar</button></div>' +
+      '<p class="qz-q">' + p.q + '</p><div class="qz-ops">' + p.ops.map(function (o, j) { return '<button data-op="' + j + '"' + (r != null ? ' disabled class="' + (o.ok ? 'si' : j === r ? 'no' : '') + '"' : '') + '>' + esc(o.t) + '</button>'; }).join('') + '</div>' +
+      (r != null ? '<p class="why">' + (p.ops[r].ok ? '✓ Correcto. ' : '✗ No. ') + p.ex + '</p><div class="next"><button class="btn navy sm" data-qz="sig">' + (QZ.i + 1 < QZ.Q.length ? 'Siguiente →' : 'Ver resultado') + '</button></div>' : '');
+    var f = b.querySelector(r != null ? '[data-qz="sig"]' : '[data-op]'); if (f) f.focus({ preventScroll: true });
+  }
+  $('#quizIr').onclick = function () { quizNuevo(); $('#quiz').hidden = false; pintarQuiz(); $('#quiz').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); };
+  $('#quiz').addEventListener('click', function (e) {
+    var o = e.target.closest('[data-op]'), a = e.target.closest('[data-qz]');
+    if (o && QZ.r == null) { QZ.r = +o.getAttribute('data-op'); if (QZ.Q[QZ.i].ops[QZ.r].ok) QZ.ok++; pintarQuiz(); return; }
+    if (!a) return; var v = a.getAttribute('data-qz');
+    if (v === 'sig') { QZ.i++; QZ.r = null; pintarQuiz(); }
+    if (v === 'otra') { quizNuevo(); pintarQuiz(); }
+    if (v === 'cerrar') $('#quiz').hidden = true;
+  });
 
   // ---------- inicio
   $('#version').onchange = function () { usarVersion(this.value); $$('#filas tr').forEach(meta); if (!$('#v-plan').hidden) pintarPlan(); toast('Usando el PCGE ' + this.value); };

@@ -58,6 +58,7 @@
       <aside class="cx-list noprint">
         <div class="cx-list-h"><b>Ejercicios</b><button class="lnk" id="nuevo">+ Propio</button></div>
         <select class="in filtro-tema" id="filtroTema" aria-label="Filtrar por fecha de subida o categoría"></select>
+        <p class="est-txt" id="estTxt"></p>
         <div id="lista"></div>
       </aside>
 
@@ -80,6 +81,8 @@
         </details>
 
         <div class="as-tabs noprint" id="asTabs" hidden></div>
+        <div class="todo-bar noprint"><button class="lnk" id="verTodo" aria-pressed="false">▤ Ver todos los asientos y cuentas T</button></div>
+        <section class="todo-box noprint" id="todoBox" hidden aria-label="Todos los asientos del ejercicio"></section>
 
         <ol class="pasos noprint">
           <li><b>1</b> Busca la cuenta por código o palabra</li>
@@ -109,6 +112,11 @@
         </div>
         <div id="feedback" class="fb" aria-live="polite"></div>
 
+        <details class="ecu noprint" id="ecuBox">
+          <summary>📊 ¿Qué pasó? Efecto de este asiento en la ecuación contable</summary>
+          <div id="ecu"></div>
+        </details>
+
         <details class="tips noprint">
           <summary>Recordatorio: ¿debe o haber?</summary>
           <div class="tips-g">
@@ -126,8 +134,9 @@
   <section id="v-plan" class="view" hidden>
     <div class="plan-head">
       <label class="search"><i data-icon="FaSearch"></i><span class="sr">Buscar en el plan</span><input id="q" type="search" placeholder="Busca por código (1212) o palabra (letras, caja, préstamos…)" autocomplete="off"></label>
-      <div class="plan-tools"><button class="lnk" id="abrirTodo">Expandir todo</button><button class="lnk" id="cerrarTodo">Contraer todo</button><span class="tiny" id="planInfo"></span></div>
+      <div class="plan-tools"><button class="btn navy sm" id="quizIr">🎯 Ponte a prueba</button><button class="lnk" id="abrirTodo">Expandir todo</button><button class="lnk" id="cerrarTodo">Contraer todo</button><span class="tiny" id="planInfo"></span></div>
     </div>
+    <section class="quiz" id="quiz" hidden aria-live="polite"></section>
     <div class="elems" id="elems"></div>
     <div id="plan" class="plan"></div>
   </section>
@@ -169,13 +178,22 @@
 <dialog id="dlgNuevo"><form method="dialog" class="box-d" id="fNuevo">
   <h2 id="dlgTitulo">Nuevo ejercicio propio</h2>
   <p class="tiny" id="dlgAyuda">Escribe un caso de tu clase. Revisaré que el asiento cuadre y que las cuentas existan.</p>
-  <label class="f">Fecha</label><input class="in" name="fecha" placeholder="Ej. 12/10/26">
+  <label class="f">Fecha</label><div class="f-hoy"><input class="in" name="fecha" placeholder="Ej. 12/10/26"><button type="button" class="btn line sm" data-hoy="1">Hoy</button></div>
   <label class="f">Tema <small>(opcional)</small></label><input class="in" name="tema" list="listaTemas" placeholder="Ej. Cobranzas">
   <label class="f">Enunciado *</label><textarea class="in" name="enunciado" required rows="4" placeholder="Ej. Se cobra la factura E001-123 a la empresa Gamma SAC por S/ 3,000 mediante transferencia."></textarea>
   <div class="d-acts"><button class="btn line" value="cancel" formnovalidate>Cancelar</button><button class="btn navy" value="ok" id="dlgOk">Crear</button></div>
 </form></dialog>
 
+<dialog id="dlgAs"><form method="dialog" class="box-d" id="fAs">
+  <h2 id="dlgAsT">Configurar asiento</h2>
+  <p class="tiny">Ponle un nombre corto y una fecha. Se ven en las pestañas y en tu libro diario.</p>
+  <label class="f">Nombre del asiento <small>(opcional)</small></label><input class="in" name="titulo" maxlength="60" placeholder="Ej. Compra de mercadería">
+  <label class="f">Fecha</label><div class="f-hoy"><input class="in" name="fecha" placeholder="Ej. 12/10/26"><button type="button" class="btn line sm" data-hoy="1">Hoy</button></div>
+  <div class="d-acts"><button class="btn line" value="cancel" formnovalidate>Cancelar</button><button class="btn navy" value="ok">Guardar</button></div>
+</form></dialog>
+
 <datalist id="listaTemas"></datalist>
+<div id="mvMenu" class="mv-menu" role="menu" hidden></div>
 <div id="ac" class="ac" role="listbox" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <footer class="foot noprint"><div class="wrap"><span>© 2026 José Manuel Guzmán Valverde</span><span>Cuentas: PCGE 2019 y 2026 · Consejo Normativo de Contabilidad</span></div></footer>
