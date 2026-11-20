@@ -206,5 +206,139 @@ window.EJERCICIOS = [
         explicacion: 'Se inscribe el capital suscrito (180,000), aunque el socio C aún deba 15,000: esa deuda sigue en la 1421 hasta que pague.'
       }
     ]
+  },
+  {
+    id: 'elemento5-pacifico', fecha: '02/01/26', tema: 'Patrimonio: Elemento 5', subido: '20/11/26',
+    empresa: 'Inversiones del Pacífico SAC', periodo: 'Ejercicio 2026',
+    enunciado: 'Inversiones del Pacífico SAC (comercialización de equipos de cómputo) registra las operaciones del patrimonio neto del ejercicio 2026 con el Elemento 5 del PCGE. (1) 02/01/26: se constituye con capital de S/ 150,000 en acciones; accionista A aporta S/ 70,000 y B S/ 50,000 depositados en cuenta corriente, y C S/ 30,000 en equipos de cómputo; el capital queda íntegramente suscrito y pagado. (2) 15/02/26: la junta acuerda aumentar el capital en S/ 60,000 con aportes dinerarios, que se depositan en el banco; el aumento queda inscrito. (3) 10/03/26: nueva emisión de acciones de valor nominal S/ 40,000; los nuevos accionistas pagan S/ 50,000; la diferencia es prima de emisión. (4) 20/04/26: se capitalizan S/ 20,000 de resultados acumulados de ejercicios anteriores; la capitalización queda formalizada. (5) Al cierre, la utilidad neta es S/ 80,000 y la junta destina el 10 % a la reserva legal (aún no se alcanza el límite de la LGS). (6) La junta acuerda distribuir dividendos por S/ 25,000 con cargo a resultados acumulados. (7) Revaluación voluntaria de un inmueble: mayor valor de S/ 35,000 sustentado en una tasación. (8) Los resultados acumulados al inicio son S/ 45,000: determina su saldo final.',
+    explicacion: 'Operación 8, saldo final de resultados acumulados (5911): inicial 45,000 − capitalización 20,000 + utilidad 80,000 − reserva legal 8,000 − dividendos 25,000 = S/ 72,000. Capital social final: 150,000 + 60,000 + 40,000 + 20,000 = S/ 270,000.',
+    asientos: [
+      {
+        titulo: 'Op. 1 · Suscripción', doc: 'Minuta de constitución', fecha: '02/01/26', glosa: 'Por la suscripción del capital social de S/ 150,000',
+        solucion: [
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 70000, detalle: 'Suscripciones por cobrar – Accionista A', nota: 'Cada accionista se compromete a aportar: cuenta por cobrar (activo, al debe). Una línea por accionista o una sola por S/ 150,000.' },
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 50000, detalle: 'Suscripciones por cobrar – Accionista B', nota: '' },
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 30000, detalle: 'Suscripciones por cobrar – Accionista C', nota: '' },
+          { lado: 'haber', cuentas: ['5221', '522'], monto: 150000, nota: 'Capital aún no inscrito: 5221 Aportes (capitalizaciones en trámite).' }
+        ],
+        explicacion: 'Suscribir es comprometerse a aportar: nace la 1421 y el capital queda en trámite (5221).'
+      },
+      {
+        titulo: 'Op. 1 · Pago de los aportes', doc: 'Voucher de depósito / acta de entrega', fecha: '02/01/26', glosa: 'Por el pago de los aportes: depósitos en cuenta corriente y entrega de equipos de cómputo',
+        solucion: [
+          { lado: 'debe', cuentas: ['1041', '104'], monto: 120000, nota: 'Los accionistas A y B depositan S/ 70,000 + S/ 50,000.' },
+          { lado: 'debe', cuentas: ['33611', '3361', '336'], monto: 30000, detalle: 'Equipo para procesamiento de información – Costo', nota: 'El accionista C aporta equipos de cómputo: activo fijo (33).' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 70000, detalle: 'Suscripciones por cobrar – Accionista A', nota: 'Se cancela todo lo suscrito: el capital queda íntegramente pagado.' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 50000, detalle: 'Suscripciones por cobrar – Accionista B', nota: '' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 30000, detalle: 'Suscripciones por cobrar – Accionista C', nota: '' }
+        ],
+        explicacion: 'El dinero entra a la 10 y los equipos a la 33; la 1421 queda en cero.'
+      },
+      {
+        titulo: 'Op. 1 · Formalización', doc: 'Partida registral', fecha: '02/01/26', glosa: 'Por la inscripción del capital social en Registros Públicos',
+        solucion: [
+          { lado: 'debe', cuentas: ['5221', '522'], monto: 150000, nota: 'Se cierra la cuenta transitoria.' },
+          { lado: 'haber', cuentas: ['5011', '501'], monto: 150000, nota: 'Inscrita la sociedad, el aporte es capital social: 5011 Acciones.' }
+        ],
+        explicacion: 'De capital en trámite (52) a capital social (50).'
+      },
+      {
+        titulo: 'Op. 2 · Acuerdo de aumento', doc: 'Acta de junta general', fecha: '15/02/26', glosa: 'Por el acuerdo de aumento de capital con nuevos aportes dinerarios',
+        solucion: [
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 60000, nota: 'Los accionistas se comprometen a aportar S/ 60,000.' },
+          { lado: 'haber', cuentas: ['5221', '522'], monto: 60000, nota: 'El aumento está en trámite hasta inscribirse.' }
+        ],
+        explicacion: 'Un aumento de capital sigue el mismo camino que la constitución: 14 / 52 → 10 / 14 → 52 / 50.'
+      },
+      {
+        titulo: 'Op. 2 · Depósito de los aportes', doc: 'Voucher de depósito', fecha: '15/02/26', glosa: 'Por el depósito de los aportes del aumento de capital',
+        solucion: [
+          { lado: 'debe', cuentas: ['1041', '104'], monto: 60000, nota: 'Entra el dinero al banco.' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 60000, nota: 'Se cancela lo comprometido.' }
+        ],
+        explicacion: 'Un activo se cambia por otro: sale la 14 y entra la 10.'
+      },
+      {
+        titulo: 'Op. 2 · Inscripción del aumento', doc: 'Partida registral', fecha: '15/02/26', glosa: 'Por la inscripción del aumento de capital',
+        solucion: [
+          { lado: 'debe', cuentas: ['5221', '522'], monto: 60000, nota: 'Se cierra la cuenta transitoria.' },
+          { lado: 'haber', cuentas: ['5011', '501'], monto: 60000, nota: 'El capital social sube de S/ 150,000 a S/ 210,000.' }
+        ],
+        explicacion: 'Inscrito el aumento, pasa de la 52 a la 50.'
+      },
+      {
+        titulo: 'Op. 3 · Suscripción con prima', doc: 'Acta de junta general', fecha: '10/03/26', glosa: 'Por la emisión de acciones de valor nominal S/ 40,000 colocadas a S/ 50,000',
+        solucion: [
+          { lado: 'debe', cuentas: ['1421', '142'], monto: 50000, nota: 'Los nuevos accionistas se comprometen a pagar el precio total: S/ 50,000.' },
+          { lado: 'haber', cuentas: ['5221', '522'], monto: 40000, nota: 'Al capital solo va el valor nominal de las acciones: S/ 40,000.' },
+          { lado: 'haber', cuentas: ['521'], monto: 10000, detalle: 'Primas (descuento) de acciones – Prima de emisión', nota: 'Lo pagado por encima del nominal (50,000 − 40,000) es prima de emisión: va a la 521, no al capital.' }
+        ],
+        explicacion: 'La prima de emisión es patrimonio, pero no capital: se separa en la 521.'
+      },
+      {
+        titulo: 'Op. 3 · Pago de las acciones', doc: 'Voucher de depósito', fecha: '10/03/26', glosa: 'Por el pago de las nuevas acciones',
+        solucion: [
+          { lado: 'debe', cuentas: ['1041', '104'], monto: 50000, nota: 'Entra al banco todo lo pagado.' },
+          { lado: 'haber', cuentas: ['1421', '142'], monto: 50000, nota: 'Se cancela lo suscrito.' }
+        ],
+        explicacion: 'Sale la 14 y entra la 10 por el precio pagado.'
+      },
+      {
+        titulo: 'Op. 3 · Inscripción de la emisión', doc: 'Partida registral', fecha: '10/03/26', glosa: 'Por la inscripción de la nueva emisión de acciones',
+        solucion: [
+          { lado: 'debe', cuentas: ['5221', '522'], monto: 40000, nota: 'Se cierra la cuenta transitoria.' },
+          { lado: 'haber', cuentas: ['5011', '501'], monto: 40000, nota: 'El capital sube a S/ 250,000; la prima queda en la 521.' }
+        ],
+        explicacion: 'Solo el valor nominal pasa a la 50.'
+      },
+      {
+        titulo: 'Op. 4 · Acuerdo de capitalización', doc: 'Acta de junta general', fecha: '20/04/26', glosa: 'Por el acuerdo de capitalizar resultados acumulados',
+        solucion: [
+          { lado: 'debe', cuentas: ['5911', '591'], monto: 20000, nota: 'Disminuyen las utilidades acumuladas que se capitalizan.' },
+          { lado: 'haber', cuentas: ['5224', '522'], monto: 20000, nota: 'Mientras se formaliza, va a 5224 Utilidades (capitalizaciones en trámite).' }
+        ],
+        explicacion: 'Capitalizar utilidades no trae dinero nuevo: solo cambia el nombre dentro del patrimonio.'
+      },
+      {
+        titulo: 'Op. 4 · Formalización de la capitalización', doc: 'Partida registral', fecha: '20/04/26', glosa: 'Por la formalización de la capitalización de resultados',
+        solucion: [
+          { lado: 'debe', cuentas: ['5224', '522'], monto: 20000, nota: 'Se cierra la cuenta transitoria.' },
+          { lado: 'haber', cuentas: ['5011', '501'], monto: 20000, nota: 'El capital sube a S/ 270,000.' }
+        ],
+        explicacion: 'De la 52 a la 50, como cualquier aumento de capital.'
+      },
+      {
+        titulo: 'Op. 5 · Utilidad del ejercicio', doc: 'Estado de resultados', fecha: '31/12/26', glosa: 'Por el traslado de la utilidad neta del ejercicio 2026',
+        solucion: [
+          { lado: 'debe', cuentas: ['891', '89'], monto: 80000, nota: 'Se cierra la cuenta de resultado del ejercicio.' },
+          { lado: 'haber', cuentas: ['5911', '591'], monto: 80000, nota: 'La utilidad pasa a resultados acumulados.' }
+        ],
+        explicacion: 'Antes de repartir o reservar, la utilidad del ejercicio se traslada de la 89 a la 59.'
+      },
+      {
+        titulo: 'Op. 5 · Reserva legal', doc: 'Acta de junta general', fecha: '31/12/26', glosa: 'Por la reserva legal: 10 % de la utilidad de S/ 80,000',
+        solucion: [
+          { lado: 'debe', cuentas: ['5911', '591'], monto: 8000, nota: '10 % × 80,000 = 8,000 sale de las utilidades acumuladas.' },
+          { lado: 'haber', cuentas: ['582', '58'], monto: 8000, nota: 'Va a 582 Reserva legal (art. 229 de la LGS: 10 % hasta llegar a la quinta parte del capital).' }
+        ],
+        explicacion: 'La reserva legal no es un gasto: es una parte de la utilidad que la ley obliga a guardar en el patrimonio.'
+      },
+      {
+        titulo: 'Op. 6 · Dividendos', doc: 'Acta de junta general', fecha: '31/12/26', glosa: 'Por el acuerdo de distribución de dividendos',
+        solucion: [
+          { lado: 'debe', cuentas: ['5911', '591'], monto: 25000, nota: 'Disminuyen las utilidades acumuladas.' },
+          { lado: 'haber', cuentas: ['4412', '441'], monto: 25000, nota: 'Nace la deuda con los accionistas: 4412 Dividendos por pagar (pasivo).' }
+        ],
+        explicacion: 'Acordar dividendos no es pagarlos: primero nace una cuenta por pagar (44); cuando se paga, 4412 / 10.'
+      },
+      {
+        titulo: 'Op. 7 · Excedente de revaluación', doc: 'Informe de tasación', fecha: '31/12/26', glosa: 'Por la revaluación voluntaria del inmueble según tasación',
+        solucion: [
+          { lado: 'debe', cuentas: ['33212', '3321', '332'], monto: 35000, detalle: 'Edificaciones – Revaluación', nota: 'Sube el valor del inmueble: 33212 Revaluación.' },
+          { lado: 'haber', cuentas: ['5712', '571'], monto: 35000, detalle: 'Excedente de revaluación – Propiedad, planta y equipo', nota: 'El mayor valor no es ingreso: va al patrimonio como excedente de revaluación.' }
+        ],
+        explicacion: 'La revaluación aumenta el activo y el patrimonio, sin pasar por resultados.'
+      }
+    ]
   }
 ];

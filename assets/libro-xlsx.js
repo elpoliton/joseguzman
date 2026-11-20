@@ -94,7 +94,7 @@
         s(r, 6, 8, l.cuenta); s(r, 7, l.haber && !l.debe ? 10 : 9, l.detalle || '');
         if (l.debe) n(r, 8, 7, l.debe); else e(r, 8, 7);
         if (l.haber) n(r, 9, 7, l.haber); else e(r, 9, 7);
-        D += l.debe || 0; H += l.haber || 0; alto[r] = 20; r++;
+        D += l.debe || 0; H += l.haber || 0; alto[r] = (l.detalle || '').length > (l.haber && !l.debe ? 40 : 46) ? 28 : 20; r++;
       });
       if (r - 1 > ini) 'ABCDEF'.split('').forEach(function (c) { mg(c + ini, c + (r - 1)); });
     });
