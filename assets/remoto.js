@@ -79,7 +79,7 @@
       var e = DECK.estado();
       ref.set({ sesion: { deck: location.pathname, ruta: RUTA, clave: CLAVE, titulo: document.title.replace(/\s*\|.*$/, ''), i: e.i, n: e.n, video: e.video, negro: e.negro, full: !!e.full, fullPend: !!e.fullPend,
         actual: e.actual, siguiente: e.siguiente, lista: e.lista,
-        web: e.web || null, red: window.REDSYNC && document.querySelector('.slide.red.on') ? window.REDSYNC.get() : null, url: location.href.split('#')[0].split('?')[0], t: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true })
+        web: e.web || null, qr: e.qr || null, red: window.REDSYNC && document.querySelector('.slide.red.on') ? window.REDSYNC.get() : null, url: location.href.split('#')[0].split('?')[0], t: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true })
         .catch(function (er) { pintarModal(Nube.mensajeError(er)); });
     }, 120);
   }

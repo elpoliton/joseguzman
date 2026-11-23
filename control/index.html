@@ -309,7 +309,7 @@
   // la miniatura muestra lo mismo que la laptop: la red y el código abiertos, y la página web encima si la hay
   function copiarEstado(w) {
     var web = S && S.web ? { url: S.web.url, y: S.web.y || 0, titulo: S.web.titulo || '' } : null, red = S && S.red;
-    setTimeout(function () { try { w.DECK.cmd('web', web); if (red && w.REDSYNC) w.REDSYNC.set(red); } catch (e) { } }, 60);
+    setTimeout(function () { try { w.DECK.cmd('web', web); w.DECK.cmd('qr', S && S.qr || null); if (red && w.REDSYNC) w.REDSYNC.set(red); } catch (e) { } }, 60);
   }
   function sincronizar(fr, forzar) {
     if (!S || !S.ruta) return;

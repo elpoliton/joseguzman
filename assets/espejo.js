@@ -42,7 +42,7 @@
       if (!!e.negro !== !!s.negro) DECK.cmd('black');
       DECK.cmd('zoom', e.zoom || null);
       if (e.red && red()) setTimeout(function () { red().set(e.red); }, 30);
-      DECK.cmd('web', e.web || null); // página web abierta dentro de la presentación (misma posición)
+      DECK.cmd('web', e.web || null); DECK.cmd('qr', e.qr || null); // página web abierta dentro de la presentación (misma posición)
     }
     Nube.sala('esp-' + code).then(function (ref) {
       ref.onSnapshot(function (snap) {
@@ -114,7 +114,7 @@
 
   function estado() {
     var e = DECK.estado(), r = red();
-    return { i: e.i, n: e.n, negro: !!e.negro, zoom: zoomActual, red: r ? r.get() : null, web: e.web || null, ruta: PATH, t: firebase.firestore.FieldValue.serverTimestamp() };
+    return { i: e.i, n: e.n, negro: !!e.negro, zoom: zoomActual, red: r ? r.get() : null, web: e.web || null, qr: e.qr || null, ruta: PATH, t: firebase.firestore.FieldValue.serverTimestamp() };
   }
   function publicar() {
     if (!ref) return; clearTimeout(tPub);

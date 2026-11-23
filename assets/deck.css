@@ -209,3 +209,13 @@ body.espejo .visor .vnueva, body.vista .visor .vnueva { visibility: hidden; }
 .tapfx { position: absolute; left: 0; top: 0; width: 70px; height: 70px; margin: -35px 0 0 -35px; border-radius: 50%; border: 5px solid #ffd24a; z-index: 51; pointer-events: none; opacity: 0; }
 .tapfx.on { animation: tapfx .6s ease-out; }
 @keyframes tapfx { 0% { opacity: 1; transform: scale(.4); } 100% { opacity: 0; transform: scale(1.4); } }
+/* QR en grande */
+button.hl { all: unset; position: absolute; z-index: 30; display: block; border-radius: 12px; cursor: zoom-in; outline: 3px solid transparent; outline-offset: 3px; }
+button.hl:hover, button.hl:focus-visible { outline-color: #fff; background: rgba(255,255,255,.12); }
+.qrgrande { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; z-index: 45; background: rgba(10,14,24,.88); display: grid; place-items: center; cursor: zoom-out; animation: qrin .25s ease-out; }
+.qrgrande .qrcaja { background: #fff; border-radius: 28px; padding: 34px 44px 26px; display: flex; flex-direction: column; align-items: center; gap: 8px; font-family: 'Lato', Calibri, sans-serif; color: #1c2230; }
+.qrgrande img { width: 600px; height: 600px; image-rendering: pixelated; }
+.qrgrande b { font-size: 34px; } .qrgrande span { font-size: 24px; color: #C8553D; font-weight: 700; } .qrgrande small { font-size: 16px; color: #6B7280; }
+@keyframes qrin { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: none; } }
+body.espejo .qrgrande, body.vista .qrgrande { pointer-events: none; }
+body.vista .qrgrande small { visibility: hidden; }

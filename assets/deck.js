@@ -267,6 +267,25 @@
     e.preventDefault(); abrirWeb({ url: u, titulo: (a.getAttribute('aria-label') || '').replace(/\s*↗\s*$/, '') });
   });
 
+  // ---------- QR en grande: un clic en un QR (data-qr) lo muestra a pantalla completa para que el público lo escanee
+  var qrBig = null;
+  function qr(p) {
+    if (!p || !p.src) { if (qrBig) { qrBig.remove(); qrBig = null; if (!vista) broadcast(); } return; }
+    if (qrBig && qrBig.getAttribute('data-src') === p.src) return;
+    if (qrBig) qrBig.remove();
+    var t = String(p.texto || '').split('|');
+    qrBig = document.createElement('div'); qrBig.className = 'qrgrande'; qrBig.setAttribute('data-src', p.src); qrBig.setAttribute('data-texto', p.texto || '');
+    qrBig.innerHTML = '<div class="qrcaja"><img alt="Código QR"><b></b><span></span><small>Escanéalo con la cámara de tu celular · clic para cerrar</small></div>';
+    qrBig.querySelector('img').src = p.src; qrBig.querySelector('b').textContent = t[0] || ''; qrBig.querySelector('span').textContent = t[1] || '';
+    qrBig.addEventListener('click', function () { qr(null); });
+    stage.insertBefore(qrBig, laser);
+    if (!vista) broadcast();
+  }
+  if (!vista) document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.slide [data-qr]'); if (!b || presenter || editor) return;
+    e.preventDefault(); qr({ src: b.getAttribute('data-qr'), texto: b.getAttribute('data-qr-texto') || '' });
+  });
+
   // ---------- tocar desde el celular: un toque en la miniatura pulsa lo que está en ese punto de la pantalla grande
   var tapfx = document.createElement('div'); tapfx.className = 'tapfx'; stage.appendChild(tapfx);
   function tocar(p) {
@@ -274,10 +293,8 @@
     tapfx.style.left = (p.x * W) + 'px'; tapfx.style.top = (p.y * H) + 'px';
     tapfx.classList.remove('on'); void tapfx.offsetWidth; tapfx.classList.add('on');
     var r = stage.getBoundingClientRect(), X = r.left + p.x * r.width, Y = r.top + p.y * r.height;
-    var tapan = Array.prototype.slice.call(document.querySelectorAll('.hud, .toast, .progress'));
-    tapan.forEach(function (el) { el.setAttribute('data-pe', el.style.pointerEvents); el.style.pointerEvents = 'none'; });
-    var el = document.elementFromPoint(X, Y), doc = document;
-    tapan.forEach(function (el) { el.style.pointerEvents = el.getAttribute('data-pe') || ''; el.removeAttribute('data-pe'); });
+    // se ignoran los controles que flotan encima (barra inferior, avisos)
+    var el = (document.elementsFromPoint(X, Y) || []).filter(function (x) { return !x.closest('.hud, .toast, .progress, .tapfx, .laser'); })[0] || null, doc = document;
     if (el && el.tagName === 'IFRAME' && visor && visor.contains(el)) {
       var fr = el.getBoundingClientRect(), k = el.clientWidth / fr.width;
       try { doc = el.contentDocument; el = doc.elementFromPoint((X - fr.left) * k, (Y - fr.top) * k); } catch (e) { el = null; }
@@ -295,6 +312,7 @@
     if (openV && n !== i) closeVideo();
     if (zoomOn && n !== i) zoom(null);
     if (visor && n !== i) cerrarWeb();
+    if (qrBig && n !== i) qr(null);
     if (slides[i]) slides[i].classList.remove('on'); i = n; slides[i].classList.add('on');
     if (n !== prevI) { var nv = vidOf(i); if (nv) { delete nv.dataset.done; boxOf(nv).classList.remove('played'); } } // al volver a la diapositiva, el video se puede ver otra vez
     if (!vista) try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) { }
@@ -323,7 +341,9 @@
     run(c, n);
   }
   function run(c, n) {
-    if (visor && (c === 'next' || c === 'prev')) { cerrarWeb(); return; } // con una web abierta, «siguiente/anterior» primero vuelven a la diapositiva
+    if (qrBig && (c === 'next' || c === 'prev')) { qr(null); return; } // con el QR en grande, «siguiente/anterior» primero lo cierran
+    if (visor && (c === 'next' || c === 'prev')) { cerrarWeb(); return; }
+    if (c === 'qr') { qr(n); return; } // con una web abierta, «siguiente/anterior» primero vuelven a la diapositiva
     if (c === 'web') { abrirWeb(n); return; } if (c === 'webscroll') { moverWeb(n); return; } if (c === 'tocar') { tocar(n); return; }
     if (c === 'next') next(); else if (c === 'prev') prev(); else if (c === 'go') show(n);
     else if (c === 'video') toggleVideo(); else if (c === 'black') black();
@@ -401,7 +421,8 @@
       case 'k': case 'K': cmd('video'); break;
       case 's': case 'S': if (!presenter) openPresenter(); break;
       case '?': case 'h': case 'H': help(true); break;
-      case 'Escape': if (visor) { cerrarWeb(); return; } var b = document.querySelector('.blackout'); if (b && b.classList.contains('on')) b.classList.remove('on'); if (openV) closeVideo(); if (zoomOn) zoom(null); return;
+      case 'q': case 'Q': { var bq = slides[i].querySelector('[data-qr]'); if (bq) { e.preventDefault(); if (qrBig) qr(null); else qr({ src: bq.getAttribute('data-qr'), texto: bq.getAttribute('data-qr-texto') || '' }); } return; }
+      case 'Escape': if (qrBig) { qr(null); return; } if (visor) { cerrarWeb(); return; } var b = document.querySelector('.blackout'); if (b && b.classList.contains('on')) b.classList.remove('on'); if (openV) closeVideo(); if (zoomOn) zoom(null); return;
       default: return;
     }
     e.preventDefault();
@@ -531,7 +552,7 @@
     estado: function () {
       var b = document.querySelector('.blackout');
       return { i: i, n: N, video: stateOf(vidOf(i)), negro: !!(b && b.classList.contains('on')), full: !!document.fullscreenElement, fullPend: fullPend,
-        web: webEstado(), actual: textoDe(i), siguiente: textoDe(i + 1), lista: slides.map(function (s, n) { return tituloDe(s) || ('Diapositiva ' + (n + 1)); }) };
+        web: webEstado(), qr: qrBig ? { src: qrBig.getAttribute('data-src'), texto: qrBig.getAttribute('data-texto') } : null, actual: textoDe(i), siguiente: textoDe(i + 1), lista: slides.map(function (s, n) { return tituloDe(s) || ('Diapositiva ' + (n + 1)); }) };
     },
     ponerNota: function (k, texto) { ponerNota(k, texto); if (chan) chan.postMessage({ t: 'nota', k: k, texto: texto }); },
     ajustes: function () { return ajustes; },
