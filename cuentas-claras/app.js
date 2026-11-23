@@ -63,8 +63,8 @@ const ORGANOS = [
 let DATA;
 function build() {
   const comp = [
-    { id: 1, title: 'Publicar las actas del Consejo de Facultad en la web', eje: 'Institucionalidad', organo: 'Consejo de Facultad', status: 'run', avance: 40, origen: 'Plan de gestión', updated: daysAgo(9), due: fmtMY(monthsFrom(4)), evidence: '3 de 8 actas del año publicadas en la sección Documentos.', a: 14, d: 6,
-      log: [{ d: daysAgo(70), t: 'El Consejo aprueba publicar sus actas.' }, { d: daysAgo(9), t: 'Se publican las 3 primeras actas.' }] },
+    { id: 1, title: 'Resumir los acuerdos de cada sesión del Consejo en lenguaje claro', eje: 'Institucionalidad', organo: 'Consejo de Facultad', status: 'run', avance: 40, origen: 'Plan de gestión', updated: daysAgo(9), due: fmtMY(monthsFrom(4)), evidence: 'Las actas ya se publican en PDF; 3 de 8 sesiones del semestre tienen resumen de acuerdos.', a: 14, d: 6,
+      log: [{ d: daysAgo(70), t: 'El Consejo aprueba acompañar cada acta con un resumen de acuerdos.' }, { d: daysAgo(9), t: 'Se publican los 3 primeros resúmenes.' }] },
     { id: 2, title: 'Ciclo de verano a costo cero', eje: 'Bienestar', organo: 'Consejo de Facultad', status: 'part', avance: 60, origen: 'Demanda estudiantil (asamblea)', updated: daysAgo(30), due: fmtMY(monthsFrom(2)), evidence: 'Se aprobó una reducción del 30 % del costo, no la gratuidad solicitada. Acuerdo N.° 112-CF.', a: 9, d: 21,
       log: [{ d: daysAgo(64), t: 'La asamblea estudiantil presenta el pedido.' }, { d: daysAgo(41), t: 'Mesa de diálogo con el Tercio estudiantil.' }, { d: daysAgo(30), t: 'El Consejo aprueba una reducción del 30 %.' }] },
     { id: 3, title: 'Mejorar los servicios higiénicos del pabellón', eje: 'Infraestructura', organo: 'Decanato', status: 'ok', avance: 100, origen: 'Propuesta de campaña', updated: daysAgo(52), due: fmtMY(monthsFrom(-1)), evidence: 'Obra entregada. Acta de recepción y fotografías del antes y el después.', a: 31, d: 4,
@@ -107,7 +107,7 @@ function build() {
 
   const ley = [
     { t: 'Estatuto, TUPA, plan estratégico y reglamentos', s: 'ok', w: 'Actualizado hace 3 semanas' },
-    { t: 'Actas de Consejo de Facultad y de Consejo Universitario', s: 'part', w: '3 de 8 actas del año' },
+    { t: 'Actas de Consejo de Facultad y de Consejo Universitario', s: 'part', w: 'Publicadas en PDF escaneado; ver «Datos reales»' },
     { t: 'Estados financieros, presupuesto y ejecución presupuestal', s: 'pend', w: 'Última versión: ' + (Y - 2) },
     { t: 'Becas y créditos educativos disponibles y otorgados', s: 'ok', w: 'Actualizado este semestre' },
     { t: 'Inversiones, donaciones y obras de infraestructura', s: 'part', w: 'Solo obras concluidas' },
@@ -232,6 +232,11 @@ function vInicio() {
         <div>${I.dims.map(d => `<a class="dim" href="${d.href}"><b>${d.k}</b><span class="mono">${d.v} %</span><span class="bar"><span style="width:${d.v}%"></span></span><small>${d.how}</small></a>`).join('')}</div>
       </div>
     </div>
+    ${R ? (() => { const by = realStats(); return `<div class="panel realband">
+      <div class="rbhead"><div><p class="eyebrow">Datos reales del portal de la Facultad</p><h2 style="font-size:1.35rem;margin-top:4px">Lo que hoy ya se puede consultar, y dónde</h2></div>${realBadge()}</div>
+      <div class="kpis"><a class="kpi" href="#actas"><b class="mono">${by[2024]}</b><span>transcripciones de sesiones del Consejo publicadas de 2024, el año de la tesis</span></a><a class="kpi" href="#actas"><b class="mono">${by[2026]}</b><span>actas del Consejo publicadas en 2026 (hasta setiembre)</span></a><a class="kpi" href="#organos/consejo"><b class="mono">4 de 12</b><span>votos del Consejo son estudiantiles: el tercio</span></a></div>
+      <div class="canales">${R.canales.map(c => `<a class="canal" href="${c.u}" target="_blank" rel="noopener"><span class="n">${ic(c.i)}</span><span><b>${esc(c.t)}</b><small>${esc(c.s)}</small></span><span aria-hidden="true">↗</span></a>`).join('')}</div>
+    </div>`; })() : ''}
     <div class="grid" style="gap:12px">
       <div class="section-head"><h2>Comunicados recientes</h2><p>Las decisiones se publican con su fundamento. Las que aún no se toman se abren a consulta.</p></div>
       <div class="panel feed">${DATA.comunicados.map(x => `<article><time class="mono">${fmt(x.date)}</time><div><h3><a href="${x.href}" style="color:inherit;text-decoration:none">${esc(x.title)}</a></h3><p>${esc(x.text)}${x.closes ? ` Cierra el <b>${fmt(x.closes)}</b>.` : ''}</p></div><div>${x.type === 'con' ? `<a class="btn small primary" href="${x.href}">Opinar</a>` : `<span class="chip type-${x.type}">${x.label}</span>`}</div></article>`).join('')}</div>
@@ -260,6 +265,7 @@ function vPerfil(o) {
         ${o.id === 'decanato' ? `<div class="panel pad" style="display:grid;gap:10px"><h3>Califica su gestión</h3><p class="muted" style="font-size:.9rem">Se evalúa cada función del cargo, no a la persona. Es anónimo y solo se publican porcentajes.</p><div><a class="btn primary small" href="#participa/calificar">Ir a la evaluación</a></div></div>` : ''}
       </div>
     </div>
+    ${o.id === 'consejo' ? hemiciclo() : ''}
   </section>`;
 }
 
@@ -432,8 +438,69 @@ function vPorQue() {
   </section>`;
 }
 
-const VIEWS = { inicio: vInicio, organos: vOrganos, compromisos: vCompromisos, informes: vInformes, transparencia: vTransparencia, participa: vParticipa, 'mi-panel': vPanel, 'por-que': vPorQue };
-const TITLES = { inicio: 'Inicio', organos: 'Órganos de gobierno', compromisos: 'Compromisos', informes: 'Informes de gestión', transparencia: 'Transparencia', participa: 'Participa', 'mi-panel': null, 'por-que': 'Por qué existe' };
+/* ---------- datos reales del portal oficial (datos-reales.js) ---------- */
+const R = window.CC_REAL || null;
+let ryear = 2024;
+function realBadge() { return R ? `<span class="realtag" title="Verificado en el portal oficial de la Facultad">${ic('check')} Dato real · revisado el ${fmt(R.revisado + 'T12:00:00')}</span>` : ''; }
+function realStats() {
+  if (!R) return null;
+  const by = {}; R.actas.forEach(a => { const y = +a.d.slice(0, 4); by[y] = (by[y] || 0) + 1; });
+  Object.keys(R.anteriores).forEach(y => { by[y] = R.anteriores[y]; });
+  return by;
+}
+function hemiciclo() {
+  if (!R) return '';
+  const seats = []; R.consejo.forEach((g, gi) => { for (let k = 0; k < g.n; k++) seats.push({ g: gi, voto: g.voto }); });
+  const vot = seats.filter(x => x.voto), voz = seats.filter(x => !x.voto);
+  const cols = ['var(--accent)', '#3E63DD', '#1E9A6A', '#8E5BD6', 'var(--muted)', 'var(--muted)'];
+  // semicírculo con los miembros con voto; fila inferior con quienes tienen solo voz
+  const n = vot.length, pts = vot.map((x, i) => { const a = Math.PI - (i + 0.5) * Math.PI / n; return { x: 160 + Math.cos(a) * 118, y: 150 - Math.sin(a) * 118, g: x.g }; });
+  const est = R.consejo[2].n, total = n;
+  return `<div class="panel pad hemi">
+    <div class="hemihead"><h3>Quién vota en el Consejo de Facultad</h3>${realBadge()}</div>
+    <div class="hemigrid">
+      <svg viewBox="0 0 320 214" role="img" aria-label="${total} miembros con voto; ${est} son estudiantes">
+        ${pts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="13" fill="${cols[p.g]}"/>`).join('')}
+        ${voz.map((x, i) => `<circle cx="${(40 + i * 27).toFixed(1)}" cy="196" r="9" fill="none" stroke="var(--muted)" stroke-width="2"/>`).join('')}
+        <text x="160" y="128" text-anchor="middle" class="hemibig">${est} de ${total}</text>
+        <text x="160" y="148" text-anchor="middle" class="hemism">votos estudiantiles</text>
+      </svg>
+      <ul class="hemileg">${R.consejo.map((g, i) => `<li><span class="sw" style="${g.voto ? 'background:' + cols[i] : 'border:2px solid var(--muted)'}"></span><b>${g.n} · ${esc(g.g)}</b><small>${esc(g.nota)}</small></li>`).join('')}</ul>
+    </div>
+    <p class="muted" style="font-size:.8rem">Fuente: Estatuto de la UNMSM, art. 57, publicado en el portal de la Facultad. Los círculos vacíos asisten con voz pero sin voto.</p>
+  </div>`;
+}
+function vActas() {
+  if (!R) return `<section class="view"><p class="empty">No se pudieron cargar los datos reales.</p></section>`;
+  const by = realStats(), years = Object.keys(by).map(Number).sort();
+  const max = Math.max.apply(null, years.map(y => by[y]));
+  const list = R.actas.filter(a => +a.d.slice(0, 4) === ryear).sort((a, b) => a.d < b.d ? -1 : 1);
+  const perM = MONTHS.map((n, i) => list.filter(a => +a.d.slice(5, 7) === i + 1));
+  const sinM = perM.map((l, i) => l.length ? null : MONTHS[i]).filter(Boolean);
+  const hasDetail = R.actas.some(a => +a.d.slice(0, 4) === ryear);
+  return `<section class="view">
+    <div class="section-head"><p class="eyebrow">Datos reales · Consejo de Facultad</p><h2>¿Qué actas del Consejo están publicadas?</h2><p>Este módulo no usa datos de ejemplo: lee el portal oficial de transparencia de la Facultad y enlaza cada documento. Sirve para comprobar, con evidencia, cuánto y cuándo se publica.</p><div>${realBadge()}</div></div>
+    <div class="panel pad">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline"><h3>Documentos del Consejo publicados por año</h3><a href="${R.fuente}" target="_blank" rel="noopener">Ver en el portal oficial ↗</a></div>
+      <div class="ybars" role="list">${years.map(y => `<button type="button" class="barcol" role="listitem" data-act="ryear" data-v="${y}" aria-pressed="${y === ryear}" ${R.actas.some(a => +a.d.slice(0, 4) === y) ? '' : 'data-solo="1"'} title="${by[y]} documentos en ${y}"><span class="bv mono">${by[y]}</span><span class="bb" style="height:${Math.round(8 + 120 * by[y] / max)}px"></span><span class="by mono">${y}${y === 2024 ? '<i>tesis</i>' : ''}</span></button>`).join('')}</div>
+      <p class="muted" style="font-size:.82rem">Toca un año con detalle (2024 a 2026) para ver sus documentos. Hasta 2024 se publican transcripciones de las sesiones; desde fines de 2025, actas.</p>
+    </div>
+    ${hasDetail ? `<div class="grid" style="gap:10px">
+      <h3>${ryear}: ${list.length} documentos publicados</h3>
+      <div class="months">${MONTHS.map((n, i) => `<div class="month ${perM[i].length ? '' : 'empty'}" style="cursor:default"><b>${n.slice(0, 3)}</b><span class="mono">${perM[i].length || '—'}</span></div>`).join('')}</div>
+      ${sinM.length ? `<p class="muted" style="font-size:.88rem">Meses sin documentos publicados en ${ryear}: <b>${sinM.join(', ')}</b>. Que no haya documento publicado no prueba que no hubo sesión: muestra lo que un estudiante puede consultar.</p>` : ''}
+      <div class="tablebox"><table><thead><tr><th>Sesión</th><th>Documento</th><th>Abrir</th></tr></thead><tbody>${list.map(a => `<tr><td class="mono">${fmt(a.d + 'T12:00:00')}</td><td>${a.tipo === 'acta' ? 'Acta' : 'Transcripción'} de la sesión del Consejo${a.nota ? `<br><small class="warnnote">⚠ ${esc(a.nota)}</small>` : ''}</td><td><a href="${a.u}" target="_blank" rel="noopener">PDF ↗</a></td></tr>`).join('')}</tbody></table></div>
+    </div>` : ''}
+    <div class="grid g2">
+      <div class="panel pad" style="display:grid;gap:8px;align-content:start"><h3>Información económica publicada</h3>${R.economia.map(e => `<a class="minirow" href="${e.u}" target="_blank" rel="noopener"><span>${esc(e.t)}</span><span>PDF ↗</span></a>`).join('')}<p class="muted" style="font-size:.84rem">Están publicadas como PDF escaneados: se pueden descargar, pero no buscar ni comparar. Cuentas Claras propone publicarlas como datos abiertos.</p></div>
+      <div class="panel pad" style="display:grid;gap:8px;align-content:start"><h3>Qué aporta este cruce a la tesis</h3><p style="font-size:.92rem">Los estudiantes perciben la transparencia como escasa aunque <b>sí hay documentos publicados</b>. El problema que describe la tesis no es la ausencia total de información, sino que está dispersa, en formatos difíciles y sin explicar qué se decidió ni qué se cumplió.</p><a class="btn ghost small" href="#por-que">Ver el fundamento →</a></div>
+    </div>
+    ${hemiciclo()}
+  </section>`;
+}
+
+const VIEWS = { inicio: vInicio, organos: vOrganos, compromisos: vCompromisos, informes: vInformes, transparencia: vTransparencia, actas: vActas, participa: vParticipa, 'mi-panel': vPanel, 'por-que': vPorQue };
+const TITLES = { inicio: 'Inicio', organos: 'Órganos de gobierno', compromisos: 'Compromisos', informes: 'Informes de gestión', transparencia: 'Transparencia', actas: 'Datos reales', participa: 'Participa', 'mi-panel': null, 'por-que': 'Por qué existe' };
 
 function route() { const h = decodeURIComponent((location.hash || '').slice(1)).split('/'); return VIEWS[h[0]] ? { v: h[0], arg: h[1] || null } : { v: 'inicio', arg: null }; }
 
@@ -573,6 +640,7 @@ const ACT = {
   size: () => { S.size = (S.size + 1) % 3; applyPrefs(); save(); toast('Texto: ' + ['normal', 'grande', 'muy grande'][S.size]); },
   filter: t => { filter = t.dataset.v; render(true); },
   dfilter: t => { dfilter = t.dataset.v; render(true); },
+  ryear: t => { if (t.dataset.solo) { toast('De ' + t.dataset.v + ' solo se registró el número de documentos publicados.'); return; } ryear = +t.dataset.v; render(true); },
   year: t => { year = +t.dataset.v; const ms = DATA.inf.filter(i => i.y === year).map(i => i.m); month = year === Y ? today.getMonth() : ms.length ? Math.max.apply(null, ms) : 0; render(true); },
   month: t => { month = +t.dataset.v; render(true); },
   vote: t => { const id = +t.dataset.id, v = t.dataset.v; if (S.votes[id] === v) delete S.votes[id]; else S.votes[id] = v; save(); build(); render(true); },
