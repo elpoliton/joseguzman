@@ -28,7 +28,7 @@
       root.style.setProperty('--c', c);
       while (stage.firstChild) stage.removeChild(stage.firstChild);
       stage.classList.remove('focus');
-      var W = 712, H = 520, cx = W / 2, cy = H / 2, rx = 262, ry = 198;
+      var W = 712, H = 480, cx = W / 2, cy = H / 2, rx = 250, ry = 178;
       var gE = el('g', {}, stage), gN = el('g', {}, stage);
       s.codigos.forEach(function (code, k) {
         var a = -Math.PI / 2 + (k * 2 * Math.PI / n) + (n % 2 ? 0 : Math.PI / n);
@@ -36,21 +36,21 @@
         var mx = cx + (x - cx) * 0.5 + Math.sin(a) * 18, my = cy + (y - cy) * 0.5 - Math.cos(a) * 18;
         var p = el('path', { d: 'M' + cx + ',' + cy + ' Q' + mx + ',' + my + ' ' + x + ',' + y, 'class': 'edge', 'data-k': k }, gE);
         if (animate) { var L = p.getTotalLength ? p.getTotalLength() : 300; p.style.strokeDasharray = L; p.style.strokeDashoffset = L; p.style.transition = 'stroke-dashoffset .6s ease ' + (0.08 * k) + 's, stroke .3s, opacity .3s'; requestAnimationFrame(function () { requestAnimationFrame(function () { p.style.strokeDashoffset = 0; }); }); }
-        var lines = wrap(code.n, 21), bw = 186, bh = 22 + lines.length * 18;
+        var lines = wrap(code.n, 19), bw = 212, bh = 24 + lines.length * 22;
         var g = el('g', { 'class': 'node', 'data-k': k, transform: 'translate(' + (x - bw / 2) + ',' + (y - bh / 2) + ')', tabindex: 0, role: 'button', 'aria-label': code.n }, gN);
         el('rect', { 'class': 'pulse', x: 0, y: 0, width: bw, height: bh, rx: 9 }, g);
         el('rect', { x: 0, y: 0, width: bw, height: bh, rx: 9 }, g);
         el('rect', { 'class': 'dia', x: 12, y: bh / 2 - 5, width: 10, height: 10, transform: 'rotate(45 17 ' + (bh / 2) + ')' }, g);
-        lines.forEach(function (ln, j) { var t = el('text', { x: 32, y: 11 + 18 * (j + 1) - 3 }, g); t.textContent = ln; });
+        lines.forEach(function (ln, j) { var t = el('text', { x: 32, y: 12 + 22 * (j + 1) - 5 }, g); t.textContent = ln; });
         if (animate) { g.style.opacity = 0; g.style.transition = 'opacity .35s ease ' + (0.25 + 0.08 * k) + 's'; requestAnimationFrame(function () { requestAnimationFrame(function () { g.style.opacity = ''; }); }); }
         g.addEventListener('click', function (e) { e.stopPropagation(); stopTour(); pick(k); });
         g.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.stopPropagation(); e.preventDefault(); stopTour(); pick(k); } });
       });
       var hub = el('g', { 'class': 'hub' }, stage);
-      el('circle', { 'class': 'halo', cx: cx, cy: cy, r: 92 }, hub);
-      el('circle', { 'class': 'core', cx: cx, cy: cy, r: 74 }, hub);
-      var t1 = el('text', { x: cx, y: cy - 8, 'font-size': 12, 'letter-spacing': 1.5, opacity: .85 }, hub); t1.textContent = 'SUBCATEGORÍA';
-      var t2 = el('text', { x: cx, y: cy + 18, 'font-size': s.nombre.length > 12 ? 19 : 23, 'class': 'serif' }, hub); t2.textContent = s.nombre;
+      el('circle', { 'class': 'halo', cx: cx, cy: cy, r: 104 }, hub);
+      el('circle', { 'class': 'core', cx: cx, cy: cy, r: 86 }, hub);
+      var t1 = el('text', { x: cx, y: cy - 8, 'font-size': 13, 'letter-spacing': 1.5, opacity: .85 }, hub); t1.textContent = 'SUBCATEGORÍA';
+      var t2 = el('text', { x: cx, y: cy + 18, 'font-size': s.nombre.length > 12 ? 21 : 25, 'class': 'serif' }, hub); t2.textContent = s.nombre;
       hub.addEventListener('click', function () { stopTour(); pick(-1); });
       // cabecera, navegación y hallazgo
       root.querySelector('.ttl h2').textContent = 'Red «' + s.nombre + '»';

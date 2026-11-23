@@ -18,10 +18,10 @@ window.PONENCIAS = [
       "ATLAS.ti",
       "Gobernanza universitaria"
     ],
-    "diapositivas": 19,
+    "diapositivas": 20,
     "videos": 0,
     "ruta": "ciencia-politica/sustentacion-tesis-fdcp/",
-    "pdf": "ciencia-politica/sustentacion-tesis-fdcp/media/sustentacion-tesis-fdcp-v5.pdf",
+    "pdf": "ciencia-politica/sustentacion-tesis-fdcp/media/sustentacion-tesis-fdcp-v6.pdf",
     "portada": "ciencia-politica/sustentacion-tesis-fdcp/diapos/01.jpg",
     "oculto": false,
     "origen": "pptx"

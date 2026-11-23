@@ -100,3 +100,57 @@
 .red .panel table.ficha td:last-child { font-weight:700; }
 body.espejo .slide.red { pointer-events:none; }
 body.espejo .slide.red .tour, body.espejo .slide.red .foot2 kbd { visibility:hidden; }
+
+/* v3: letra más grande para leer a distancia (no cambia el contenido) */
+.red .route span { font-size:14px; top:17px; }
+.red .kick { top:92px; font-size:16px; }
+.red .ttl { top:120px; height:60px; }
+.red .ttl h2 { font-size:40px; }
+.red .ttl .obj { font-size:17px; padding:7px 16px; }
+.red .ttl .q { font-size:19px; }
+.red .nav { top:200px; width:250px; }
+.red .nav h4 { font-size:14px; margin-bottom:8px; }
+.red .nav h4.g2 { margin-top:18px; }
+.red .nav button { height:56px; font-size:20px; padding:0 12px; }
+.red .nav button i { width:28px; height:28px; font-size:14px; }
+.red .nav button small { font-size:14px; }
+.red .chain { top:672px; width:250px; font-size:15px; line-height:1.4; }
+.red .chain b { font-size:14px; }
+.red .chain li::before { width:21px; height:21px; font-size:12px; }
+.red svg.net { left:334px; top:192px; width:712px; height:480px; }
+.red .net .node text { font-size:18px; }
+.red .hall { left:334px; top:688px; width:712px; min-height:0; padding:12px 20px 12px 24px; }
+.red .hall small { font-size:14px; }
+.red .hall p { font-size:22px; line-height:1.28; }
+.red .panel { left:1066px; top:192px; width:462px; height:690px; padding:18px 24px; overflow-y:auto; scrollbar-width:thin; }
+.red .panel .lab { font-size:14px; }
+.red .panel h3 { font-size:30px; margin:4px 0 10px; }
+.red .panel .what { font-size:20px; line-height:1.34; margin:0 0 12px; }
+.red .tabs2 button { font-size:16px; padding:7px 16px; border-radius:18px; }
+.red .pq { font-size:19px; line-height:1.32; }
+.red .pq small, .red .panel blockquote small { font-size:13px; }
+.red .panel blockquote { font-size:21px; line-height:1.3; }
+.red .panel blockquote cite { font-size:14px; }
+.red .panel .read { font-size:19px; line-height:1.32; }
+.red .panel .none { font-size:17px; }
+.red .panel ul.codes { gap:8px; }
+.red .panel ul.codes li { font-size:19px; padding:9px 14px; }
+.red .panel ul.codes li span { font-size:14px; }
+.red .panel .ind { font-size:17px; }
+.red .panel ol.preg { font-size:18px; line-height:1.34; }
+.red .panel table.ficha { font-size:16px; }
+.red .panel table.ficha th { font-size:13px; }
+.red .foot2 { left:334px; top:852px; font-size:15px; }
+.red .foot2 kbd { font-size:13px; }
+.red .tour { font-size:15px; padding:8px 16px; }
+.red .src { font-size:13px; left:72px; width:250px; top:820px; bottom:auto; line-height:1.3; }
+/* alineado con las diapositivas v6 (margen de 60 px y ruta más visible) */
+.red .route { left:60px; top:26px; width:1480px; }
+.red .route div { height:12px; }
+.red .route span { top:17px; font-size:20px; }
+.red .kick { left:60px; top:94px; font-size:21px; }
+.red .ttl { left:60px; right:60px; top:126px; }
+.red .nav, .red .chain, .red .src { left:60px; }
+.red .panel { left:1066px; width:474px; }
+.red .panel { height:648px; }
+.red .panel table.ficha { font-size:15px; } .red .panel table.ficha td { padding:5px 6px; }
