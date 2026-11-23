@@ -193,3 +193,19 @@ body.espejo { cursor: none; }
 .esp-aviso b { font-size: 15px; } .esp-aviso small { color: #aab4c8; font-size: 12px; }
 .esp-aviso .esp-st { color: #2fd08a; font-weight: 700; }
 .esp-aviso.min { opacity: 0; transform: translateX(-50%) translateY(20px); }
+
+/* ---------- visor web dentro de la presentación (enlaces del mismo sitio) */
+.visor { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; z-index: 40; background: #fff; display: flex; flex-direction: column; box-shadow: 0 0 0 9999px rgba(0,0,0,.35); }
+.visor .vbar { flex: none; height: 64px; display: flex; align-items: center; gap: 18px; padding: 0 18px; background: #1c2230; color: #fff; font: 400 20px/1 'Lato', Calibri, sans-serif; }
+.visor .vvolver { all: unset; cursor: pointer; background: #C8553D; color: #fff; font-weight: 700; font-size: 21px; padding: 11px 20px; border-radius: 10px; white-space: nowrap; }
+.visor .vvolver:hover { filter: brightness(1.08); }
+.visor .vtit { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 700; opacity: .9; }
+.visor .vnueva { color: #C9C2B4; font-size: 16px; text-decoration: none; white-space: nowrap; }
+.visor iframe { flex: 1; width: 100%; border: 0; background: #fff; }
+.laser { z-index: 50; }
+body.espejo .visor, body.vista .visor { pointer-events: none; }
+body.espejo .visor .vnueva, body.vista .visor .vnueva { visibility: hidden; }
+/* toque desde el celular */
+.tapfx { position: absolute; left: 0; top: 0; width: 70px; height: 70px; margin: -35px 0 0 -35px; border-radius: 50%; border: 5px solid #ffd24a; z-index: 51; pointer-events: none; opacity: 0; }
+.tapfx.on { animation: tapfx .6s ease-out; }
+@keyframes tapfx { 0% { opacity: 1; transform: scale(.4); } 100% { opacity: 0; transform: scale(1.4); } }

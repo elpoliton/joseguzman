@@ -78,11 +78,13 @@
     tPub = setTimeout(function () {
       var e = DECK.estado();
       ref.set({ sesion: { deck: location.pathname, ruta: RUTA, clave: CLAVE, titulo: document.title.replace(/\s*\|.*$/, ''), i: e.i, n: e.n, video: e.video, negro: e.negro, full: !!e.full, fullPend: !!e.fullPend,
-        actual: e.actual, siguiente: e.siguiente, lista: e.lista, url: location.href.split('#')[0].split('?')[0], t: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true })
+        actual: e.actual, siguiente: e.siguiente, lista: e.lista,
+        web: e.web || null, red: window.REDSYNC && document.querySelector('.slide.red.on') ? window.REDSYNC.get() : null, url: location.href.split('#')[0].split('?')[0], t: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true })
         .catch(function (er) { pintarModal(Nube.mensajeError(er)); });
     }, 120);
   }
   document.addEventListener('deck:cambio', publicar);
+  document.addEventListener('red:cambio', publicar); // diapositivas interactivas: el celular ve la misma red y el mismo código
 
   function conectar() {
     if (quitar) { quitar(); quitar = null; } if (quitarLaser) { quitarLaser(); quitarLaser = null; }

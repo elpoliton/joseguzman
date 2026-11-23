@@ -81,6 +81,12 @@
   .pad { position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; touch-action: none; }
   .pad iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; }
   .pad .touch { position: absolute; inset: 0; }
+  .webcard { background: #2a6f77; border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .webcard .t { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .webcard .g2 .b { height: 52px; font-size: 15px; }
+  .mini .tocar { position: absolute; right: 8px; top: 8px; background: rgba(5,10,25,.75); color: #fff; font-size: 12px; font-weight: 900; padding: 5px 9px; border-radius: 99px; pointer-events: none; }
+  .pad .pt.tap { background: transparent; border: 4px solid #ffd24a; box-shadow: none; width: 34px; height: 34px; margin: -17px 0 0 -17px; }
+  #webSen { display: none; } #webSen.on { display: grid; }
   .pad .pt { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #ff3b3b; box-shadow: 0 0 14px 4px rgba(255,40,40,.6); pointer-events: none; display: none; }
   .lista { list-style: none; margin: 0; padding: 0; overflow: auto; flex: 1; }
   .lista li { padding: 14px 16px; border-bottom: 1px solid var(--line); cursor: pointer; }
@@ -106,7 +112,9 @@
       <div class="card" style="flex:1"><div class="num"><b id="pos">–</b> de <span id="tot">–</span></div><div class="sub" id="enEsta">en esta: 0:00</div><div class="chips" id="chips"></div></div>
       <div class="card" style="min-width:118px" id="relojCard"><div class="clock" id="reloj">00:00<small id="relojLbl">TRANSCURRIDO</small></div></div>
     </div>
-    <div class="mini" id="mini"><iframe id="miniF" title="Diapositiva actual" tabindex="-1"></iframe><div class="cap" id="actual">–</div></div>
+    <div class="mini" id="mini"><iframe id="miniF" title="Diapositiva actual" tabindex="-1"></iframe><span class="tocar">👆 Tocar</span><div class="cap" id="actual">–</div></div>
+    <div class="webcard" id="webCard" hidden><div class="t">🌐 En la pantalla: <span id="webTit">página web</span></div>
+      <div class="g2"><button class="b sm" id="bWebVolver">↩ Volver a las diapos</button><button class="b sm" id="bWebManejar">👆 Manejar la página</button></div></div>
     <div class="card cur" id="curCard" hidden><div class="num">Ahora</div><h2 id="actual2">–</h2></div>
     <div class="notes" id="notas"></div>
     <div class="next">Siguiente: <b id="sig">–</b></div>
@@ -127,7 +135,7 @@
   <div class="grip"></div>
   <h3>Más funciones <button class="x" data-cerrar>Cerrar ✕</button></h3>
   <h4>Señalar en la pantalla</h4>
-  <div class="g2"><button class="b sm" data-sen="laser">🔴<small>Puntero láser</small></button><button class="b sm" data-sen="zoom">🔍<small>Acercar (zoom)</small></button></div>
+  <div class="g3"><button class="b sm" data-sen="tocar">👆<small>Tocar la pantalla</small></button><button class="b sm" data-sen="laser">🔴<small>Puntero láser</small></button><button class="b sm" data-sen="zoom">🔍<small>Acercar (zoom)</small></button></div>
   <h4>Video de la diapositiva</h4>
   <div class="g3"><button class="b sm" data-c="vseek" data-n="-10">⏪<small>10 s atrás</small></button><button class="b sm" data-c="video">⏯<small>Play / pausa</small></button><button class="b sm" data-c="vseek" data-n="10">⏩<small>10 s adelante</small></button></div>
   <div class="g2" style="margin-top:8px"><button class="b sm" data-c="vvol" data-n="-0.1">🔉<small>Bajar volumen</small></button><button class="b sm" data-c="vvol" data-n="0.1">🔊<small>Subir volumen</small></button></div>
@@ -151,8 +159,9 @@
 <div class="full" id="ovSen" hidden>
   <div class="hd"><b id="senTit">Puntero láser</b><button data-cerrar>Listo</button></div>
   <div class="senal">
-    <div class="seg"><button data-modo="laser" class="sel">🔴 Láser</button><button data-modo="zoom">🔍 Zoom</button><button id="bSinZoom">Quitar zoom</button></div>
+    <div class="seg"><button data-modo="tocar">👆 Tocar</button><button data-modo="laser" class="sel">🔴 Láser</button><button data-modo="zoom">🔍 Zoom</button><button id="bSinZoom">Quitar zoom</button></div>
     <div class="pad" id="pad"><iframe id="padF" title="Diapositiva actual" tabindex="-1"></iframe><div class="touch" id="touch"></div><div class="pt" id="pt"></div></div>
+    <div class="g3" id="webSen"><button class="b sm" id="bWebArriba">▲<small>Subir</small></button><button class="b sm" id="bWebAbajo">▼<small>Bajar</small></button><button class="b sm" id="bWebVolver2">↩<small>Volver a las diapos</small></button></div>
     <p class="hint" id="senHint">Desliza el dedo sobre la diapositiva: aparece un punto rojo en la pantalla grande. Al soltar, desaparece.</p>
     <div class="ctrl"><button class="b prev" style="height:64px" data-c="prev">◀</button><button class="b nextb" style="height:64px;font-size:20px" data-c="next">Siguiente ▶</button></div>
   </div>
@@ -294,8 +303,13 @@
   // ---------- miniaturas (la ponencia en modo «vista», del mismo sitio)
   function urlVista(extra) { return S && S.ruta ? '../ponencias/' + S.ruta + '?vista' + (extra || '') + '#' + (S.i + 1) : 'about:blank'; }
   function irEn(fr, i) {
-    try { var w = fr.contentWindow; if (w && w.DECK && w.DECK.vista) { w.DECK.cmd('go', i); return true; } } catch (e) { }
+    try { var w = fr.contentWindow; if (w && w.DECK && w.DECK.vista) { w.DECK.cmd('go', i); copiarEstado(w); return true; } } catch (e) { }
     return false;
+  }
+  // la miniatura muestra lo mismo que la laptop: la red y el código abiertos, y la página web encima si la hay
+  function copiarEstado(w) {
+    var web = S && S.web ? { url: S.web.url, y: S.web.y || 0, titulo: S.web.titulo || '' } : null, red = S && S.red;
+    setTimeout(function () { try { w.DECK.cmd('web', web); if (red && w.REDSYNC) w.REDSYNC.set(red); } catch (e) { } }, 60);
   }
   function sincronizar(fr, forzar) {
     if (!S || !S.ruta) return;
@@ -321,10 +335,20 @@
   $$('[data-sen]').forEach(function (b) { b.onclick = function () { if (!S || !S.ruta) { aviso('Abre una ponencia en la laptop primero'); return; } cerrar($('#ovMas')); abrir('#ovSen'); ponerModo(b.getAttribute('data-sen')); sincronizar($('#padF'), true); }; });
   $$('[data-modo]').forEach(function (b) { b.onclick = function () { ponerModo(b.getAttribute('data-modo')); }; });
   $('#bSinZoom').onclick = function () { enviar('zoom', null); aviso('Zoom quitado'); };
+  function abrirTocar() { if (!S || !S.ruta) { aviso('Abre una ponencia en la laptop primero'); return; } abrir('#ovSen'); ponerModo('tocar'); sincronizar($('#padF'), true); }
+  $('#mini').addEventListener('click', abrirTocar);
+  $('#bWebManejar').onclick = abrirTocar;
+  $('#bWebVolver').onclick = $('#bWebVolver2').onclick = function () { enviar('web', null); aviso('Volviendo a las diapositivas'); };
+  $('#bWebArriba').onclick = function () { enviar('webscroll', -450); };
+  $('#bWebAbajo').onclick = function () { enviar('webscroll', 450); };
   function ponerModo(m) {
     modo = m; $$('[data-modo]').forEach(function (b) { b.classList.toggle('sel', b.getAttribute('data-modo') === m); });
-    $('#senTit').textContent = m === 'laser' ? 'Puntero láser' : 'Acercar (zoom)';
-    $('#senHint').textContent = m === 'laser' ? 'Desliza el dedo sobre la diapositiva: aparece un punto rojo en la pantalla grande. Al soltar, desaparece.' : 'Toca la parte de la diapositiva que quieres acercar. Toca otra parte para moverte; «Quitar zoom» vuelve a la vista normal (también se quita al cambiar de diapositiva).';
+    $('#senTit').textContent = { laser: 'Puntero láser', zoom: 'Acercar (zoom)', tocar: 'Tocar la pantalla' }[m];
+    $('#senHint').textContent = {
+      laser: 'Desliza el dedo sobre la diapositiva: aparece un punto rojo en la pantalla grande. Al soltar, desaparece.',
+      zoom: 'Toca la parte de la diapositiva que quieres acercar. Toca otra parte para moverte; «Quitar zoom» vuelve a la vista normal (también se quita al cambiar de diapositiva).',
+      tocar: 'Toca lo que quieras pulsar (un código de la red, una pestaña, un botón o un enlace): se pulsa en la pantalla grande y lo ves aquí. Con una página web abierta, desliza hacia arriba o abajo para moverla.'
+    }[m];
   }
   function pos(e) { var r = $('#touch').getBoundingClientRect(); var t = e.touches ? e.touches[0] || e.changedTouches[0] : e; return { x: Math.max(0, Math.min(1, (t.clientX - r.left) / r.width)), y: Math.max(0, Math.min(1, (t.clientY - r.top) / r.height)) }; }
   function enviarLaser(p) {
@@ -333,10 +357,17 @@
     tEnv = setTimeout(function () { tEnv = null; ultimoEnvio = Date.now(); var q = pendiente; if (refL && q) refL.set({ x: q.x, y: q.y, on: q.on, t: firebase.firestore.FieldValue.serverTimestamp() }).catch(function () { }); }, espera);
   }
   function verPunto(p) { var pt = $('#pt'); if (!p) { pt.style.display = 'none'; return; } pt.style.display = 'block'; pt.style.left = (p.x * 100) + '%'; pt.style.top = (p.y * 100) + '%'; }
-  var tocando = false;
-  function inicio(e) { e.preventDefault(); var p = pos(e); if (modo === 'zoom') { enviar('zoom', { x: p.x, y: p.y }); verPunto(p); setTimeout(function () { verPunto(null); }, 400); return; } tocando = true; verPunto(p); enviarLaser({ x: p.x, y: p.y, on: true }); }
-  function mover(e) { if (!tocando) return; e.preventDefault(); var p = pos(e); verPunto(p); enviarLaser({ x: p.x, y: p.y, on: true }); }
-  function soltar() { if (!tocando) return; tocando = false; verPunto(null); enviarLaser({ x: 0, y: 0, on: false }); }
+  var tocando = false, toque = null;
+  function inicio(e) { e.preventDefault(); var p = pos(e); if (modo === 'tocar') { toque = { p: p, y0: p.y, ultimo: p.y }; return; } if (modo === 'zoom') { enviar('zoom', { x: p.x, y: p.y }); verPunto(p); setTimeout(function () { verPunto(null); }, 400); return; } tocando = true; verPunto(p); enviarLaser({ x: p.x, y: p.y, on: true }); }
+  function mover(e) {
+    if (toque) { e.preventDefault(); var q = pos(e), dy = q.y - toque.ultimo;
+      if (Math.abs(q.y - toque.y0) > 0.06) toque.arrastre = true;
+      if (toque.arrastre && S && S.web && Math.abs(dy) > 0.04) { enviar('webscroll', Math.round(-dy * 900 * 1.6)); toque.ultimo = q.y; }
+      return; }
+    if (!tocando) return; e.preventDefault(); var p = pos(e); verPunto(p); enviarLaser({ x: p.x, y: p.y, on: true }); }
+  function soltar() {
+    if (toque) { var t = toque; toque = null; if (!t.arrastre) { enviar('tocar', { x: t.p.x, y: t.p.y }); var pt = $('#pt'); pt.classList.add('tap'); verPunto(t.p); setTimeout(function () { verPunto(null); pt.classList.remove('tap'); }, 450); } return; }
+    if (!tocando) return; tocando = false; verPunto(null); enviarLaser({ x: 0, y: 0, on: false }); }
   var tz = $('#touch');
   tz.addEventListener('touchstart', inicio, { passive: false }); tz.addEventListener('touchmove', mover, { passive: false }); tz.addEventListener('touchend', soltar); tz.addEventListener('touchcancel', soltar);
   tz.addEventListener('mousedown', inicio); window.addEventListener('mousemove', mover); window.addEventListener('mouseup', soltar);
@@ -398,7 +429,10 @@
     $('#sig').textContent = s.i + 1 >= s.n ? 'Fin de la presentación' : ((s.siguiente && s.siguiente.titulo) || 'Diapositiva ' + (s.i + 2));
     var V = { idle: 'Video: «Siguiente» lo abre en grande', wait: '▶ Video abriéndose…', open: '▶ Video en grande', paused: '⏸ Video en pausa', ended: 'Video terminado: «Siguiente» vuelve', done: 'Video ya visto' }[s.video];
     $('#chips').innerHTML = (V ? '<span class="chip v">' + esc(V) + '</span>' : '') + (s.negro ? '<span class="chip n">Pantalla en negro</span>' : '') +
-      (s.fullPend ? '<span class="chip v">⛶ Pulsa un botón del puntero en la laptop</span>' : '');
+      (s.fullPend ? '<span class="chip v">⛶ Pulsa un botón del puntero en la laptop</span>' : '') +
+      (s.web ? '<span class="chip v">🌐 Web abierta: «Siguiente» o «Anterior» vuelven a la diapositiva</span>' : '');
+    $('#webCard').hidden = !s.web; $('#webTit').textContent = s.web ? (s.web.titulo || 'página web') : '';
+    $('#webSen').classList.toggle('on', !!s.web);
     $('#bFull').classList.toggle('on', !!s.full);
     $('#bFull').innerHTML = '⛶<small>' + (s.full ? 'Salir' : 'Pantalla') + '</small>';
     $('#bNegro').classList.toggle('on', !!s.negro);

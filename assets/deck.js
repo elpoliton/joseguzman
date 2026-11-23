@@ -209,12 +209,92 @@
     laser.style.left = (p.x * W) + 'px'; laser.style.top = (p.y * H) + 'px'; laser.classList.add('on');
   }
 
+  // ---------- visor web: los enlaces del mismo sitio (p. ej. Cuentas Claras) se abren DENTRO de la presentación,
+  // encima de la diapositiva, para no perder la pestaña. «← Volver», Escape, «siguiente/anterior» o el celular lo cierran.
+  var visor = null, visorY = 0, yPend = null, tVisor = null;
+  function mismoSitio(href) { try { var u = new URL(href, location.href); return u.origin === location.origin && /^https?:$/.test(u.protocol) ? u.href : null; } catch (e) { return null; } }
+  function webEstado() {
+    if (!visor) return null;
+    var f = visor.querySelector('iframe'), url = visor.getAttribute('data-url');
+    try { var h = f.contentWindow.location.href; if (h && h !== 'about:blank') url = h; visorY = Math.round(f.contentWindow.scrollY); } catch (e) { }
+    return { url: url, y: visorY, titulo: visor.getAttribute('data-titulo') || '' };
+  }
+  function avisarWeb() { if (vista) return; clearTimeout(tVisor); tVisor = setTimeout(broadcast, 250); }
+  function abrirWeb(p) {
+    if (!p || !p.url) { cerrarWeb(); return; }
+    var url = mismoSitio(p.url); if (!url) return;
+    if (!visor) {
+      visor = document.createElement('div'); visor.className = 'visor';
+      visor.innerHTML = '<div class="vbar"><button class="vvolver" type="button">← Volver a la diapositiva</button><b class="vtit"></b>' +
+        '<a class="vnueva" target="_blank" rel="noopener">Abrir en otra pestaña ↗</a></div><iframe title="Página web"></iframe>';
+      stage.insertBefore(visor, laser);
+      visor.querySelector('.vvolver').addEventListener('click', function () { cerrarWeb(); });
+      var fr = visor.querySelector('iframe');
+      fr.addEventListener('load', function () {
+        var w = null; try { w = fr.contentWindow; if (!w.document || w.location.href === 'about:blank') w = null; } catch (e) { w = null; }
+        if (!w) { // la página no se deja mostrar aquí: se abre en otra pestaña
+          if (!vista && !body.classList.contains('espejo')) { var u = visor.getAttribute('data-url'); cerrarWeb(); window.open(u, '_blank', 'noopener'); }
+          return;
+        }
+        if (yPend != null) { try { w.scrollTo(0, yPend); } catch (e) { } yPend = null; }
+        var t = w.document.title || visor.getAttribute('data-titulo') || ''; visor.setAttribute('data-titulo', t); visor.querySelector('.vtit').textContent = t;
+        if (vista) return; // copia del celular o pantalla espejo: solo se coloca
+        w.addEventListener('scroll', function () { visorY = Math.round(w.scrollY); avisarWeb(); }, { passive: true });
+        w.addEventListener('hashchange', avisarWeb);
+        w.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrarWeb(); });
+        avisarWeb();
+      });
+    }
+    var f = visor.querySelector('iframe'), actual = null;
+    try { actual = f.contentWindow.location.href; } catch (e) { }
+    if (p.titulo) { visor.setAttribute('data-titulo', p.titulo); visor.querySelector('.vtit').textContent = p.titulo; }
+    visor.querySelector('.vnueva').href = url;
+    if (actual !== url) {
+      var mismaPagina = actual && actual.split('#')[0] === url.split('#')[0];
+      visor.setAttribute('data-url', url);
+      if (mismaPagina) { try { f.contentWindow.location.replace(url); } catch (e) { f.src = url; } }
+      else { yPend = p.y || 0; f.src = url; }
+    }
+    if (p.y != null) { try { if (f.contentWindow.document.readyState === 'complete') f.contentWindow.scrollTo(0, p.y); else yPend = p.y; } catch (e) { yPend = p.y; } }
+    avisarWeb();
+  }
+  function cerrarWeb() { if (!visor) return; visor.remove(); visor = null; visorY = 0; yPend = null; if (!vista) broadcast(); }
+  function moverWeb(dy) { if (!visor) return; try { visor.querySelector('iframe').contentWindow.scrollBy({ top: +dy || 0, behavior: 'smooth' }); } catch (e) { } }
+  if (!vista) document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('.slide a[href]'); if (!a || presenter || editor) return;
+    if (a.getAttribute('target') !== '_blank' && !a.hasAttribute('data-visor')) return;
+    var u = mismoSitio(a.href); if (!u) return;
+    e.preventDefault(); abrirWeb({ url: u, titulo: (a.getAttribute('aria-label') || '').replace(/\s*↗\s*$/, '') });
+  });
+
+  // ---------- tocar desde el celular: un toque en la miniatura pulsa lo que está en ese punto de la pantalla grande
+  var tapfx = document.createElement('div'); tapfx.className = 'tapfx'; stage.appendChild(tapfx);
+  function tocar(p) {
+    if (!p || p.x == null || vista) return;
+    tapfx.style.left = (p.x * W) + 'px'; tapfx.style.top = (p.y * H) + 'px';
+    tapfx.classList.remove('on'); void tapfx.offsetWidth; tapfx.classList.add('on');
+    var r = stage.getBoundingClientRect(), X = r.left + p.x * r.width, Y = r.top + p.y * r.height;
+    var tapan = Array.prototype.slice.call(document.querySelectorAll('.hud, .toast, .progress'));
+    tapan.forEach(function (el) { el.setAttribute('data-pe', el.style.pointerEvents); el.style.pointerEvents = 'none'; });
+    var el = document.elementFromPoint(X, Y), doc = document;
+    tapan.forEach(function (el) { el.style.pointerEvents = el.getAttribute('data-pe') || ''; el.removeAttribute('data-pe'); });
+    if (el && el.tagName === 'IFRAME' && visor && visor.contains(el)) {
+      var fr = el.getBoundingClientRect(), k = el.clientWidth / fr.width;
+      try { doc = el.contentDocument; el = doc.elementFromPoint((X - fr.left) * k, (Y - fr.top) * k); } catch (e) { el = null; }
+    }
+    if (!el) return;
+    var win = doc.defaultView || window;
+    try { if (el.focus) el.focus({ preventScroll: true }); } catch (e) { }
+    el.dispatchEvent(new win.MouseEvent('click', { bubbles: true, cancelable: true, view: win, clientX: X, clientY: Y }));
+  }
+
   // ---------- navegación
   function show(n, silent) {
     n = Math.max(0, Math.min(N - 1, n));
     var prevI = i;
     if (openV && n !== i) closeVideo();
     if (zoomOn && n !== i) zoom(null);
+    if (visor && n !== i) cerrarWeb();
     if (slides[i]) slides[i].classList.remove('on'); i = n; slides[i].classList.add('on');
     if (n !== prevI) { var nv = vidOf(i); if (nv) { delete nv.dataset.done; boxOf(nv).classList.remove('played'); } } // al volver a la diapositiva, el video se puede ver otra vez
     if (!vista) try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) { }
@@ -243,6 +323,8 @@
     run(c, n);
   }
   function run(c, n) {
+    if (visor && (c === 'next' || c === 'prev')) { cerrarWeb(); return; } // con una web abierta, «siguiente/anterior» primero vuelven a la diapositiva
+    if (c === 'web') { abrirWeb(n); return; } if (c === 'webscroll') { moverWeb(n); return; } if (c === 'tocar') { tocar(n); return; }
     if (c === 'next') next(); else if (c === 'prev') prev(); else if (c === 'go') show(n);
     else if (c === 'video') toggleVideo(); else if (c === 'black') black();
     else if (c === 'vseek') seekVideo(n); else if (c === 'vvol') volVideo(n);
@@ -319,7 +401,7 @@
       case 'k': case 'K': cmd('video'); break;
       case 's': case 'S': if (!presenter) openPresenter(); break;
       case '?': case 'h': case 'H': help(true); break;
-      case 'Escape': var b = document.querySelector('.blackout'); if (b && b.classList.contains('on')) b.classList.remove('on'); if (openV) closeVideo(); if (zoomOn) zoom(null); return;
+      case 'Escape': if (visor) { cerrarWeb(); return; } var b = document.querySelector('.blackout'); if (b && b.classList.contains('on')) b.classList.remove('on'); if (openV) closeVideo(); if (zoomOn) zoom(null); return;
       default: return;
     }
     e.preventDefault();
@@ -449,7 +531,7 @@
     estado: function () {
       var b = document.querySelector('.blackout');
       return { i: i, n: N, video: stateOf(vidOf(i)), negro: !!(b && b.classList.contains('on')), full: !!document.fullscreenElement, fullPend: fullPend,
-        actual: textoDe(i), siguiente: textoDe(i + 1), lista: slides.map(function (s, n) { return tituloDe(s) || ('Diapositiva ' + (n + 1)); }) };
+        web: webEstado(), actual: textoDe(i), siguiente: textoDe(i + 1), lista: slides.map(function (s, n) { return tituloDe(s) || ('Diapositiva ' + (n + 1)); }) };
     },
     ponerNota: function (k, texto) { ponerNota(k, texto); if (chan) chan.postMessage({ t: 'nota', k: k, texto: texto }); },
     ajustes: function () { return ajustes; },
