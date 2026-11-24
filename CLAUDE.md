@@ -52,6 +52,7 @@ Más detalle de cada sección en `README.md`.
 - Las reglas se editan en la consola de Firebase, no en este repo. La regla de `salas-ponencias` tiene que estar **en el nivel de `documents`**, no dentro de otro `match`.
 
 ## Registro de cambios
+- 24/11/2026: «Mi Formato 5.1» tiene columna editable «¿Por qué va aquí?» por línea (`linea.nota`; al copiar un ejercicio se llena con la `nota` de la solución, y `asiento.expl` con su explicación) y su Excel trae la hoja «Explicación». El editor guarda al instante al salir de la pestaña (`pagehide`).
 - 24/11/2026: el Excel Formato 5.1 que descarga «Mi libro diario» trae una hoja «Explicación» por ejercicio (`explicar: true` en `LibroXLSX`): cada fila con tipo de cuenta, efecto y la razón (la `nota` de la solución para esa cuenta y lado). Compras de agosto en v2.
 - 24/11/2026: ejercicio «Caso práctico de compras (agosto)» (`compras-agosto`, 14 asientos) y su libro resuelto en Materiales del curso.
 - 23/11/2026: QR en grande: un elemento con `data-qr="<imagen>"` (y `data-qr-texto="Título|url"`) muestra el QR a pantalla completa al hacer clic, con la tecla Q o al tocarlo desde el celular; se cierra con clic, Escape o siguiente/anterior. Llega al celular y a las pantallas espejo (`qr` en `DECK.estado()`). Usado en la diapositiva 15 de la sustentación FDCP.

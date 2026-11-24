@@ -16,15 +16,18 @@
   var tGuardar = null;
   function guardar(rapido) {
     var l = actual(); if (l) l.t = Date.now();
-    clearTimeout(tGuardar); tGuardar = setTimeout(function () { CX.guardar(); }, rapido ? 0 : 500);
+    clearTimeout(tGuardar); tGuardar = setTimeout(function () { tGuardar = null; CX.guardar(); }, rapido ? 0 : 500);
   }
+  function guardarYa() { if (tGuardar) { clearTimeout(tGuardar); tGuardar = null; CX.guardar(); } }
+  window.addEventListener('pagehide', guardarYa); window.addEventListener('beforeunload', guardarYa);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) guardarYa(); });
   function hoyISO() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
   function aISO(f) { // 'dd/mm/aa' → 'aaaa-mm-dd'
     var m = /^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/.exec(String(f || '').trim()); if (!m) return '';
     var y = +m[3]; if (y < 100) y += 2000; return y + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2);
   }
   function aDMA(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); return m ? m[3] + '/' + m[2] + '/' + m[1] : (iso || ''); }
-  function lineaVacia() { return { cuenta: '', detalle: '', auto: true, debe: 0, haber: 0 }; }
+  function lineaVacia() { return { cuenta: '', detalle: '', auto: true, debe: 0, haber: 0, nota: '' }; }
   function asientoVacio(fecha) { return { fecha: fecha || hoyISO(), glosa: '', libro: '', corr: '', doc: '', lineas: [lineaVacia(), lineaVacia()] }; }
   function nuevoLibro(datos) {
     var t = Date.now(), l = Object.assign({ id: 'f51-' + t, nombre: 'Libro diario ' + (libros().length + 1), periodo: '', ruc: '', empresa: '', creado: t, t: t, asientos: [asientoVacio()] }, datos || {});
@@ -62,15 +65,16 @@
           '<td><input class="in' + (x.haber && !x.debe ? ' hab' : '') + '" data-c="detalle" value="' + esc(x.detalle) + '" aria-label="Denominación"></td>' +
           '<td><input class="in n" data-c="debe" value="' + (x.debe ? fmt(x.debe) : '') + '" inputmode="decimal" aria-label="Debe"></td>' +
           '<td><input class="in n" data-c="haber" value="' + (x.haber ? fmt(x.haber) : '') + '" inputmode="decimal" aria-label="Haber"></td>' +
+          '<td><textarea class="in f5-nota" data-c="nota" rows="' + Math.max(1, Math.ceil((x.nota || '').length / 34)) + '" placeholder="¿Por qué va aquí?" aria-label="¿Por qué va aquí?">' + esc(x.nota || '') + '</textarea></td>' +
           '<td class="acc"><button class="f5-x" data-del-l="' + j + ':' + i + '" title="Quitar línea" aria-label="Quitar línea">×</button></td></tr>';
       });
-      filas += '<tr class="f5-pie" data-a="' + j + '"><td colspan="2"><button class="lnk" data-add-l="' + j + '">+ línea</button></td><td colspan="2" class="cuad" id="f5c' + j + '"></td><td></td></tr>';
+      filas += '<tr class="f5-pie" data-a="' + j + '"><td colspan="2"><button class="lnk" data-add-l="' + j + '">+ línea</button></td><td colspan="2" class="cuad" id="f5c' + j + '"></td><td colspan="2"></td></tr>';
       n++;
     });
-    box.innerHTML = '<div class="tbl-wrap"><table class="f5t"><colgroup>' + [40, 126, 190, 64, 64, 120, 76, 250, 104, 104, 28].map(function (w) { return '<col style="width:' + w + 'px">'; }).join('') + '</colgroup><thead>' +
-      '<tr><th rowspan="2" class="c">N.°</th><th rowspan="2">Fecha</th><th rowspan="2">Glosa o descripción de la operación</th><th colspan="3">Referencia de la operación</th><th colspan="2">Cuenta contable asociada</th><th colspan="2">Movimiento</th><th rowspan="2"></th></tr>' +
+    box.innerHTML = '<div class="tbl-wrap"><table class="f5t"><colgroup>' + [40, 126, 180, 64, 64, 116, 76, 236, 104, 104, 230, 28].map(function (w) { return '<col style="width:' + w + 'px">'; }).join('') + '</colgroup><thead>' +
+      '<tr><th rowspan="2" class="c">N.°</th><th rowspan="2">Fecha</th><th rowspan="2">Glosa o descripción de la operación</th><th colspan="3">Referencia de la operación</th><th colspan="2">Cuenta contable asociada</th><th colspan="2">Movimiento</th><th rowspan="2">¿Por qué va aquí?<br><small>(sale en la pestaña «Explicación» del Excel)</small></th><th rowspan="2"></th></tr>' +
       '<tr><th>Cód. libro (Tabla 8)</th><th>N.° correlativo</th><th>Doc. sustentatorio</th><th>Código</th><th>Denominación</th><th class="n">Debe</th><th class="n">Haber</th></tr></thead>' +
-      '<tbody>' + filas + '</tbody><tfoot><tr class="tt"><td colspan="8" class="r">Totales <span id="f5Cuadre"></span></td><td class="n" id="f5D"></td><td class="n" id="f5H"></td><td></td></tr></tfoot></table></div>' +
+      '<tbody>' + filas + '</tbody><tfoot><tr class="tt"><td colspan="8" class="r">Totales <span id="f5Cuadre"></span></td><td class="n" id="f5D"></td><td class="n" id="f5H"></td><td colspan="2"></td></tr></tfoot></table></div>' +
       '<div class="f5-bot"><button class="btn navy sm" id="f5AddA">+ Agregar asiento</button><span class="tiny">Escribe el código y elige la cuenta: la denominación se completa sola (puedes cambiarla). Se guarda solo.</span></div>';
     ['nombre', 'periodo', 'ruc', 'empresa'].forEach(function (k) { $('#f5' + k).value = l[k] || ''; });
     totales();
@@ -96,6 +100,7 @@
       t.classList.toggle('mal', !!x.cuenta && !nm && x.cuenta.length >= 2);
       if (nm && (x.auto || !x.detalle)) { x.detalle = nm; x.auto = true; tr.querySelector('[data-c="detalle"]').value = nm; }
     } else if (c === 'detalle') { x.detalle = t.value; x.auto = false; }
+    else if (c === 'nota') { x.nota = t.value; t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
     else { x[c] = num(t.value); if (x[c]) { var o = c === 'debe' ? 'haber' : 'debe'; if (x[o]) { x[o] = 0; tr.querySelector('[data-c="' + o + '"]').value = ''; } } tr.querySelector('[data-c="detalle"]').classList.toggle('hab', !!x.haber && !x.debe); totales(); }
     guardar();
   });
@@ -143,7 +148,7 @@
     var d = CX.libroDe(id); if (!d || !d.asientos.length) { CX.toast('Ese ejercicio no tiene asientos todavía'); return; }
     nuevoLibro({
       nombre: d.nombre, empresa: d.empresa, ruc: d.ruc, periodo: d.periodo, enunciado: d.enunciado,
-      asientos: d.asientos.map(function (a) { return { fecha: aISO(a.fecha) || a.fecha, glosa: a.glosa, libro: '', corr: '', doc: a.doc, lineas: a.lineas.map(function (x) { return { cuenta: x.cuenta, detalle: x.detalle, auto: false, debe: x.debe, haber: x.haber }; }) }; })
+      asientos: d.asientos.map(function (a) { return { fecha: aISO(a.fecha) || a.fecha, glosa: a.glosa, libro: '', corr: '', doc: a.doc, expl: a.expl || '', lineas: a.lineas.map(function (x) { return { cuenta: x.cuenta, detalle: x.detalle, auto: false, debe: x.debe, haber: x.haber, nota: x.nota || '' }; }) }; })
     });
     pintar(); CX.toast('Copiado: ahora puedes editarlo');
   };
@@ -151,10 +156,10 @@
   // ---------- descargas
   function paraXLSX(l) {
     return {
-      hoja: l.nombre || 'Libro diario', empresa: l.empresa, ruc: l.ruc, periodo: l.periodo, enunciado: l.enunciado || '',
+      hoja: l.nombre || 'Libro diario', empresa: l.empresa, ruc: l.ruc, periodo: l.periodo, enunciado: l.enunciado || '', explicar: true,
       asientos: l.asientos.map(function (a) {
         var L = a.lineas.filter(function (x) { return x.cuenta || x.debe || x.haber; });
-        return { fecha: aDMA(a.fecha), glosa: a.glosa, libro: a.libro, corr: a.corr, doc: a.doc, lineas: L.length ? L : [lineaVacia()] };
+        return { fecha: aDMA(a.fecha), glosa: a.glosa, libro: a.libro, corr: a.corr, doc: a.doc, expl: a.expl || '', lineas: L.length ? L : [lineaVacia()] };
       })
     };
   }

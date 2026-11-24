@@ -799,7 +799,8 @@
       pasos(e).forEach(function (p, k) {
         var w = S.trabajo[wk(e.id, k)], L = conLineas(w), gl = w && w.glosa;
         if (!L.length && p.solucion) { gl = p.glosa; L = p.solucion.map(function (x) { var c = x.cuentas[0]; return { cuenta: c, detalle: x.detalle || nomDet(c), debe: x.lado === 'debe' ? x.monto : 0, haber: x.lado === 'haber' ? x.monto : 0 }; }); }
-        if (L.length) A.push({ fecha: p.fecha || e.fecha || '', glosa: gl || '', doc: p.doc || '', lineas: L.map(function (l) { return { cuenta: l.cuenta, detalle: l.detalle, debe: l.debe || 0, haber: l.haber || 0 }; }) });
+        var nt = {}; (p.solucion || []).forEach(function (x) { x.cuentas.forEach(function (c) { var k = c + '#' + x.lado; if (!nt[k]) nt[k] = x.nota || ''; }); });
+        if (L.length) A.push({ fecha: p.fecha || e.fecha || '', glosa: gl || '', doc: p.doc || '', expl: p.explicacion || '', lineas: L.map(function (l) { return { cuenta: l.cuenta, detalle: l.detalle, debe: l.debe || 0, haber: l.haber || 0, nota: nt[l.cuenta + '#' + (l.debe ? 'debe' : 'haber')] || '' }; }) });
       });
       return { nombre: e.empresa || 'Ejercicio ' + (todos().indexOf(e) + 1), empresa: e.empresa || '', ruc: e.ruc || '', periodo: e.periodo || '', enunciado: e.enunciado || '', asientos: A };
     }
