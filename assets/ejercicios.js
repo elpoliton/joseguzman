@@ -463,7 +463,7 @@ window.EJERCICIOS = [
         titulo: 'Op. 5 · Pago del recibo', doc: 'Recibo 01-2335473', fecha: '25/08/26', glosa: 'Por el pago del recibo de agua por transferencia',
         solucion: [
           { lado: 'debe', cuentas: ['4212', '421'], monto: 950, nota: 'Se cancela la deuda con Sedapal.' },
-          { lado: 'haber', cuentas: ['1041', '104'], monto: 950, nota: 'Sale del banco.' }
+          { lado: 'haber', cuentas: ['1041', '104'], monto: 950, nota: 'El dinero sale de la cuenta corriente: el activo 1041 disminuye, por eso va al haber.' }
         ],
         explicacion: 'Pago: 4212 contra 1041.'
       }

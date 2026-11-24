@@ -709,7 +709,13 @@
       return {
         hoja: e.empresa ? e.empresa.replace(/^(Comercial|Distribuidora)\s+/i, '').replace(/\s+S\.?A\.?C\.?$/i, '') : 'Ejercicio ' + b.n,
         empresa: e.empresa || '', ruc: e.ruc || '', periodo: e.periodo || '', enunciado: e.enunciado,
-        asientos: b.A.map(function (a) { return { fecha: a.p.fecha || e.fecha || '', glosa: a.w.glosa || '', doc: a.p.doc || '', lineas: a.L }; })
+        explicar: true,
+        asientos: b.A.map(function (a) {
+          // la razón de cada línea sale de la solución del ejercicio (misma cuenta y mismo lado)
+          var nt = {}; (a.p.solucion || []).forEach(function (x) { x.cuentas.forEach(function (c) { var k = c + '#' + x.lado; if (!nt[k] || (!nt[k] && x.nota)) nt[k] = x.nota || nt[k] || ''; }); });
+          return { fecha: a.p.fecha || e.fecha || '', glosa: a.w.glosa || '', doc: a.p.doc || '', expl: a.p.explicacion || '',
+            lineas: a.L.map(function (l) { return Object.assign({}, l, { nota: nt[l.cuenta + '#' + (l.debe ? 'debe' : 'haber')] || '' }); }) };
+        })
       };
     }), 'libro-diario-formato-5.1-' + (DI.sub ? 'subidos-' + DI.sub.replace(/\//g, '-') : hoy()) + '.xlsx');
     toast('Excel descargado: una hoja por ejercicio');
