@@ -52,6 +52,7 @@ Más detalle de cada sección en `README.md`.
 - Las reglas se editan en la consola de Firebase, no en este repo. La regla de `salas-ponencias` tiene que estar **en el nivel de `documents`**, no dentro de otro `match`.
 
 ## Registro de cambios
+- 24/11/2026: ejercicio «Caso práctico de compras (agosto)» (`compras-agosto`, 14 asientos) y su libro resuelto en Materiales del curso.
 - 23/11/2026: QR en grande: un elemento con `data-qr="<imagen>"` (y `data-qr-texto="Título|url"`) muestra el QR a pantalla completa al hacer clic, con la tecla Q o al tocarlo desde el celular; se cierra con clic, Escape o siguiente/anterior. Llega al celular y a las pantallas espejo (`qr` en `DECK.estado()`). Usado en la diapositiva 15 de la sustentación FDCP.
 - 23/11/2026: control desde el celular: modo «👆 Tocar» (tocar la miniatura pulsa ese punto en la laptop: comando `tocar` en `deck.js`) y **visor web**: los enlaces del mismo sitio con `target="_blank"` (p. ej. Cuentas Claras en la diapositiva 15) se abren dentro de la presentación, encima de la diapositiva, en vez de otra pestaña. Se cierra con «← Volver», Escape, siguiente/anterior o desde el celular (`web`, `webscroll`). `DECK.estado().web` y `REDSYNC` llegan al celular (`remoto.js`) y a las pantallas espejo.
 - 22/11/2026: Sustentación FDCP en v6 (20 diapositivas): misma información con letra más grande para leer a distancia; el Anexo C (instrumentos) pasa a dos diapositivas (19 y 20). La diapositiva 7 interactiva también agranda su letra (`red.css`, bloque «v3») y los nodos (`red.js`).

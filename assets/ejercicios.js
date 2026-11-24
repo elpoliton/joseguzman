@@ -340,5 +340,133 @@ window.EJERCICIOS = [
         explicacion: 'La revaluación aumenta el activo y el patrimonio, sin pasar por resultados.'
       }
     ]
+  },
+  {
+    id: 'compras-agosto', fecha: '08/08/26', tema: 'Compras con IGV', subido: '24/11/26',
+    empresa: 'Caso práctico de compras', periodo: 'Agosto 2026',
+    enunciado: '(1) 08/08: se compran mercaderías a Edelmisa SAC (RUC 20577776877), F. 001-0180, por un precio de S/ 18,000; se cancela el 55 % en efectivo y el resto por transferencia. (2) 18/08: se compran mercaderías a Montalván y Hermanos SAC (RUC 20664176864), F. 001-0280, por S/ 85,000 más IGV; se cancela el 30 % al contado y el resto por transferencia. (3) 21/08: se compran mercaderías por S/ 24,500 más IGV a Romero SAC (RUC 20300152555), F. 001-01220; se cancela por transferencia. (4) 23/08: se compra a La Ayacuchana SRL (RUC 20513123890), F. 001-00161: producto A, 1,500 unidades a un precio de S/ 15 c/u; producto B, 1,800 unidades a un valor de S/ 20 c/u; producto C, 1,300 unidades a un precio de S/ 18 c/u; se cancela el 15 % al contado y el resto por transferencia. (5) 25/08: se provisiona el recibo de agua N.° 01-2335473 de Sedapal SA (RUC 20111224422) por el precio de S/ 950; se cancela por transferencia.',
+    explicacion: 'Cada compra lleva tres asientos: compra (60 + 40111 / 4212), ingreso al almacén (20 / 61) y pago (4212 / 10). Clave: «precio» incluye IGV (se divide entre 1.18) y «valor» o «más IGV» no lo incluye (se multiplica por 0.18).',
+    asientos: [
+      {
+        titulo: 'Op. 1 · Compra', doc: 'Factura 001-0180', fecha: '08/08/26', glosa: 'Por la compra de mercaderías a Edelmisa SAC, F. 001-0180',
+        solucion: [
+          { lado: 'debe', cuentas: ['6011', '601'], monto: 15254.24, nota: '«Precio» incluye IGV: valor = 18,000 ÷ 1.18 = 15,254.24.' },
+          { lado: 'debe', cuentas: ['40111', '4011'], monto: 2745.76, nota: 'IGV de la compra: crédito fiscal (18 %).' },
+          { lado: 'haber', cuentas: ['4212', '421'], monto: 18000, nota: 'Nace la deuda con el proveedor por el total de la factura.' }
+        ],
+        explicacion: 'Toda compra con factura: 60 (valor) + 40111 (IGV) contra 4212 (total).'
+      },
+      {
+        titulo: 'Op. 1 · Ingreso al almacén', doc: 'Factura 001-0180', fecha: '08/08/26', glosa: 'Por el ingreso de las mercaderías al almacén',
+        solucion: [
+          { lado: 'debe', cuentas: ['20111', '2011'], monto: 15254.24, nota: 'La mercadería entra al almacén por su costo (sin IGV).' },
+          { lado: 'haber', cuentas: ['6111', '611'], monto: 15254.24, nota: 'Asiento de destino de la compra: 20 contra 61.' }
+        ],
+        explicacion: 'La 60 es una cuenta de gestión: su destino es la 20, y la 61 la equilibra.'
+      },
+      {
+        titulo: 'Op. 1 · Pago', doc: 'Factura 001-0180', fecha: '08/08/26', glosa: 'Por el pago de la F. 001-0180: 55 % en efectivo y el resto por transferencia',
+        solucion: [
+          { lado: 'debe', cuentas: ['4212', '421'], monto: 18000, nota: 'Se cancela la deuda con el proveedor.' },
+          { lado: 'haber', cuentas: ['101', '10'], monto: 9900, nota: '55 % × 18,000 = 9,900 en efectivo.' },
+          { lado: 'haber', cuentas: ['1041', '104'], monto: 8100, nota: 'El resto sale por transferencia de la cuenta corriente.' }
+        ],
+        explicacion: 'El pago no toca el IGV ni la mercadería: solo cancela la 4212.'
+      },
+      {
+        titulo: 'Op. 2 · Compra', doc: 'Factura 001-0280', fecha: '18/08/26', glosa: 'Por la compra de mercaderías a Montalván y Hermanos SAC, F. 001-0280',
+        solucion: [
+          { lado: 'debe', cuentas: ['6011', '601'], monto: 85000, nota: '85,000 «más IGV»: ese es el valor; IGV = 15,300.' },
+          { lado: 'debe', cuentas: ['40111', '4011'], monto: 15300, nota: 'IGV de la compra: crédito fiscal (18 %).' },
+          { lado: 'haber', cuentas: ['4212', '421'], monto: 100300, nota: 'Nace la deuda con el proveedor por el total de la factura.' }
+        ],
+        explicacion: 'Toda compra con factura: 60 (valor) + 40111 (IGV) contra 4212 (total).'
+      },
+      {
+        titulo: 'Op. 2 · Ingreso al almacén', doc: 'Factura 001-0280', fecha: '18/08/26', glosa: 'Por el ingreso de las mercaderías al almacén',
+        solucion: [
+          { lado: 'debe', cuentas: ['20111', '2011'], monto: 85000, nota: 'La mercadería entra al almacén por su costo (sin IGV).' },
+          { lado: 'haber', cuentas: ['6111', '611'], monto: 85000, nota: 'Asiento de destino de la compra: 20 contra 61.' }
+        ],
+        explicacion: 'La 60 es una cuenta de gestión: su destino es la 20, y la 61 la equilibra.'
+      },
+      {
+        titulo: 'Op. 2 · Pago', doc: 'Factura 001-0280', fecha: '18/08/26', glosa: 'Por el pago de la F. 001-0280: 30 % al contado y el resto por transferencia',
+        solucion: [
+          { lado: 'debe', cuentas: ['4212', '421'], monto: 100300, nota: 'Se cancela la deuda con el proveedor.' },
+          { lado: 'haber', cuentas: ['101', '10'], monto: 30090, nota: '30 % × 100,300 = 30,090 al contado.' },
+          { lado: 'haber', cuentas: ['1041', '104'], monto: 70210, nota: 'El resto sale por transferencia de la cuenta corriente.' }
+        ],
+        explicacion: 'El pago no toca el IGV ni la mercadería: solo cancela la 4212.'
+      },
+      {
+        titulo: 'Op. 3 · Compra', doc: 'Factura 001-01220', fecha: '21/08/26', glosa: 'Por la compra de mercaderías a Romero SAC, F. 001-01220',
+        solucion: [
+          { lado: 'debe', cuentas: ['6011', '601'], monto: 24500, nota: '24,500 «más IGV»: ese es el valor; IGV = 4,410.' },
+          { lado: 'debe', cuentas: ['40111', '4011'], monto: 4410, nota: 'IGV de la compra: crédito fiscal (18 %).' },
+          { lado: 'haber', cuentas: ['4212', '421'], monto: 28910, nota: 'Nace la deuda con el proveedor por el total de la factura.' }
+        ],
+        explicacion: 'Toda compra con factura: 60 (valor) + 40111 (IGV) contra 4212 (total).'
+      },
+      {
+        titulo: 'Op. 3 · Ingreso al almacén', doc: 'Factura 001-01220', fecha: '21/08/26', glosa: 'Por el ingreso de las mercaderías al almacén',
+        solucion: [
+          { lado: 'debe', cuentas: ['20111', '2011'], monto: 24500, nota: 'La mercadería entra al almacén por su costo (sin IGV).' },
+          { lado: 'haber', cuentas: ['6111', '611'], monto: 24500, nota: 'Asiento de destino de la compra: 20 contra 61.' }
+        ],
+        explicacion: 'La 60 es una cuenta de gestión: su destino es la 20, y la 61 la equilibra.'
+      },
+      {
+        titulo: 'Op. 3 · Pago', doc: 'Factura 001-01220', fecha: '21/08/26', glosa: 'Por el pago de la F. 001-01220 por transferencia',
+        solucion: [
+          { lado: 'debe', cuentas: ['4212', '421'], monto: 28910, nota: 'Se cancela la deuda con el proveedor.' },
+          { lado: 'haber', cuentas: ['1041', '104'], monto: 28910, nota: 'Se paga todo por transferencia.' }
+        ],
+        explicacion: 'El pago no toca el IGV ni la mercadería: solo cancela la 4212.'
+      },
+      {
+        titulo: 'Op. 4 · Compra', doc: 'Factura 001-00161', fecha: '23/08/26', glosa: 'Por la compra de mercaderías a La Ayacuchana SRL, F. 001-00161',
+        solucion: [
+          { lado: 'debe', cuentas: ['6011', '601'], monto: 74898.31, nota: 'A y C se dan a «precio» (con IGV) y B a «valor» (sin IGV): valor = 19,067.80 + 36,000 + 19,830.51 = 74,898.31.' },
+          { lado: 'debe', cuentas: ['40111', '4011'], monto: 13481.69, nota: 'IGV de la compra: crédito fiscal (18 %).' },
+          { lado: 'haber', cuentas: ['4212', '421'], monto: 88380, nota: 'Nace la deuda con el proveedor por el total de la factura.' }
+        ],
+        explicacion: 'Toda compra con factura: 60 (valor) + 40111 (IGV) contra 4212 (total).'
+      },
+      {
+        titulo: 'Op. 4 · Ingreso al almacén', doc: 'Factura 001-00161', fecha: '23/08/26', glosa: 'Por el ingreso de las mercaderías al almacén',
+        solucion: [
+          { lado: 'debe', cuentas: ['20111', '2011'], monto: 74898.31, nota: 'La mercadería entra al almacén por su costo (sin IGV).' },
+          { lado: 'haber', cuentas: ['6111', '611'], monto: 74898.31, nota: 'Asiento de destino de la compra: 20 contra 61.' }
+        ],
+        explicacion: 'La 60 es una cuenta de gestión: su destino es la 20, y la 61 la equilibra.'
+      },
+      {
+        titulo: 'Op. 4 · Pago', doc: 'Factura 001-00161', fecha: '23/08/26', glosa: 'Por el pago de la F. 001-00161: 15 % al contado y el resto por transferencia',
+        solucion: [
+          { lado: 'debe', cuentas: ['4212', '421'], monto: 88380, nota: 'Se cancela la deuda con el proveedor.' },
+          { lado: 'haber', cuentas: ['101', '10'], monto: 13257, nota: '15 % × 88,380 = 13,257 al contado.' },
+          { lado: 'haber', cuentas: ['1041', '104'], monto: 75123, nota: 'El resto sale por transferencia de la cuenta corriente.' }
+        ],
+        explicacion: 'El pago no toca el IGV ni la mercadería: solo cancela la 4212.'
+      },
+      {
+        titulo: 'Op. 5 · Provisión del recibo de agua', doc: 'Recibo 01-2335473', fecha: '25/08/26', glosa: 'Por la provisión del recibo de agua de Sedapal SA',
+        solucion: [
+          { lado: 'debe', cuentas: ['6363', '636'], monto: 805.08, nota: 'Gasto por servicio básico de agua. «Precio» con IGV: 950 ÷ 1.18 = 805.08.' },
+          { lado: 'debe', cuentas: ['40111', '4011'], monto: 144.92, nota: 'IGV del recibo.' },
+          { lado: 'haber', cuentas: ['4212', '421'], monto: 950, nota: 'Deuda con Sedapal por el total del recibo.' }
+        ],
+        explicacion: 'Un servicio no va al almacén: es gasto (63), por eso no hay asiento 20 / 61.'
+      },
+      {
+        titulo: 'Op. 5 · Pago del recibo', doc: 'Recibo 01-2335473', fecha: '25/08/26', glosa: 'Por el pago del recibo de agua por transferencia',
+        solucion: [
+          { lado: 'debe', cuentas: ['4212', '421'], monto: 950, nota: 'Se cancela la deuda con Sedapal.' },
+          { lado: 'haber', cuentas: ['1041', '104'], monto: 950, nota: 'Sale del banco.' }
+        ],
+        explicacion: 'Pago: 4212 contra 1041.'
+      }
+    ]
   }
 ];
