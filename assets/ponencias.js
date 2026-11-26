@@ -101,5 +101,31 @@ window.PONENCIAS = [
     "portada": "dinamica-de-plan-contable/dpc-aa1-politon/diapos/01.jpg",
     "oculto": false,
     "origen": "pptx"
+  },
+  {
+    "id": "dpc-aa2-politon",
+    "titulo": "AA2: POLITON E.I.R.L. · Elementos 5, 6 y 7",
+    "subtitulo": "Patrimonio, gastos por naturaleza e ingresos: 20 asientos de noviembre 2026",
+    "categoria": "Contabilidad",
+    "subcategoria": "Dinámica de Plan Contable",
+    "fecha": "2026-11-26",
+    "fechaTexto": "Noviembre 2026",
+    "lugar": "IES CERTUS",
+    "resumen": "Exposición del equipo Los Contables: aumento de capital en tres pasos (elemento 5), gastos por naturaleza 60 a 69 (elemento 6), ingresos 70, 75 y 77 (elemento 7), resultado preliminar y ecuación contable.",
+    "etiquetas": [
+      "PCGE",
+      "Elemento 5",
+      "Elemento 6",
+      "Elemento 7",
+      "Libro diario",
+      "CERTUS"
+    ],
+    "diapositivas": 14,
+    "videos": 0,
+    "ruta": "dinamica-de-plan-contable/dpc-aa2-politon/",
+    "pdf": "dinamica-de-plan-contable/dpc-aa2-politon/media/dpc-aa2-politon.pdf",
+    "portada": "dinamica-de-plan-contable/dpc-aa2-politon/diapos/01.jpg",
+    "oculto": false,
+    "origen": "pptx"
   }
 ];

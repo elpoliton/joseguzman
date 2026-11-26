@@ -399,7 +399,9 @@ MATERIALES = [
    ['Caso práctico de compras (agosto)', 'Cinco compras con IGV: compra, ingreso al almacén y pago en efectivo o por transferencia; «precio» frente a «valor»; recibo de agua de Sedapal. Subido el 24/11/2026.', [['PDF', 'libro-diario-compras-agosto-v1.pdf'], ['Excel con explicación', 'libro-diario-compras-agosto-v2.xlsx']]]]},
  {'grupo': 'Mis entregas', 'items': [
    ['AA1 · POLITON E.I.R.L. · Informe', 'Informe de la AA1: apertura, cobranzas, pagos, compras, ingresos al almacén y compra de activos, con cada asiento explicado. Entregado el 12/11/2026.', [['PDF', 'aa1-politon-informe-v1.pdf']]],
-   ['AA1 · POLITON E.I.R.L. · Libro diario', 'Asiento de apertura y 17 operaciones de octubre 2026 en el formato 5.1, con registro de compras, caja y bancos y un balance de comprobación con fórmulas.', [['Excel', 'aa1-politon-libro-diario-v1.xlsx']]]]},
+   ['AA1 · POLITON E.I.R.L. · Libro diario', 'Asiento de apertura y 17 operaciones de octubre 2026 en el formato 5.1, con registro de compras, caja y bancos y un balance de comprobación con fórmulas.', [['Excel', 'aa1-politon-libro-diario-v1.xlsx']]],
+   ['AA2 · POLITON E.I.R.L. · Informe', 'Informe de la AA2: identificación y aplicación de las cuentas de los elementos 5, 6 y 7 en 20 operaciones de noviembre 2026, con cada asiento explicado. Equipo Los Contables, 26/11/2026.', [['PDF', 'aa2-politon-informe-v1.pdf']]],
+   ['AA2 · POLITON E.I.R.L. · Libro diario y proceso contable', 'Asientos 19 al 38 en el formato 5.1, identificación de transacciones, cuentas 5-6-7, compras, ventas, caja y bancos, balance de comprobación y resultado preliminar con fórmulas.', [['Excel', 'aa2-politon-libro-diario-v1.xlsx']]]]},
 ]
 ENLACES = [
   ['📓 Cuaderno del curso en Marginalia (Documentos de la web → Dinámica del Plan Contable)', 'https://politon.pe/marginalia/'],

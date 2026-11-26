@@ -52,6 +52,7 @@ Más detalle de cada sección en `README.md`.
 - Las reglas se editan en la consola de Firebase, no en este repo. La regla de `salas-ponencias` tiene que estar **en el nivel de `documents`**, no dentro de otro `match`.
 
 ## Registro de cambios
+- 26/11/2026: AA2 de POLITON (equipo Los Contables) en Ponencias (`dpc-aa2-politon`) y en Materiales › Mis entregas (`aa2-politon-informe-v1.pdf`, `aa2-politon-libro-diario-v1.xlsx`). «Tocar» desde el celular: los enlaces del sitio (también con `www.` o http) se abren en el visor; los externos muestran en la laptop un aviso «🔗 Enlace externo · Abrir ↗» (el navegador no abre otra pestaña sin un clic real).
 - 24/11/2026: «Mi Formato 5.1» tiene columna editable «¿Por qué va aquí?» por línea (`linea.nota`; al copiar un ejercicio se llena con la `nota` de la solución, y `asiento.expl` con su explicación) y su Excel trae la hoja «Explicación». El editor guarda al instante al salir de la pestaña (`pagehide`).
 - 24/11/2026: el Excel Formato 5.1 que descarga «Mi libro diario» trae una hoja «Explicación» por ejercicio (`explicar: true` en `LibroXLSX`): cada fila con tipo de cuenta, efecto y la razón (la `nota` de la solución para esa cuenta y lado). Compras de agosto en v2.
 - 24/11/2026: ejercicio «Caso práctico de compras (agosto)» (`compras-agosto`, 14 asientos) y su libro resuelto en Materiales del curso.

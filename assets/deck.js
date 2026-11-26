@@ -212,7 +212,15 @@
   // ---------- visor web: los enlaces del mismo sitio (p. ej. Cuentas Claras) se abren DENTRO de la presentación,
   // encima de la diapositiva, para no perder la pestaña. «← Volver», Escape, «siguiente/anterior» o el celular lo cierran.
   var visor = null, visorY = 0, yPend = null, tVisor = null;
-  function mismoSitio(href) { try { var u = new URL(href, location.href); return u.origin === location.origin && /^https?:$/.test(u.protocol) ? u.href : null; } catch (e) { return null; } }
+  // mismo sitio aunque cambie «www.» o http/https: se reescribe al origen de esta página para poder mostrarlo dentro
+  function mismoSitio(href) {
+    try {
+      var u = new URL(href, location.href); if (!/^https?:$/.test(u.protocol)) return null;
+      if (u.origin === location.origin) return u.href;
+      var h = function (x) { return x.replace(/^www\./, ''); };
+      return h(u.hostname) === h(location.hostname) ? location.origin + u.pathname + u.search + u.hash : null;
+    } catch (e) { return null; }
+  }
   function webEstado() {
     if (!visor) return null;
     var f = visor.querySelector('iframe'), url = visor.getAttribute('data-url');
@@ -300,9 +308,34 @@
       try { doc = el.contentDocument; el = doc.elementFromPoint((X - fr.left) * k, (Y - fr.top) * k); } catch (e) { el = null; }
     }
     if (!el) return;
+    // enlaces: los del sitio se abren dentro de la presentación; los externos no se pueden abrir sin un clic real en la laptop
+    var a = el.closest && el.closest('a[href]');
+    if (a && doc === document) {
+      var u = mismoSitio(a.href);
+      if (u && (a.getAttribute('target') === '_blank' || a.hasAttribute('data-visor') || a.classList.contains('hl'))) { abrirWeb({ url: u, titulo: (a.getAttribute('aria-label') || a.textContent || '').trim().replace(/\s*↗\s*$/, '') }); return; }
+      if (!u && /^https?:/.test(a.href)) { enlaceExterno(a.href, (a.getAttribute('aria-label') || a.textContent || '').trim()); return; }
+    }
     var win = doc.defaultView || window;
     try { if (el.focus) el.focus({ preventScroll: true }); } catch (e) { }
     el.dispatchEvent(new win.MouseEvent('click', { bubbles: true, cancelable: true, view: win, clientX: X, clientY: Y }));
+  }
+
+  // enlace externo pedido desde el celular: el navegador solo abre otra pestaña con un clic real en la laptop
+  var extBox = null;
+  function enlaceExterno(url, titulo) {
+    if (vista) return;
+    if (!extBox) {
+      extBox = document.createElement('div'); extBox.className = 'extlink';
+      extBox.innerHTML = '<span>🔗 Enlace externo</span><b class="et"></b><a class="eabrir" target="_blank" rel="noopener">Abrir ↗</a><button class="ecerrar" type="button" aria-label="Cerrar">×</button>';
+      stage.appendChild(extBox);
+      extBox.querySelector('.ecerrar').addEventListener('click', function () { extBox.classList.remove('on'); });
+      extBox.querySelector('.eabrir').addEventListener('click', function () { setTimeout(function () { extBox.classList.remove('on'); }, 300); });
+    }
+    extBox.querySelector('.et').textContent = titulo || url.replace(/^https?:\/\//, '').slice(0, 60);
+    extBox.querySelector('.eabrir').href = url;
+    extBox.classList.add('on');
+    var w = null; try { w = window.open(url, '_blank', 'noopener'); } catch (e) { }
+    toast(w ? 'Enlace abierto en otra pestaña' : 'Enlace externo: pulsa «Abrir ↗» en la laptop');
   }
 
   // ---------- navegación
@@ -313,6 +346,7 @@
     if (zoomOn && n !== i) zoom(null);
     if (visor && n !== i) cerrarWeb();
     if (qrBig && n !== i) qr(null);
+    if (extBox && n !== i) extBox.classList.remove('on');
     if (slides[i]) slides[i].classList.remove('on'); i = n; slides[i].classList.add('on');
     if (n !== prevI) { var nv = vidOf(i); if (nv) { delete nv.dataset.done; boxOf(nv).classList.remove('played'); } } // al volver a la diapositiva, el video se puede ver otra vez
     if (!vista) try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) { }
