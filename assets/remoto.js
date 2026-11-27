@@ -9,7 +9,7 @@
   if (/[?&]espejo=/.test(location.search)) return; // pantalla espejo: solo mira (espejo.js)
   var CONTROL = 'https://politon.pe/joseguzman/control/';
   var KSALA = 'jg-sala';
-  var ref = null, quitar = null, vistos = null, tPub = null, celularVisto = 0, sala = null;
+  var ref = null, quitar = null, vistos = null, tPub = null, celularVisto = 0, celulares = 0, sala = null;
   // clave de esta ponencia (para las notas escritas desde el celular): su ruta dentro de /ponencias/
   var RUTA = (location.pathname.split('/ponencias/')[1] || location.pathname).replace(/index\.html$/, '');
   var CLAVE = RUTA.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '');
@@ -62,7 +62,7 @@
       body.querySelector('#rmCopiar').onclick = function () { var b = this; (navigator.clipboard ? navigator.clipboard.writeText(enlace()) : Promise.reject()).then(function () { b.textContent = '¡Copiado!'; }, function () { prompt('Copia este enlace:', enlace()); }); };
       body.querySelector('#rmNuevo').onclick = function () { if (!confirm('¿Crear un código nuevo? El celular tendrá que escanear el QR otra vez.')) return; sala = nuevaSala(); conectar(); pintarModal(); };
     }
-    var st = body.querySelector('#rmSt'); st.className = 'rm-st' + (conectado ? ' ok' : ''); st.textContent = conectado ? '✅ Celular conectado' : '⏳ Esperando al celular…';
+    var st = body.querySelector('#rmSt'); st.className = 'rm-st' + (conectado ? ' ok' : ''); st.textContent = conectado ? (celulares > 1 ? '✅ ' + celulares + ' celulares conectados' : '✅ Celular conectado') : '⏳ Esperando al celular…';
     body.querySelector('#rmErr').textContent = err || '';
   }
   btn.onclick = function () {
@@ -97,6 +97,7 @@
         if (!s.exists) return;
         var d = s.data(), cel = d.celular;
         if (cel && cel.visto && cel.visto.toMillis) { var antes = celularVisto; celularVisto = cel.visto.toMillis(); if (!antes && Date.now() - celularVisto < 45000) DECK.toast('📱 Celular conectado'); }
+        celulares = Object.keys(d.celulares || {}).filter(function (k) { var v = d.celulares[k]; return v && v.toMillis && Date.now() - v.toMillis() < 45000; }).length;
         if (!modal.hidden) pintarModal();
         // notas escritas desde el celular (ganan si son más nuevas que lo guardado en el panel)
         var mias = d.notas && d.notas[CLAVE], cambio = false, base = (DECK.ajustes() || {}).t || 0;
@@ -108,8 +109,11 @@
         });
         if (cambio) publicar();
         // cola de comandos del celular: se ejecutan en orden los que no se han visto (al conectar, los existentes se ignoran)
-        var cola = Array.isArray(d.cola) ? d.cola : [];
-        if (!vistos) { vistos = {}; cola.forEach(function (x) { vistos[x.id] = 1; }); return; }
+        // (cola: modo antiguo de un solo celular; colas.<id>: una por celular, para que varios manejen la misma exposición)
+        var cola = Array.isArray(d.cola) ? d.cola.slice() : [];
+        Object.keys(d.colas || {}).forEach(function (k) { if (Array.isArray(d.colas[k])) cola = cola.concat(d.colas[k]); });
+        cola.sort(function (a, b) { return a && b && a.id < b.id ? -1 : 1; });
+        if (!vistos) { vistos = {}; cola.forEach(function (x) { if (x) vistos[x.id] = 1; }); return; }
         cola.forEach(function (x) {
           if (!x || !x.id || vistos[x.id]) return; vistos[x.id] = 1;
           DECK.cmd(x.c, x.n);

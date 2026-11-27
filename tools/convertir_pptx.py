@@ -25,6 +25,12 @@ def slug(s):
     return re.sub(r'[^a-z0-9]+', '-', s).strip('-')[:60] or 'ponencia'
 
 
+def ver(ruta):
+    # ?v=<huella del archivo>: cada versión tiene su propia dirección y el navegador no muestra la copia vieja
+    import hashlib
+    return '?v=' + hashlib.md5(open(ruta, 'rb').read()).hexdigest()[:8]
+
+
 def sh(*cmd, **kw):
     print('$', ' '.join(cmd), flush=True)
     subprocess.run(cmd, check=True, **kw)
@@ -74,6 +80,8 @@ def enlaces_de(slide, SW, SH):
             if not rel.is_external or not rel.target_ref.startswith(('http://', 'https://', 'mailto:')):
                 continue
             txt = shp.text_frame.text.strip().replace('\n', ' ') if shp.has_text_frame else ''
+            if not txt:  # forma transparente sobre la imagen: se usa su texto alternativo
+                txt = (shp._element.xpath('./*[1]/p:cNvPr/@descr') or [''])[0].strip()
             out.append({'url': rel.target_ref, 'txt': txt, 'x': shp.left / SW, 'y': shp.top / SH, 'w': shp.width / SW, 'h': shp.height / SH})
             break
     return out
@@ -125,7 +133,7 @@ def main(meta_path):
     for k in range(N):
         d = info[k]
         titulo_d = d['textos'][0].split('\n')[0][:120] if d['textos'] else ''
-        img = f'diapos/{k + 1:02d}.jpg'; offline.append(img)
+        img = f'diapos/{k + 1:02d}.jpg'; img += ver(os.path.join(out, img)); offline.append(img)
         partes = [f'<img class="full" src="{img}" alt="Diapositiva {k + 1}{": " + E(titulo_d) if titulo_d else ""}">']
         if d['textos']:
             partes.append('<div class="sr">' + ' · '.join(E(t).replace('\n', ' ') for t in d['textos']) + '</div>')
@@ -136,6 +144,7 @@ def main(meta_path):
             sh('ffmpeg', '-v', 'error', '-y', '-i', raw, '-vf', "scale='min(1280,iw)':-2", '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '26',
                '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-c:a', 'aac', '-b:a', '128k', os.path.join(media, vname))
             sh('ffmpeg', '-v', 'error', '-y', '-ss', '0.5', '-i', os.path.join(media, vname), '-frames:v', '1', '-q:v', '4', os.path.join(media, pname))
+            vname += ver(os.path.join(media, vname)); pname += ver(os.path.join(media, pname))
             offline += ['media/' + vname, 'media/' + pname]
             st = f'left:{ox + v["x"] * iw:.0f}px;top:{oy + v["y"] * ih:.0f}px;width:{v["w"] * iw:.0f}px;height:{v["h"] * ih:.0f}px'
             partes.append(f'<div class="vbox" style="{st}"><video src="media/{vname}" poster="media/{pname}" preload="metadata" playsinline></video><div class="hint"><span><i data-icon="FaPlay"></i></span></div></div>')
@@ -153,7 +162,7 @@ def main(meta_path):
         'id': sid, 'titulo': meta['titulo'], 'subtitulo': meta.get('subtitulo', ''), 'categoria': meta['categoria'], 'subcategoria': meta['subcategoria'],
         'fecha': fecha, 'fechaTexto': f'{MESES[m - 1]} {y}', 'lugar': meta.get('lugar', ''), 'resumen': meta.get('resumen', ''),
         'etiquetas': [t.strip() for t in meta.get('etiquetas', []) if t.strip()], 'diapositivas': N, 'videos': nvid,
-        'ruta': ruta, 'pdf': ruta + 'media/' + pdf_name, 'portada': ruta + 'diapos/01.jpg', 'oculto': bool(meta.get('oculto', False)), 'origen': 'pptx',
+        'ruta': ruta, 'pdf': ruta + 'media/' + pdf_name, 'portada': ruta + 'diapos/01.jpg' + ver(os.path.join(diap, '01.jpg')), 'oculto': bool(meta.get('oculto', False)), 'origen': 'pptx',
     }
     U = 'https://politon.pe/joseguzman/ponencias/' + ruta
     titulo_pag = f'{ficha["titulo"]} | José Manuel Guzmán Valverde'

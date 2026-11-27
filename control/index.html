@@ -232,12 +232,18 @@
   $('#salir').onclick = desconectar;
 
   // ---------- comandos
-  var cola = [];
+  // varios celulares pueden manejar la misma exposición: cada uno escribe su propia cola (colas.<YO>), así no se pisan los comandos
+  var cola = [], YO = (function () { var k = 'jg-control-yo', v = null; try { v = localStorage.getItem(k); } catch (e) { } if (!v) { v = Math.random().toString(36).slice(2, 10); try { localStorage.setItem(k, v); } catch (e) { } } return v; })(), soloCola = false;
+  function marca(extra) { var ts = firebase.firestore.FieldValue.serverTimestamp(), o = { celular: { visto: ts } }; if (!soloCola) { o.celulares = {}; o.celulares[YO] = ts; } return Object.assign(o, extra || {}); }
   function enviar(c, n) {
     if (!ref) return;
     vibrar(12);
     cola = cola.slice(-9).concat([{ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), c: c, n: n == null ? null : n }]);
-    ref.set({ cola: cola, celular: { visto: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true }).catch(function (e) { $('#estado').textContent = Nube.mensajeError(e); });
+    var o; if (soloCola) o = marca({ cola: cola }); else { o = marca(); o.colas = {}; o.colas[YO] = cola; }
+    ref.set(o, { merge: true }).catch(function (e) {
+      if (!soloCola) { soloCola = true; ref.set(marca({ cola: cola }), { merge: true }).catch(function (e2) { $('#estado').textContent = Nube.mensajeError(e2); }); return; } // reglas antiguas: modo de un solo celular
+      $('#estado').textContent = Nube.mensajeError(e);
+    });
   }
   $('#bNext').onclick = function () { enviar('next'); };
   $('#bPrev').onclick = function () { enviar('prev'); };
@@ -405,7 +411,7 @@
   // ---------- mantener la pantalla encendida y avisar que el celular sigue conectado
   function despierto() { if (corriendo && 'wakeLock' in navigator && document.visibilityState === 'visible') navigator.wakeLock.request('screen').then(function (l) { lock = l; }).catch(function () { }); }
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { despierto(); latir(); } });
-  function latir() { if (ref) ref.set({ celular: { visto: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true }).catch(function () { }); }
+  function latir() { if (ref) ref.set(marca(), { merge: true }).catch(function () { if (!soloCola) { soloCola = true; latir(); } }); }
 
   // ---------- pintar el estado que manda la laptop
   function pintar(d) {

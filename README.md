@@ -30,7 +30,7 @@ En las diapositivas con video, «siguiente» primero reproduce el video y la sig
 ## Nube (Firebase · proyecto organizador-politon)
 `assets/nube.js` carga el SDK solo cuando hace falta. Cada web usa su propio documento, separado del organizador:
 - `apps/contabilidad/usuarios/{uid}`: práctica de /contabilidad sincronizada entre dispositivos (`assets/contabilidad-nube.js`).
-- `salas-ponencias/{código}`: control remoto, sin iniciar sesión (emparejamiento por QR). La laptop publica `sesion` (diapositiva, notas, siguiente) y ejecuta la `cola` de comandos que escribe el celular desde `/control/` (`assets/remoto.js`).
+- `salas-ponencias/{código}`: control remoto, sin iniciar sesión (emparejamiento por QR). La laptop publica `sesion` (diapositiva, notas, siguiente) y ejecuta los comandos que escriben los celulares desde `/control/` (`assets/remoto.js`): cada celular usa su propia cola `colas.<id>` (la antigua `cola` sigue funcionando), así varios pueden manejar la misma exposición.
 
 ## Publicación
 Cada cambio en la rama `main` se publica solo por FTP en politon.pe/joseguzman (`.github/workflows/publicar.yml`).

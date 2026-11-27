@@ -248,7 +248,7 @@
             : '<div class="drive-f"><input class="in" id="dLink" placeholder="Pega aquí el enlace de tu carpeta de Google Drive"><button class="btn navy sm-b" id="dGuardar">Guardar</button></div>') +
       '<p class="tiny">El enlace se guarda solo en este navegador.</p></div>' +
       C.materiales.map(function (g) {
-        return '<h3 class="h-ef">' + esc(g.grupo) + '</h3><div class="mats">' + g.items.map(function (m) { return '<div class="mat"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p><div class="mat-f">' + (m[2] || []).map(function (f) { return '<button class="chip" data-abrir="' + esc(f[1]) + '" data-tit="' + esc(m[0] + (m[2].length > 1 ? ' – ' + f[0] : '')) + '"><i data-icon="' + (/\.pdf$/.test(f[1]) ? 'FaFilePdf' : 'FaFileInvoiceDollar') + '"></i> ' + esc(f[0]) + '</button>'; }).join('') + '</div></div>'; }).join('') + '</div>';
+        return '<h3 class="h-ef">' + esc(g.grupo) + '</h3><div class="mats">' + g.items.map(function (m) { return '<div class="mat"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p><div class="mat-f">' + (m[2] || []).map(function (f) { if (/\.docx?$/i.test(f[1])) return '<a class="chip" href="materiales/' + esc(f[1]) + '" download><i data-icon="FaDownload"></i> ' + esc(f[0]) + '</a>'; return '<button class="chip" data-abrir="' + esc(f[1]) + '" data-tit="' + esc(m[0] + (m[2].length > 1 ? ' – ' + f[0] : '')) + '"><i data-icon="' + (/\.pdf$/.test(f[1]) ? 'FaFilePdf' : 'FaFileInvoiceDollar') + '"></i> ' + esc(f[0]) + '</button>'; }).join('') + '</div></div>'; }).join('') + '</div>';
       }).join('') +
       '<h3 class="h-ef">Fuentes oficiales y de consulta</h3><ul class="links">' + C.enlaces.map(function (l) { return '<li><a href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + esc(l[0]) + ' <i data-icon="FaExternalLinkAlt"></i></a></li>'; }).join('') + '</ul>';
     var g = $('#dGuardar'); if (g) g.onclick = function () { var v = $('#dLink').value.trim(); if (!/^https:\/\/(drive|docs)\.google\.com\//.test(v)) { alert('Pega un enlace de Google Drive (empieza con https://drive.google.com/).'); return; } S.drive = v; guardar(); hechas.materiales = 0; vista('materiales'); };
@@ -262,22 +262,26 @@
     if (V.dlg) return;
     var d = document.createElement('dialog'); d.id = 'visor';
     d.innerHTML = '<div class="vs-bar"><b id="vsT"></b><span class="grow"></span><span class="vs-pdf" hidden><button class="vs-b" id="vsMenos" aria-label="Alejar">−</button><span id="vsZ">100 %</span><button class="vs-b" id="vsMas" aria-label="Acercar">+</button><span class="vs-pg" id="vsPg"></span></span>' +
-      '<a class="vs-b vs-dl" id="vsDl" download><i data-icon="FaDownload"></i> <span>Descargar</span></a><button class="vs-b" id="vsX" aria-label="Cerrar">✕</button></div><div class="vs-body" id="vsB"></div>';
+      '<button class="vs-b vs-max" id="vsMax" aria-label="Agrandar" title="Agrandar (F)">⛶ <span>Agrandar</span></button><a class="vs-b vs-dl" id="vsDl" download><i data-icon="FaDownload"></i> <span>Descargar</span></a><button class="vs-b" id="vsX" aria-label="Cerrar">✕</button></div><div class="vs-body" id="vsB"></div>';
     document.body.appendChild(d); V.dlg = d;
     $('#vsX').onclick = function () { d.close(); };
     d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
-    d.addEventListener('close', function () { if (V.doc) { try { V.doc.destroy(); } catch (e) { } V.doc = null; } if (V.obs) V.obs.disconnect(); $('#vsB').innerHTML = ''; try { history.replaceState(null, '', '#materiales'); } catch (e) { } });
-    $('#vsMenos').onclick = function () { zoomPdf(-0.25); }; $('#vsMas').onclick = function () { zoomPdf(0.25); };
+    d.addEventListener('close', function () { agrandar(false); if (V.doc) { try { V.doc.destroy(); } catch (e) { } V.doc = null; } if (V.obs) V.obs.disconnect(); $('#vsB').innerHTML = ''; try { history.replaceState(null, '', '#materiales'); } catch (e) { } });
+    $('#vsMenos').onclick = function () { zoom(-1); }; $('#vsMas').onclick = function () { zoom(1); };
+    $('#vsMax').onclick = function () { agrandar(!d.classList.contains('max')); };
+    d.addEventListener('keydown', function (e) { if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey) { e.preventDefault(); agrandar(!d.classList.contains('max')); } else if (e.key === '+' || e.key === '=') zoom(1); else if (e.key === '-') zoom(-1); });
+    document.addEventListener('fullscreenchange', function () { if (!document.fullscreenElement && d.classList.contains('max') && V.fs) { V.fs = false; agrandar(false); } });
     $('#vsB').addEventListener('scroll', function () { if (V.raf) return; V.raf = requestAnimationFrame(function () { V.raf = 0; marcarPagina(); }); });
     if (window.pintarIconos) pintarIconos(d);
   }
   function abrirDoc(archivo, titulo) {
     crearVisor(); var url = 'materiales/' + archivo, esPdf = /\.pdf$/i.test(archivo);
     $('#vsT').textContent = titulo || archivo; $('#vsDl').href = url; $('#vsDl').setAttribute('download', archivo);
-    $('.vs-pdf', V.dlg).hidden = !esPdf; $('#vsB').className = 'vs-body ' + (esPdf ? 'es-pdf' : 'es-xls');
+    $('.vs-pdf', V.dlg).hidden = false; $('#vsPg').hidden = !esPdf; V.xz = 1; $('#vsB').style.removeProperty('--xlz'); $('#vsZ').textContent = '100 %'; $('#vsB').className = 'vs-body ' + (esPdf ? 'es-pdf' : 'es-xls');
     $('#vsB').innerHTML = '<p class="vs-cargando">Abriendo el documento…</p>';
     if (!V.dlg.open) V.dlg.showModal();
-    try { history.replaceState(null, '', '#materiales'); } catch (e) { }
+    // dentro del visor de una ponencia se conserva #ver=… para que el celular y las pantallas espejo abran el mismo documento
+    if (window.top === window) try { history.replaceState(null, '', '#materiales'); } catch (e) { }
     (esPdf ? verPdf(url) : verExcel(archivo)).catch(function () { $('#vsB').innerHTML = '<p class="vs-cargando">No se pudo abrir aquí. Usa el botón <b>Descargar</b>.</p>'; });
   }
   function cargarPdfjs() {
@@ -292,7 +296,7 @@
       V.doc = doc; V.zoom = 1; return doc.getPage(1).then(function (p) { V.p1 = p.getViewport({ scale: 1 }); pintarPaginas(); });
     });
   }
-  function anchoBase() { var w = Math.min($('#vsB').clientWidth - 24, 980); return Math.max(w, 260); }
+  function anchoBase() { var w = Math.min($('#vsB').clientWidth - 24, V.dlg && V.dlg.classList.contains('max') ? 1800 : 980); return Math.max(w, 260); }
   function pintarPaginas() {
     var b = $('#vsB'), n = V.doc.numPages, esc1 = anchoBase() / V.p1.width * V.zoom, alto = V.p1.height * esc1, ancho = V.p1.width * esc1;
     V.escala = esc1; b.innerHTML = '';
@@ -313,6 +317,24 @@
     });
   }
   function zoomPdf(d) { if (!V.doc) return; var z = Math.max(0.5, Math.min(4, V.zoom + d)); if (z === V.zoom) return; V.zoom = z; var b = $('#vsB'), ratio = b.scrollTop / Math.max(1, b.scrollHeight); pintarPaginas(); b.scrollTop = ratio * b.scrollHeight; }
+  // agrandar: el visor ocupa toda la ventana (o toda la pantalla, si el navegador lo permite) y la tabla del Excel crece
+  function agrandar(on) {
+    var d = V.dlg; if (!d) return; d.classList.toggle('max', on);
+    var bt = $('#vsMax'); bt.innerHTML = on ? '🗗 <span>Reducir</span>' : '⛶ <span>Agrandar</span>'; bt.setAttribute('aria-label', on ? 'Reducir' : 'Agrandar');
+    if (on) {
+      if (!V.doc && V.xz === 1) zoomXls(0.4);
+      if (d.requestFullscreen && document.fullscreenEnabled && !document.fullscreenElement) d.requestFullscreen().then(function () { V.fs = true; }).catch(function () { });
+    } else {
+      if (!V.doc && V.xz > 1) zoomXls(1 - V.xz);
+      if (document.fullscreenElement === d) { V.fs = false; document.exitFullscreen().catch(function () { }); }
+    }
+    if (V.doc) { var b = $('#vsB'), r = b.scrollTop / Math.max(1, b.scrollHeight); pintarPaginas(); b.scrollTop = r * b.scrollHeight; }
+  }
+  function zoom(dir) { if (V.doc) zoomPdf(dir * 0.25); else zoomXls(dir * 0.2); }
+  function zoomXls(dz) {
+    var z = Math.round(Math.max(0.6, Math.min(3, (V.xz || 1) + dz)) * 10) / 10; V.xz = z;
+    $('#vsB').style.setProperty('--xlz', z); $('#vsZ').textContent = Math.round(z * 100) + ' %';
+  }
   function marcarPagina() {
     if (!V.doc) return; var b = $('#vsB'), pgs = $$('.pg', b), cur = 1, y = b.scrollTop + b.clientHeight / 3;
     for (var i = 0; i < pgs.length; i++) { if (pgs[i].offsetTop - b.offsetTop <= y) cur = i + 1; else break; }
@@ -328,7 +350,9 @@
         $('#xlT').innerHTML = '<table class="xl"><tbody>' + h.filas.map(function (f) { return '<tr>' + f.map(function (c) { return '<td' + (/^-?[\d.,]+%?$/.test(c) && c !== '' ? ' class="n"' : '') + '>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>' + (h.recortado ? '<p class="tiny">Se muestran las primeras filas; descarga el archivo para ver todo.</p>' : '');
       }
       $('.xl-tabs', b).onclick = function (e) { var c = e.target.closest('[data-h]'); if (c) hoja(+c.getAttribute('data-h')); };
-      hoja(0);
+      var ini = 0; if (V.hojaIni) { j.hojas.forEach(function (h, i) { if (h.nombre.toUpperCase() === V.hojaIni.toUpperCase()) ini = i; }); V.hojaIni = null; }
+      hoja(ini);
+      if (V.grandeIni) { V.grandeIni = false; agrandar(true); }
     });
   }
   document.addEventListener('click', function (e) { var a = e.target.closest('[data-abrir]'); if (a) abrirDoc(a.getAttribute('data-abrir'), a.getAttribute('data-tit')); });
@@ -336,8 +360,18 @@
   // ---------------------------------------------------------------- inicio
   var h = decodeURIComponent((location.hash || '').slice(1)), m = /^([a-z]+)(?:-(.+))?$/.exec(h) || [];
   var ver = /^ver=(.+)$/.exec(h);
+  // un enlace #ver=… a esta misma página (p. ej. desde el visor de una ponencia) solo cambia el hash: también abre el documento
+  window.addEventListener('hashchange', function () {
+    var v = /^ver=(.+)$/.exec(decodeURIComponent((location.hash || '').slice(1))); if (!v) return;
+    var partes = v[1].split('&'), arch = partes[0], tit = arch;
+    partes.slice(1).forEach(function (x) { var kv = x.split('='); if (kv[0] === 'hoja') V.hojaIni = kv.slice(1).join('='); if (kv[0] === 'grande') V.grandeIni = true; });
+    C.materiales.forEach(function (g) { g.items.forEach(function (it) { (it[2] || []).forEach(function (f) { if (f[1] === arch) tit = it[0]; }); }); });
+    if (V.dlg && V.dlg.open) { var eraMax = V.dlg.classList.contains('max'); if (V.doc) { try { V.doc.destroy(); } catch (e) { } V.doc = null; } abrirDoc(arch, tit); if (eraMax) V.grandeIni = true; }
+    else { vista('materiales'); abrirDoc(arch, tit); }
+  });
   if (ver) {
-    var arch = ver[1], tit = arch;
+    var partes = ver[1].split('&'), arch = partes[0], tit = arch;
+    partes.slice(1).forEach(function (x) { var kv = x.split('='); if (kv[0] === 'hoja') V.hojaIni = kv.slice(1).join('='); if (kv[0] === 'grande') V.grandeIni = true; });
     C.materiales.forEach(function (g) { g.items.forEach(function (it) { (it[2] || []).forEach(function (f) { if (f[1] === arch) tit = it[0]; }); }); });
     vista('materiales'); abrirDoc(arch, tit);
   } else vista(m[1] || 'ruta', m[1] === 'cuestionarios' ? m[2] : null);

@@ -234,7 +234,7 @@
     if (!visor) {
       visor = document.createElement('div'); visor.className = 'visor';
       visor.innerHTML = '<div class="vbar"><button class="vvolver" type="button">← Volver a la diapositiva</button><b class="vtit"></b>' +
-        '<a class="vnueva" target="_blank" rel="noopener">Abrir en otra pestaña ↗</a></div><iframe title="Página web"></iframe>';
+        '<a class="vnueva" target="_blank" rel="noopener">Abrir en otra pestaña ↗</a></div><iframe title="Página web" allow="fullscreen" allowfullscreen></iframe>';
       stage.insertBefore(visor, laser);
       visor.querySelector('.vvolver').addEventListener('click', function () { cerrarWeb(); });
       var fr = visor.querySelector('iframe');

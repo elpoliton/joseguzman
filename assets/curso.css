@@ -173,9 +173,14 @@ table.ef { width: 100%; border-collapse: collapse; font-size: 14.5px; }
 .vs-body.es-xls { padding: 12px 14px 20px; background: #fff; }
 .xl-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; position: sticky; top: -12px; background: #fff; padding: 6px 0; z-index: 1; }
 .xl-t { overflow: auto; border: 1px solid var(--line); border-radius: 10px; }
-table.xl { border-collapse: collapse; font-size: 13px; min-width: 100%; }
-.xl td { border: 1px solid #e3e8f1; padding: 4px 8px; white-space: nowrap; max-width: 420px; overflow: hidden; text-overflow: ellipsis; }
+table.xl { border-collapse: collapse; font-size: calc(13px * var(--xlz, 1)); min-width: 100%; }
+.xl td { border: 1px solid #e3e8f1; padding: calc(4px * var(--xlz, 1)) calc(8px * var(--xlz, 1)); white-space: nowrap; max-width: 420px; overflow: hidden; text-overflow: ellipsis; }
 .xl tr:first-child td { background: var(--soft); font-weight: 700; }
 .xl td.n { text-align: right; font-variant-numeric: tabular-nums; }
 .xl-n { margin: 10px 0 0; }
 @media (max-width: 640px) { #visor { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; margin: 0; } .vs-bar > b { max-width: 100%; flex-basis: 100%; } .vs-dl span { display: none; } }
+#visor.max, #visor.max:fullscreen { width: 100vw; max-width: 100vw; height: 100vh; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
+#visor:fullscreen::backdrop { background: #fff; }
+.vs-max { background: rgba(255,255,255,.22); }
+.xl td { max-width: calc(420px * var(--xlz, 1)); }
+@media (max-width: 640px) { .vs-max span { display: none; } }
