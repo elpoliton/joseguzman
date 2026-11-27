@@ -111,7 +111,7 @@ window.PONENCIAS = [
     "fecha": "2026-11-26",
     "fechaTexto": "Noviembre 2026",
     "lugar": "IES CERTUS",
-    "resumen": "Exposición del equipo Los Contables: video de apertura «¿Cuánto gané?», aumento de capital en tres pasos (elemento 5), gastos por naturaleza 60 a 69 (elemento 6), ingresos 70, 75 y 77 (elemento 7), resultado preliminar y ecuación contable.",
+    "resumen": "Exposición del equipo Los Contables: video de apertura «¿Cuánto gané?», aumento de capital en tres pasos (elemento 5), gastos por naturaleza 60 a 69 (elemento 6), ingresos 70, 75 y 77 (elemento 7), resultado preliminar y ecuación contable. Con enlaces al informe y al libro diario.",
     "etiquetas": [
       "PCGE",
       "Elemento 5",

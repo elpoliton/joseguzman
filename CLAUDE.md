@@ -52,6 +52,7 @@ Más detalle de cada sección en `README.md`.
 - Las reglas se editan en la consola de Firebase, no en este repo. La regla de `salas-ponencias` tiene que estar **en el nivel de `documents`**, no dentro de otro `match`.
 
 ## Registro de cambios
+- 27/11/2026: AA2 (`dpc-aa2-politon`) con botones al informe (PDF) y al libro diario (Excel) en las diapositivas 1, 3, 14 y 15 (formas con enlace en el PPTX v3). PCGE 2019 de la web: se agregan 70121 y 70122, que el dataset omitía; la corrección queda en `CORRECCIONES` de `tools/pcge_datos.py`.
 - 26/11/2026: AA2 (`dpc-aa2-politon`) en 15 diapositivas: la 2 es el video horizontal «¿Cuánto gané?» (`media/video-1.mp4`), hecho con el kit video-expediente en 16:9.
 - 26/11/2026: AA2 de POLITON (equipo Los Contables) en Ponencias (`dpc-aa2-politon`) y en Materiales › Mis entregas (`aa2-politon-informe-v1.pdf`, `aa2-politon-libro-diario-v1.xlsx`). «Tocar» desde el celular: los enlaces del sitio (también con `www.` o http) se abren en el visor; los externos muestran en la laptop un aviso «🔗 Enlace externo · Abrir ↗» (el navegador no abre otra pestaña sin un clic real).
 - 24/11/2026: «Mi Formato 5.1» tiene columna editable «¿Por qué va aquí?» por línea (`linea.nota`; al copiar un ejercicio se llena con la `nota` de la solución, y `asiento.expl` con su explicación) y su Excel trae la hoja «Explicación». El editor guarda al instante al salir de la pestaña (`pagehide`).
